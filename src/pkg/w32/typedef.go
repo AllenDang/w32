@@ -100,3 +100,14 @@ type OPENFILENAME struct {
     DwReserved      uint
     FlagsEx         uint
 }
+
+type BROWSEINFO struct {
+    Owner        HWND
+    Root         *uint16
+    DisplayName  *uint16
+    Title        *uint16
+    Flags        uint
+    CallbackFunc uintptr
+    LParam       uintptr
+    Image        int
+}

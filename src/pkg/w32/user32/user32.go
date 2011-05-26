@@ -14,38 +14,40 @@ import (
 var (
     lib uintptr
 
-    procRegisterClassEx     uintptr
-    procLoadIcon            uintptr
-    procLoadCursor          uintptr
-    procShowWindow          uintptr
-    procUpdateWindow        uintptr
-    procCreateWindowEx      uintptr
-    procDestroyWindow       uintptr
-    procDefWindowProc       uintptr
-    procPostQuitMessage     uintptr
-    procGetMessage          uintptr
-    procTranslateMessage    uintptr
-    procDispatchMessage     uintptr
-    procSendMessage         uintptr
-    procPostMessage         uintptr
-    procSetWindowText       uintptr
-    procGetWindowTextLength uintptr
-    procGetWindowText       uintptr
-    procGetWindowRect       uintptr
-    procMoveWindow          uintptr
-    procScreenToClient      uintptr
-    procCallWindowProc      uintptr
-    procSetWindowLongPtr    uintptr
-    procEnableWindow        uintptr
-    procIsWindowEnabled     uintptr
-    procIsWindowVisible     uintptr
-    procSetFocus            uintptr
-    procInvalidateRect      uintptr
-    procGetClientRect       uintptr
-    procGetDC               uintptr
-    procReleaseDC           uintptr
-    procSetCapture          uintptr
-    procReleaseCapture      uintptr
+    procRegisterClassEx          uintptr
+    procLoadIcon                 uintptr
+    procLoadCursor               uintptr
+    procShowWindow               uintptr
+    procUpdateWindow             uintptr
+    procCreateWindowEx           uintptr
+    procDestroyWindow            uintptr
+    procDefWindowProc            uintptr
+    procPostQuitMessage          uintptr
+    procGetMessage               uintptr
+    procTranslateMessage         uintptr
+    procDispatchMessage          uintptr
+    procSendMessage              uintptr
+    procPostMessage              uintptr
+    procSetWindowText            uintptr
+    procGetWindowTextLength      uintptr
+    procGetWindowText            uintptr
+    procGetWindowRect            uintptr
+    procMoveWindow               uintptr
+    procScreenToClient           uintptr
+    procCallWindowProc           uintptr
+    procSetWindowLongPtr         uintptr
+    procEnableWindow             uintptr
+    procIsWindowEnabled          uintptr
+    procIsWindowVisible          uintptr
+    procSetFocus                 uintptr
+    procInvalidateRect           uintptr
+    procGetClientRect            uintptr
+    procGetDC                    uintptr
+    procReleaseDC                uintptr
+    procSetCapture               uintptr
+    procReleaseCapture           uintptr
+    procGetWindowThreadProcessId uintptr
+    procMessageBox               uintptr
 )
 
 func init() {
@@ -83,6 +85,8 @@ func init() {
     procReleaseDC = GetProcAddr(lib, "ReleaseDC")
     procSetCapture = GetProcAddr(lib, "SetCapture")
     procReleaseCapture = GetProcAddr(lib, "ReleaseCapture")
+    procGetWindowThreadProcessId = GetProcAddr(lib, "GetWindowThreadProcessId")
+    procMessageBox = GetProcAddr(lib, "MessageBoxW")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -412,4 +416,26 @@ func ReleaseCapture() bool {
         0)
 
     return ret != 0
+}
+
+func GetWindowThreadProcessId(hwnd HWND) (HANDLE, int) {
+    var processId int
+    ret, _, _ := syscall.Syscall(procGetWindowThreadProcessId, 2,
+        uintptr(hwnd),
+        uintptr(unsafe.Pointer(&processId)),
+        0)
+
+    return HANDLE(ret), processId
+}
+
+func MessageBox(hwnd HWND, text, caption string, flags uint) int {
+    ret, _, _ := syscall.Syscall6(procMessageBox, 4,
+        uintptr(hwnd),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
+        uintptr(flags),
+        0,
+        0)
+
+    return int(ret)
 }

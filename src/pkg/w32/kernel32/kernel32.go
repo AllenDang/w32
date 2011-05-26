@@ -13,8 +13,9 @@ import (
 var (
     lib uintptr
 
-    procGetModuleHandle uintptr
-    procMulDiv          uintptr
+    procGetModuleHandle  uintptr
+    procMulDiv           uintptr
+    procGetCurrentThread uintptr
 )
 
 func init() {
@@ -22,6 +23,7 @@ func init() {
 
     procGetModuleHandle = GetProcAddr(lib, "GetModuleHandleW")
     procMulDiv = GetProcAddr(lib, "MulDiv")
+    procGetCurrentThread = GetProcAddr(lib, "GetCurrentThread")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -45,4 +47,13 @@ func MulDiv(number, numerator, denominator int) int {
         uintptr(denominator))
 
     return int(ret)
+}
+
+func GetCurrentThread() HANDLE {
+    ret, _, _ := syscall.Syscall(procGetCurrentThread, 0,
+        0,
+        0,
+        0)
+
+    return HANDLE(ret)
 }
