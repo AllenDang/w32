@@ -48,6 +48,8 @@ var (
     procReleaseCapture           uintptr
     procGetWindowThreadProcessId uintptr
     procMessageBox               uintptr
+    procGetSystemMetrics         uintptr
+    procGetWindowLongPtr         uintptr
 )
 
 func init() {
@@ -87,6 +89,8 @@ func init() {
     procReleaseCapture = GetProcAddr(lib, "ReleaseCapture")
     procGetWindowThreadProcessId = GetProcAddr(lib, "GetWindowThreadProcessId")
     procMessageBox = GetProcAddr(lib, "MessageBoxW")
+    procGetSystemMetrics = GetProcAddr(lib, "GetSystemMetrics")
+    procGetWindowLongPtr = GetProcAddr(lib, "GetWindowLongW")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -438,4 +442,22 @@ func MessageBox(hwnd HWND, text, caption string, flags uint) int {
         0)
 
     return int(ret)
+}
+
+func GetSystemMetrics(index int) int {
+    ret, _, _ := syscall.Syscall(procGetSystemMetrics, 1,
+        uintptr(index),
+        0,
+        0)
+
+    return int(ret)
+}
+
+func GetWindowLongPtr(hwnd HWND, index int) uintptr {
+    ret, _, _ := syscall.Syscall(procGetWindowLongPtr, 2,
+        uintptr(hwnd),
+        uintptr(index),
+        0)
+
+    return ret
 }
