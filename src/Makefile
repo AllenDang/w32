@@ -7,6 +7,7 @@ all: clean
 	make -C pkg/w32/comdlg32	install
 	make -C pkg/w32/ole32		install
 	make -C pkg/w32/shell32		install
+	make -C pkg/w32/oleaut32	install
 	make -C pkg/w32/com			install
 
 clean:
@@ -18,6 +19,7 @@ clean:
 	make -C pkg/w32/comdlg32	clean
 	make -C pkg/w32/ole32		clean
 	make -C pkg/w32/shell32		clean
+	make -C pkg/w32/oleaut32	clean
 	make -C pkg/w32/com			clean
 
 format:
