@@ -121,8 +121,27 @@ type GUID struct {
 
 type VARIANT struct {
     VT         uint16 //  2
-    wReserved1 uint16 //  4
-    wReserved2 uint16 //  6
-    wReserved3 uint16 //  8
+    WReserved1 uint16 //  4
+    WReserved2 uint16 //  6
+    WReserved3 uint16 //  8
     Val        int64  // 16
+}
+
+type DISPPARAMS struct {
+    Rgvarg            uintptr
+    RgdispidNamedArgs uintptr
+    CArgs             uint32
+    CNamedArgs        uint32
+}
+
+type EXCEPINFO struct {
+    WCode             uint16
+    WReserved         uint16
+    BstrSource        *uint16
+    BstrDescription   *uint16
+    BstrHelpFile      *uint16
+    DwHelpContext     uint32
+    PvReserved        uintptr
+    PfnDeferredFillIn uintptr
+    Scode             int32
 }

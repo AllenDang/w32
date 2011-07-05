@@ -45,8 +45,7 @@ func (this *IDispatch) GetIDsOfName(names []string) []int32 {
 }
 
 func (this *IDispatch) Invoke(dispid int32, dispatch int16, params ...interface{}) *VARIANT {
-	//TODO: Implement Invoke here.
-    return nil
+	return ComInvoke(this, dispid, dispatch, params...)
 }
 
 type pIUnknownVtbl struct {
