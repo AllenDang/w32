@@ -13,9 +13,10 @@ import (
 var (
     lib uintptr
 
-    procGetModuleHandle  uintptr
-    procMulDiv           uintptr
-    procGetCurrentThread uintptr
+    procGetModuleHandle    uintptr
+    procMulDiv             uintptr
+    procGetCurrentThread   uintptr
+    procGetUserDefaultLCID uintptr
 )
 
 func init() {
@@ -24,6 +25,7 @@ func init() {
     procGetModuleHandle = GetProcAddr(lib, "GetModuleHandleW")
     procMulDiv = GetProcAddr(lib, "MulDiv")
     procGetCurrentThread = GetProcAddr(lib, "GetCurrentThread")
+    procGetUserDefaultLCID = GetProcAddr(lib, "GetUserDefaultLCID")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -56,4 +58,13 @@ func GetCurrentThread() HANDLE {
         0)
 
     return HANDLE(ret)
+}
+
+func GetUserDefaultLCID() uint32 {
+    ret, _, _ := syscall.Syscall(procGetUserDefaultLCID, 0,
+        0,
+        0,
+        0)
+
+    return uint32(ret)
 }
