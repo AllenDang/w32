@@ -118,3 +118,11 @@ type GUID struct {
     Data3 uint16
     Data4 [8]byte
 }
+
+type VARIANT struct {
+    VT         uint16 //  2
+    wReserved1 uint16 //  4
+    wReserved2 uint16 //  6
+    wReserved3 uint16 //  8
+    Val        int64  // 16
+}
