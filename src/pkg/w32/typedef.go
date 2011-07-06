@@ -24,6 +24,7 @@ type (
     HFONT     HANDLE
     HDC       HANDLE
     HGDIOBJ   HANDLE
+    HDROP     HANDLE
 )
 
 type POINT struct {
