@@ -50,6 +50,17 @@ var (
     procMessageBox               uintptr
     procGetSystemMetrics         uintptr
     procGetWindowLongPtr         uintptr
+    procCopyRect                 uintptr
+    procEqualRect                uintptr
+    procInflateRect              uintptr
+    procIntersectRect            uintptr
+    procIsRectEmpty              uintptr
+    procOffsetRect               uintptr
+    procPtInRect                 uintptr
+    procSetRect                  uintptr
+    procSetRectEmpty             uintptr
+    procSubtractRect             uintptr
+    procUnionRect                uintptr
 )
 
 func init() {
@@ -91,6 +102,17 @@ func init() {
     procMessageBox = GetProcAddr(lib, "MessageBoxW")
     procGetSystemMetrics = GetProcAddr(lib, "GetSystemMetrics")
     procGetWindowLongPtr = GetProcAddr(lib, "GetWindowLongW")
+    procCopyRect = GetProcAddr(lib, "CopyRect")
+    procEqualRect = GetProcAddr(lib, "EqualRect")
+    procInflateRect = GetProcAddr(lib, "InflateRect")
+    procIntersectRect = GetProcAddr(lib, "IntersectRect")
+    procIsRectEmpty = GetProcAddr(lib, "IsRectEmpty")
+    procOffsetRect = GetProcAddr(lib, "OffsetRect")
+    procPtInRect = GetProcAddr(lib, "PtInRect")
+    procSetRect = GetProcAddr(lib, "SetRect")
+    procSetRectEmpty = GetProcAddr(lib, "SetRectEmpty")
+    procSubtractRect = GetProcAddr(lib, "SubtractRect")
+    procUnionRect = GetProcAddr(lib, "UnionRect")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -460,4 +482,107 @@ func GetWindowLongPtr(hwnd HWND, index int) uintptr {
         0)
 
     return ret
+}
+
+func CopyRect(dst, src *RECT) bool {
+    ret, _, _ := syscall.Syscall(procCopyRect, 2,
+        uintptr(unsafe.Pointer(dst)),
+        uintptr(unsafe.Pointer(src)),
+        0)
+
+    return ret != 0
+}
+
+func EqualRect(rect1, rect2 *RECT) bool {
+    ret, _, _ := syscall.Syscall(procEqualRect, 2,
+        uintptr(unsafe.Pointer(rect1)),
+        uintptr(unsafe.Pointer(rect2)),
+        0)
+
+    return ret != 0
+}
+
+func InflateRect(rect *RECT, dx, dy int) bool {
+    ret, _, _ := syscall.Syscall(procInflateRect, 3,
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(dx),
+        uintptr(dy))
+
+    return ret != 0
+}
+
+func IntersectRect(dst, src1, src2 *RECT) bool {
+    ret, _, _ := syscall.Syscall(procIntersectRect, 3,
+        uintptr(unsafe.Pointer(dst)),
+        uintptr(unsafe.Pointer(src1)),
+        uintptr(unsafe.Pointer(src2)))
+
+    return ret != 0
+}
+
+func IsRectEmpty(rect *RECT) bool {
+    ret, _, _ := syscall.Syscall(procIsRectEmpty, 1,
+        uintptr(unsafe.Pointer(rect)),
+        0,
+        0)
+
+    return ret != 0
+}
+
+func OffsetRect(rect *RECT, dx, dy int) bool {
+    ret, _, _ := syscall.Syscall(procOffsetRect, 3,
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(dx),
+        uintptr(dy))
+
+    return ret != 0
+}
+
+func PtInRect(rect *RECT, x, y int) bool {
+    pt := POINT{X: x, Y: y}
+    ret, _, _ := syscall.Syscall(procPtInRect, 2,
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(unsafe.Pointer(&pt)),
+        0)
+
+    return ret != 0
+}
+
+func SetRect(rect *RECT, left, top, right, bottom int) bool {
+    ret, _, _ := syscall.Syscall6(procSetRect, 5,
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(left),
+        uintptr(top),
+        uintptr(right),
+        uintptr(bottom),
+        0)
+
+    return ret != 0
+}
+
+func SetRectEmpty(rect *RECT) bool {
+    ret, _, _ := syscall.Syscall(procSetRectEmpty, 1,
+        uintptr(unsafe.Pointer(rect)),
+        0,
+        0)
+
+    return ret != 0
+}
+
+func SubtractRect(dst, src1, src2 *RECT) bool {
+    ret, _, _ := syscall.Syscall(procSubtractRect, 3,
+        uintptr(unsafe.Pointer(dst)),
+        uintptr(unsafe.Pointer(src1)),
+        uintptr(unsafe.Pointer(src2)))
+
+    return ret != 0
+}
+
+func UnionRect(dst, src1, src2 *RECT) bool {
+    ret, _, _ := syscall.Syscall(procUnionRect, 3,
+        uintptr(unsafe.Pointer(dst)),
+        uintptr(unsafe.Pointer(src1)),
+        uintptr(unsafe.Pointer(src2)))
+
+    return ret != 0
 }
