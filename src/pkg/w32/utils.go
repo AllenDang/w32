@@ -32,7 +32,7 @@ func LoadLib(name string) uintptr {
 }
 
 func GetProcAddr(lib uintptr, name string) uintptr {
-    addr, err := syscall.GetProcAddress(uint32(lib), name)
+    addr, err := syscall.GetProcAddress(syscall.Handle(lib), name)
     if err != 0 {
         panic(fmt.Sprintf("syscal.GetProcAddress(%d, '%s') failed: %s",
             lib, name, syscall.Errstr(err)))
