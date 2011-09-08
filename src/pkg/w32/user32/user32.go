@@ -61,6 +61,9 @@ var (
     procSetRectEmpty             uintptr
     procSubtractRect             uintptr
     procUnionRect                uintptr
+    procCreateDialogParam        uintptr
+    procGetDlgItem               uintptr
+    procDrawIcon                 uintptr
 )
 
 func init() {
@@ -113,6 +116,9 @@ func init() {
     procSetRectEmpty = GetProcAddr(lib, "SetRectEmpty")
     procSubtractRect = GetProcAddr(lib, "SubtractRect")
     procUnionRect = GetProcAddr(lib, "UnionRect")
+    procCreateDialogParam = GetProcAddr(lib, "CreateDialogParamW")
+    procGetDlgItem = GetProcAddr(lib, "GetDlgItem")
+    procDrawIcon = GetProcAddr(lib, "DrawIcon")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -583,6 +589,39 @@ func UnionRect(dst, src1, src2 *RECT) bool {
         uintptr(unsafe.Pointer(dst)),
         uintptr(unsafe.Pointer(src1)),
         uintptr(unsafe.Pointer(src2)))
+
+    return ret != 0
+}
+
+func CreateDialog(hInstance HINSTANCE, lpTemplate *uint16, hWndParent HWND, lpDialogProc uintptr) HWND {
+    ret, _, _ := syscall.Syscall6(procCreateDialogParam, 5,
+        uintptr(unsafe.Pointer(hInstance)),
+        uintptr(unsafe.Pointer(lpTemplate)),
+        uintptr(unsafe.Pointer(hWndParent)),
+        lpDialogProc,
+        0,
+        0)
+
+    return HWND(ret)
+}
+
+func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
+    ret, _, _ := syscall.Syscall(procGetDlgItem, 2,
+        uintptr(unsafe.Pointer(hDlg)),
+        uintptr(nIDDlgItem),
+        0)
+
+    return HWND(ret)
+}
+
+func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
+    ret, _, _ := syscall.Syscall6(procDrawIcon, 4,
+        uintptr(unsafe.Pointer(hDC)),
+        uintptr(x),
+        uintptr(y),
+        uintptr(unsafe.Pointer(hIcon)),
+        0,
+        0)
 
     return ret != 0
 }
