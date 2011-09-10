@@ -64,6 +64,10 @@ var (
     procCreateDialogParam        uintptr
     procGetDlgItem               uintptr
     procDrawIcon                 uintptr
+    procClientToScreen           uintptr
+    procIsDialogMessage          uintptr
+    procIsWindow                 uintptr
+    procEndDialog                uintptr
 )
 
 func init() {
@@ -119,6 +123,10 @@ func init() {
     procCreateDialogParam = GetProcAddr(lib, "CreateDialogParamW")
     procGetDlgItem = GetProcAddr(lib, "GetDlgItem")
     procDrawIcon = GetProcAddr(lib, "DrawIcon")
+    procClientToScreen = GetProcAddr(lib, "ClientToScreen")
+    procIsDialogMessage = GetProcAddr(lib, "IsDialogMessageW")
+    procIsWindow = GetProcAddr(lib, "IsWindow")
+    procEndDialog = GetProcAddr(lib, "EndDialog")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -621,6 +629,45 @@ func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
         uintptr(y),
         uintptr(unsafe.Pointer(hIcon)),
         0,
+        0)
+
+    return ret != 0
+}
+
+func ClientToScreen(hwnd HWND, x, y int) (int, int) {
+    var pt POINT
+    pt.X, pt.Y = x, y
+
+    syscall.Syscall(procClientToScreen, 2,
+        uintptr(hwnd),
+        uintptr(unsafe.Pointer(&pt)),
+        0)
+
+    return pt.X, pt.Y
+}
+
+func IsDialogMessage(hwnd HWND, msg *MSG) bool {
+    ret, _, _ := syscall.Syscall(procIsDialogMessage, 2,
+        uintptr(hwnd),
+        uintptr(unsafe.Pointer(msg)),
+        0)
+
+    return ret != 0
+}
+
+func IsWindow(hwnd HWND) bool {
+    ret, _, _ := syscall.Syscall(procIsWindow, 1,
+        uintptr(hwnd),
+        0,
+        0)
+
+    return ret != 0
+}
+
+func EndDialog(hwnd HWND, nResult uintptr) bool {
+    ret, _, _ := syscall.Syscall(procEndDialog, 2,
+        uintptr(hwnd),
+        nResult,
         0)
 
     return ret != 0
