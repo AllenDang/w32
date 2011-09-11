@@ -276,3 +276,77 @@ type DOCINFO struct {
     LpszDatatype *uint16
     FwType       uint
 }
+
+type NMHDR struct {
+    HwndFrom HWND
+    IdFrom   uintptr
+    Code     uint32
+}
+
+type LVCOLUMN struct {
+    Mask       uint32
+    Fmt        int32
+    Cx         int32
+    PszText    *uint16
+    CchTextMax int32
+    ISubItem   int32
+    IImage     int32
+    IOrder     int32
+}
+
+type LVITEM struct {
+    Mask       uint32
+    IItem      int32
+    ISubItem   int32
+    State      uint32
+    StateMask  uint32
+    PszText    *uint16
+    CchTextMax int32
+    IImage     int32
+    LParam     uintptr
+    IIndent    int32
+    IGroupId   int32
+    CColumns   uint32
+    PuColumns  uint32
+}
+
+type LVHITTESTINFO struct {
+    Pt       POINT
+    Flags    uint32
+    IItem    int32
+    ISubItem int32
+    IGroup   int32
+}
+
+type NMITEMACTIVATE struct {
+    Hdr       NMHDR
+    IItem     int32
+    ISubItem  int32
+    UNewState uint32
+    UOldState uint32
+    UChanged  uint32
+    PtAction  POINT
+    LParam    uintptr
+    UKeyFlags uint32
+}
+
+type NMLISTVIEW struct {
+    Hdr       NMHDR
+    IItem     int32
+    ISubItem  int32
+    UNewState uint32
+    UOldState uint32
+    UChanged  uint32
+    PtAction  POINT
+    LParam    uintptr
+}
+
+type NMLVDISPINFO struct {
+    Hdr  NMHDR
+    Item LVITEM
+}
+
+type INITCOMMONCONTROLSEX struct {
+    DwSize uint32
+    DwICC  uint32
+}
