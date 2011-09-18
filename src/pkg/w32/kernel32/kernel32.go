@@ -17,6 +17,8 @@ var (
     procMulDiv             uintptr
     procGetCurrentThread   uintptr
     procGetUserDefaultLCID uintptr
+    procLstrlen            uintptr
+    procLstrcpy            uintptr
 )
 
 func init() {
@@ -26,6 +28,8 @@ func init() {
     procMulDiv = GetProcAddr(lib, "MulDiv")
     procGetCurrentThread = GetProcAddr(lib, "GetCurrentThread")
     procGetUserDefaultLCID = GetProcAddr(lib, "GetUserDefaultLCID")
+    procLstrlen = GetProcAddr(lib, "lstrlenW")
+    procLstrcpy = GetProcAddr(lib, "lstrcpyW")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -67,4 +71,20 @@ func GetUserDefaultLCID() uint32 {
         0)
 
     return uint32(ret)
+}
+
+func Lstrlen(lpString *uint16) int {
+    ret, _, _ := syscall.Syscall(procLstrlen, 1,
+        uintptr(unsafe.Pointer(lpString)),
+        0,
+        0)
+
+    return int(ret)
+}
+
+func Lstrcpy(buf []uint16, lpString *uint16) {
+    syscall.Syscall(procLstrcpy, 2,
+        uintptr(unsafe.Pointer(&buf[0])),
+        uintptr(unsafe.Pointer(lpString)),
+        0)
 }

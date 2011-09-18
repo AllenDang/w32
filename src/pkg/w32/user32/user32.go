@@ -22,6 +22,7 @@ var (
     procCreateWindowEx           uintptr
     procDestroyWindow            uintptr
     procDefWindowProc            uintptr
+    procDefDlgProc               uintptr
     procPostQuitMessage          uintptr
     procGetMessage               uintptr
     procTranslateMessage         uintptr
@@ -68,6 +69,7 @@ var (
     procIsDialogMessage          uintptr
     procIsWindow                 uintptr
     procEndDialog                uintptr
+    procSetWindowLong            uintptr
 )
 
 func init() {
@@ -81,6 +83,7 @@ func init() {
     procCreateWindowEx = GetProcAddr(lib, "CreateWindowExW")
     procDestroyWindow = GetProcAddr(lib, "DestroyWindow")
     procDefWindowProc = GetProcAddr(lib, "DefWindowProcW")
+    procDefDlgProc = GetProcAddr(lib, "DefDlgProcW")
     procPostQuitMessage = GetProcAddr(lib, "PostQuitMessage")
     procGetMessage = GetProcAddr(lib, "GetMessageW")
     procTranslateMessage = GetProcAddr(lib, "TranslateMessage")
@@ -127,6 +130,7 @@ func init() {
     procIsDialogMessage = GetProcAddr(lib, "IsDialogMessageW")
     procIsWindow = GetProcAddr(lib, "IsWindow")
     procEndDialog = GetProcAddr(lib, "EndDialog")
+    procSetWindowLong = GetProcAddr(lib, "SetWindowLongW")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -206,6 +210,18 @@ func DestroyWindow(hwnd HWND) bool {
 
 func DefWindowProc(hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
     ret, _, _ := syscall.Syscall6(procDefWindowProc, 4,
+        uintptr(hwnd),
+        uintptr(msg),
+        wParam,
+        lParam,
+        0,
+        0)
+
+    return ret
+}
+
+func DefDlgProc(hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
+    ret, _, _ := syscall.Syscall6(procDefDlgProc, 4,
         uintptr(hwnd),
         uintptr(msg),
         wParam,
@@ -671,4 +687,13 @@ func EndDialog(hwnd HWND, nResult uintptr) bool {
         0)
 
     return ret != 0
+}
+
+func SetWindowLong(hwnd HWND, nIndex int, dwNewLong uint32) uint32 {
+    ret, _, _ := syscall.Syscall(procSetWindowLong, 3,
+        uintptr(hwnd),
+        uintptr(nIndex),
+        uintptr(dwNewLong))
+
+    return uint32(ret)
 }

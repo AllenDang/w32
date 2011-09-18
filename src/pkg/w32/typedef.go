@@ -28,6 +28,7 @@ type (
     HENHMETAFILE HANDLE
     HBITMAP      HANDLE
     HPEN         HANDLE
+    HKEY         HANDLE
     COLORREF     uint
 )
 

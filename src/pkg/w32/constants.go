@@ -10,6 +10,12 @@ const (
 )
 
 const (
+    ERROR_SUCCESS       = 0
+    ERROR_NO_MORE_ITEMS = 259
+    ERROR_MORE_DATA     = 234
+)
+
+const (
     CW_USEDEFAULT = ^0x7fffffff
 )
 
@@ -1246,6 +1252,7 @@ const (
     LVM_DELETEALLITEMS           = LVM_FIRST + 9
     LVM_GETCALLBACKMASK          = LVM_FIRST + 10
     LVM_SETCALLBACKMASK          = LVM_FIRST + 11
+    LVM_SETUNICODEFORMAT         = CCM_SETUNICODEFORMAT
     LVM_GETNEXTITEM              = LVM_FIRST + 12
     LVM_FINDITEM                 = LVM_FIRST + 83
     LVM_GETITEMRECT              = LVM_FIRST + 14
@@ -1532,4 +1539,49 @@ const (
     INFOTIPSIZE            = 1024
     ICC_STANDARD_CLASSES   = 0x00004000
     ICC_LINK_CLASS         = 0x00008000
+)
+
+// Dialog Codes
+const (
+    DLGC_WANTARROWS      = 0x0001
+    DLGC_WANTTAB         = 0x0002
+    DLGC_WANTALLKEYS     = 0x0004
+    DLGC_WANTMESSAGE     = 0x0004
+    DLGC_HASSETSEL       = 0x0008
+    DLGC_DEFPUSHBUTTON   = 0x0010
+    DLGC_UNDEFPUSHBUTTON = 0x0020
+    DLGC_RADIOBUTTON     = 0x0040
+    DLGC_WANTCHARS       = 0x0080
+    DLGC_STATIC          = 0x0100
+    DLGC_BUTTON          = 0x2000
+)
+
+// Get/SetWindowWord/Long offsets for use with WC_DIALOG windows
+const (
+    DWL_MSGRESULT = 0
+    DWL_DLGPROC   = 4
+    DWL_USER      = 8
+)
+
+// Registry predefined keys
+const (
+    HKEY_CLASSES_ROOT     HKEY = 0x80000000
+    HKEY_CURRENT_USER     HKEY = 0x80000001
+    HKEY_LOCAL_MACHINE    HKEY = 0x80000002
+    HKEY_USERS            HKEY = 0x80000003
+    HKEY_PERFORMANCE_DATA HKEY = 0x80000004
+    HKEY_CURRENT_CONFIG   HKEY = 0x80000005
+    HKEY_DYN_DATA         HKEY = 0x80000006
+)
+
+// Registry Key Security and Access Rights
+const (
+    KEY_READ = 0x20019
+)
+
+const (
+    NFR_ANSI    = 1
+    NFR_UNICODE = 2
+    NF_QUERY    = 3
+    NF_REQUERY  = 4
 )
