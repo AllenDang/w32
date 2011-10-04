@@ -1585,3 +1585,28 @@ const (
     NF_QUERY    = 3
     NF_REQUERY  = 4
 )
+
+// Registry value types
+const (
+    RRF_RT_REG_NONE         = 0x00000001
+    RRF_RT_REG_SZ           = 0x00000002
+    RRF_RT_REG_EXPAND_SZ    = 0x00000004
+    RRF_RT_REG_BINARY       = 0x00000008
+    RRF_RT_REG_DWORD        = 0x00000010
+    RRF_RT_REG_MULTI_SZ     = 0x00000020
+    RRF_RT_REG_QWORD        = 0x00000040
+    RRF_RT_DWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_DWORD)
+    RRF_RT_QWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_QWORD)
+    RRF_RT_ANY              = 0x0000ffff
+    RRF_NOEXPAND            = 0x10000000
+    RRF_ZEROONFAILURE       = 0x20000000
+    REG_PROCESS_APPKEY      = 0x00000001
+    REG_MUI_STRING_TRUNCATE = 0x00000001
+)
+
+// PeekMessage wRemoveMsg value
+const (
+    PM_NOREMOVE = 0x000
+    PM_REMOVE   = 0x001
+    PM_NOYIELD  = 0x002
+)

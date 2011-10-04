@@ -63,6 +63,7 @@ var (
     procSubtractRect             uintptr
     procUnionRect                uintptr
     procCreateDialogParam        uintptr
+    procDialogBoxParam           uintptr
     procGetDlgItem               uintptr
     procDrawIcon                 uintptr
     procClientToScreen           uintptr
@@ -70,6 +71,8 @@ var (
     procIsWindow                 uintptr
     procEndDialog                uintptr
     procSetWindowLong            uintptr
+    procPeekMessage              uintptr
+    procTranslateAccelerator     uintptr
 )
 
 func init() {
@@ -124,6 +127,7 @@ func init() {
     procSubtractRect = GetProcAddr(lib, "SubtractRect")
     procUnionRect = GetProcAddr(lib, "UnionRect")
     procCreateDialogParam = GetProcAddr(lib, "CreateDialogParamW")
+    procDialogBoxParam = GetProcAddr(lib, "DialogBoxParamW")
     procGetDlgItem = GetProcAddr(lib, "GetDlgItem")
     procDrawIcon = GetProcAddr(lib, "DrawIcon")
     procClientToScreen = GetProcAddr(lib, "ClientToScreen")
@@ -131,6 +135,8 @@ func init() {
     procIsWindow = GetProcAddr(lib, "IsWindow")
     procEndDialog = GetProcAddr(lib, "EndDialog")
     procSetWindowLong = GetProcAddr(lib, "SetWindowLongW")
+    procPeekMessage = GetProcAddr(lib, "PeekMessageW")
+    procTranslateAccelerator = GetProcAddr(lib, "TranslateAcceleratorW")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -619,14 +625,26 @@ func UnionRect(dst, src1, src2 *RECT) bool {
 
 func CreateDialog(hInstance HINSTANCE, lpTemplate *uint16, hWndParent HWND, lpDialogProc uintptr) HWND {
     ret, _, _ := syscall.Syscall6(procCreateDialogParam, 5,
-        uintptr(unsafe.Pointer(hInstance)),
+        uintptr(hInstance),
         uintptr(unsafe.Pointer(lpTemplate)),
-        uintptr(unsafe.Pointer(hWndParent)),
+        uintptr(hWndParent),
         lpDialogProc,
         0,
         0)
 
     return HWND(ret)
+}
+
+func DialogBox(hInstance HINSTANCE, lpTemplateName *uint16, hWndParent HWND, lpDialogProc uintptr) int {
+    ret, _, _ := syscall.Syscall6(procDialogBoxParam, 5,
+        uintptr(hInstance),
+        uintptr(unsafe.Pointer(lpTemplateName)),
+        uintptr(hWndParent),
+        lpDialogProc,
+        0,
+        0)
+
+    return int(ret)
 }
 
 func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
@@ -696,4 +714,25 @@ func SetWindowLong(hwnd HWND, nIndex int, dwNewLong uint32) uint32 {
         uintptr(dwNewLong))
 
     return uint32(ret)
+}
+
+func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) bool {
+    ret, _, _ := syscall.Syscall6(procPeekMessage, 5,
+        uintptr(unsafe.Pointer(lpMsg)),
+        uintptr(hwnd),
+        uintptr(wMsgFilterMin),
+        uintptr(wMsgFilterMax),
+        uintptr(wRemoveMsg),
+        0)
+
+    return ret != 0
+}
+
+func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
+    ret, _, _ := syscall.Syscall(procTranslateMessage, 3,
+        uintptr(hwnd),
+        uintptr(hAccTable),
+        uintptr(unsafe.Pointer(lpMsg)))
+
+    return ret != 0
 }
