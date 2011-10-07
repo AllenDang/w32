@@ -10,9 +10,26 @@ const (
 )
 
 const (
-    ERROR_SUCCESS       = 0
-    ERROR_NO_MORE_ITEMS = 259
-    ERROR_MORE_DATA     = 234
+    ERROR_SUCCESS        = 0
+    ERROR_NO_MORE_ITEMS  = 259
+    ERROR_MORE_DATA      = 234
+    ERROR_FILE_NOT_FOUND = 2
+    ERROR_PATH_NOT_FOUND = 3
+    ERROR_BAD_FORMAT     = 11
+)
+
+const (
+    SE_ERR_FNF             = 2
+    SE_ERR_PNF             = 3
+    SE_ERR_ACCESSDENIED    = 5
+    SE_ERR_OOM             = 8
+    SE_ERR_DLLNOTFOUND     = 32
+    SE_ERR_SHARE           = 26
+    SE_ERR_ASSOCINCOMPLETE = 27
+    SE_ERR_DDETIMEOUT      = 28
+    SE_ERR_DDEFAIL         = 29
+    SE_ERR_DDEBUSY         = 30
+    SE_ERR_NOASSOC         = 31
 )
 
 const (
@@ -1238,6 +1255,28 @@ const (
     IDTRYAGAIN = 10
     IDCONTINUE = 11
     IDTIMEOUT  = 32000
+)
+
+// Generic WM_NOTIFY notification codes
+const (
+    NM_FIRST           = 0
+    NM_OUTOFMEMORY     = NM_FIRST - 1
+    NM_CLICK           = NM_FIRST - 2
+    NM_DBLCLK          = NM_FIRST - 3
+    NM_RETURN          = NM_FIRST - 4
+    NM_RCLICK          = NM_FIRST - 5
+    NM_RDBLCLK         = NM_FIRST - 6
+    NM_SETFOCUS        = NM_FIRST - 7
+    NM_KILLFOCUS       = NM_FIRST - 8
+    NM_CUSTOMDRAW      = NM_FIRST - 12
+    NM_HOVER           = NM_FIRST - 13
+    NM_NCHITTEST       = NM_FIRST - 14
+    NM_KEYDOWN         = NM_FIRST - 15
+    NM_RELEASEDCAPTURE = NM_FIRST - 16
+    NM_SETCURSOR       = NM_FIRST - 17
+    NM_CHAR            = NM_FIRST - 18
+    NM_TOOLTIPSCREATED = NM_FIRST - 19
+    NM_LAST            = NM_FIRST - 99
 )
 
 // ListView messages

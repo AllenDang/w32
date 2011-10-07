@@ -490,10 +490,10 @@ func GetWindowThreadProcessId(hwnd HWND) (HANDLE, int) {
     return HANDLE(ret), processId
 }
 
-func MessageBox(hwnd HWND, text, caption string, flags uint) int {
+func MessageBox(hwnd HWND, title, caption string, flags uint) int {
     ret, _, _ := syscall.Syscall6(procMessageBox, 4,
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
         uintptr(flags),
         0,
