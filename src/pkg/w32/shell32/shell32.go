@@ -21,6 +21,7 @@ var (
     procDragQueryPoint      uintptr
     procDragFinish          uintptr
     procShellExecute        uintptr
+    procExtractIcon         uintptr
 )
 
 func init() {
@@ -33,6 +34,7 @@ func init() {
     procDragQueryPoint = GetProcAddr(lib, "DragQueryPoint")
     procDragFinish = GetProcAddr(lib, "DragFinish")
     procShellExecute = GetProcAddr(lib, "ShellExecuteW")
+    procExtractIcon = GetProcAddr(lib, "ExtractIconW")
 }
 
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
@@ -169,4 +171,13 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
     }
 
     return int(ret), os.NewError(errorMsg)
+}
+
+func ExtractIcon(lpszExeFileName string, nIconIndex uint) HICON {
+    ret, _, _ := syscall.Syscall(procExtractIcon, 3,
+        0,
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpszExeFileName))),
+        uintptr(nIconIndex))
+
+    return HICON(ret)
 }
