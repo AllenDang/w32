@@ -20,7 +20,7 @@ type (
     HMENU        HANDLE
     HWND         HANDLE
     HBRUSH       HANDLE
-    HRESULT      uint32
+    HRESULT      uint
     HFONT        HANDLE
     HDC          HANDLE
     HGDIOBJ      HANDLE
@@ -29,6 +29,7 @@ type (
     HBITMAP      HANDLE
     HPEN         HANDLE
     HKEY         HANDLE
+    HIMAGELIST   HANDLE
     COLORREF     uint
 )
 
@@ -119,7 +120,7 @@ type BROWSEINFO struct {
 }
 
 type GUID struct {
-    Data1 uint32
+    Data1 uint
     Data2 uint16
     Data3 uint16
     Data4 [8]byte
@@ -136,8 +137,8 @@ type VARIANT struct {
 type DISPPARAMS struct {
     Rgvarg            uintptr
     RgdispidNamedArgs uintptr
-    CArgs             uint32
-    CNamedArgs        uint32
+    CArgs             uint
+    CNamedArgs        uint
 }
 
 type EXCEPINFO struct {
@@ -146,10 +147,10 @@ type EXCEPINFO struct {
     BstrSource        *uint16
     BstrDescription   *uint16
     BstrHelpFile      *uint16
-    DwHelpContext     uint32
+    DwHelpContext     uint
     PvReserved        uintptr
     PfnDeferredFillIn uintptr
-    Scode             int32
+    Scode             int
 }
 
 type LOGBRUSH struct {
@@ -271,7 +272,7 @@ type TEXTMETRIC struct {
 }
 
 type DOCINFO struct {
-    CbSize       int32
+    CbSize       int
     LpszDocName  *uint16
     LpszOutput   *uint16
     LpszDatatype *uint16
@@ -281,63 +282,63 @@ type DOCINFO struct {
 type NMHDR struct {
     HwndFrom HWND
     IdFrom   uintptr
-    Code     uint32
+    Code     uint
 }
 
 type LVCOLUMN struct {
-    Mask       uint32
-    Fmt        int32
-    Cx         int32
+    Mask       uint
+    Fmt        int
+    Cx         int
     PszText    *uint16
-    CchTextMax int32
-    ISubItem   int32
-    IImage     int32
-    IOrder     int32
+    CchTextMax int
+    ISubItem   int
+    IImage     int
+    IOrder     int
 }
 
 type LVITEM struct {
-    Mask       uint32
-    IItem      int32
-    ISubItem   int32
-    State      uint32
-    StateMask  uint32
+    Mask       uint
+    IItem      int
+    ISubItem   int
+    State      uint
+    StateMask  uint
     PszText    *uint16
-    CchTextMax int32
-    IImage     int32
+    CchTextMax int
+    IImage     int
     LParam     uintptr
-    IIndent    int32
-    IGroupId   int32
-    CColumns   uint32
-    PuColumns  uint32
+    IIndent    int
+    IGroupId   int
+    CColumns   uint
+    PuColumns  uint
 }
 
 type LVHITTESTINFO struct {
     Pt       POINT
-    Flags    uint32
-    IItem    int32
-    ISubItem int32
-    IGroup   int32
+    Flags    uint
+    IItem    int
+    ISubItem int
+    IGroup   int
 }
 
 type NMITEMACTIVATE struct {
     Hdr       NMHDR
-    IItem     int32
-    ISubItem  int32
-    UNewState uint32
-    UOldState uint32
-    UChanged  uint32
+    IItem     int
+    ISubItem  int
+    UNewState uint
+    UOldState uint
+    UChanged  uint
     PtAction  POINT
     LParam    uintptr
-    UKeyFlags uint32
+    UKeyFlags uint
 }
 
 type NMLISTVIEW struct {
     Hdr       NMHDR
-    IItem     int32
-    ISubItem  int32
-    UNewState uint32
-    UOldState uint32
-    UChanged  uint32
+    IItem     int
+    ISubItem  int
+    UNewState uint
+    UOldState uint
+    UChanged  uint
     PtAction  POINT
     LParam    uintptr
 }
@@ -348,6 +349,6 @@ type NMLVDISPINFO struct {
 }
 
 type INITCOMMONCONTROLSEX struct {
-    DwSize uint32
-    DwICC  uint32
+    DwSize uint
+    DwICC  uint
 }

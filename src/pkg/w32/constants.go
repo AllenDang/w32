@@ -1284,6 +1284,7 @@ const (
     LVM_FIRST                    = 0x1000
     LVM_GETITEMCOUNT             = LVM_FIRST + 4
     LVM_SETIMAGELIST             = LVM_FIRST + 3
+    LVM_GETIMAGELIST             = LVM_FIRST + 2
     LVM_GETITEM                  = LVM_FIRST + 75
     LVM_SETITEM                  = LVM_FIRST + 76
     LVM_INSERTITEM               = LVM_FIRST + 77
@@ -1648,4 +1649,21 @@ const (
     PM_NOREMOVE = 0x000
     PM_REMOVE   = 0x001
     PM_NOYIELD  = 0x002
+)
+
+// ImageList flags
+const (
+    ILC_MASK             = 0x00000001
+    ILC_COLOR            = 0x00000000
+    ILC_COLORDDB         = 0x000000FE
+    ILC_COLOR4           = 0x00000004
+    ILC_COLOR8           = 0x00000008
+    ILC_COLOR16          = 0x00000010
+    ILC_COLOR24          = 0x00000018
+    ILC_COLOR32          = 0x00000020
+    ILC_PALETTE          = 0x00000800
+    ILC_MIRROR           = 0x00002000
+    ILC_PERITEMMIRROR    = 0x00008000
+    ILC_ORIGINALSIZE     = 0x00010000
+    ILC_HIGHQUALITYSCALE = 0x00020000
 )

@@ -173,7 +173,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
     return int(ret), os.NewError(errorMsg)
 }
 
-func ExtractIcon(lpszExeFileName string, nIconIndex uint) HICON {
+func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {
     ret, _, _ := syscall.Syscall(procExtractIcon, 3,
         0,
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpszExeFileName))),

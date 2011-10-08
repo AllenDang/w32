@@ -132,7 +132,7 @@ func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interfac
             }
         }
         dispparams.Rgvarg = uintptr(unsafe.Pointer(&vargs[0]))
-        dispparams.CArgs = uint32(len(params))
+        dispparams.CArgs = uint(len(params))
     }
 
     var ret VARIANT

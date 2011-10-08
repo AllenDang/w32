@@ -744,5 +744,6 @@ func DestroyIcon(hIcon HICON) bool {
         uintptr(hIcon),
         0,
         0)
+
     return ret != 0
 }
