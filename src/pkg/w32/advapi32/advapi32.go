@@ -14,10 +14,11 @@ import (
 var (
     lib uintptr
 
-    procRegOpenKeyEx uintptr
-    procRegCloseKey  uintptr
-    procRegGetValue  uintptr
-    procRegEnumKeyEx uintptr
+    procRegOpenKeyEx   uintptr
+    procRegCloseKey    uintptr
+    procRegGetValue    uintptr
+    procRegEnumKeyEx   uintptr
+    procRegSetKeyValue uintptr
 )
 
 func init() {
@@ -27,6 +28,7 @@ func init() {
     procRegCloseKey = GetProcAddr(lib, "RegCloseKey")
     procRegGetValue = GetProcAddr(lib, "RegGetValueW")
     procRegEnumKeyEx = GetProcAddr(lib, "RegEnumKeyExW")
+    procRegSetKeyValue = GetProcAddr(lib, "RegSetKeyValueW")
 }
 
 func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
@@ -86,10 +88,22 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
         0)
 
     if ret != ERROR_SUCCESS {
-        return ""	
+        return ""
     }
 
     return syscall.UTF16ToString(buf)
+}
+
+func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint32) (errno int) {
+    ret, _, _ := syscall.Syscall6(procRegSetKeyValue, 6,
+        uintptr(hKey),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))),
+        uintptr(dwType),
+        data,
+        uintptr(cbData))
+    
+    return int(ret)
 }
 
 func RegEnumKeyEx(hKey HKEY, index uint32) string {

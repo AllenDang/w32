@@ -1616,7 +1616,14 @@ const (
 
 // Registry Key Security and Access Rights
 const (
-    KEY_READ = 0x20019
+    KEY_ALL_ACCESS         = 0xF003F
+    KEY_CREATE_SUB_KEY     = 0x0004
+    KEY_ENUMERATE_SUB_KEYS = 0x0008
+    KEY_NOTIFY             = 0x0010
+    KEY_QUERY_VALUE        = 0x0001
+    KEY_SET_VALUE          = 0x0002
+    KEY_READ               = 0x20019
+    KEY_WRITE              = 0x20006
 )
 
 const (
@@ -1829,4 +1836,22 @@ const (
     VK_NONAME              = 0xFC
     VK_PA1                 = 0xFD
     VK_OEM_CLEAR           = 0xFE
+)
+
+// Registry Value Types
+const (
+    REG_NONE                       = 0
+    REG_SZ                         = 1
+    REG_EXPAND_SZ                  = 2
+    REG_BINARY                     = 3
+    REG_DWORD                      = 4
+    REG_DWORD_LITTLE_ENDIAN        = 4
+    REG_DWORD_BIG_ENDIAN           = 5
+    REG_LINK                       = 6
+    REG_MULTI_SZ                   = 7
+    REG_RESOURCE_LIST              = 8
+    REG_FULL_RESOURCE_DESCRIPTOR   = 9
+    REG_RESOURCE_REQUIREMENTS_LIST = 10
+    REG_QWORD                      = 11
+    REG_QWORD_LITTLE_ENDIAN        = 11
 )
