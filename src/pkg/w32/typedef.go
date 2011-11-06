@@ -352,3 +352,15 @@ type INITCOMMONCONTROLSEX struct {
     DwSize uint
     DwICC  uint
 }
+
+type TOOLINFO struct {
+    CbSize     uint
+    UFlags     uint
+    Hwnd       HWND
+    UId        uintptr
+    Rect       RECT
+    Hinst      HINSTANCE
+    LpszText   *uint16
+    LParam     uintptr
+    LpReserved unsafe.Pointer
+}

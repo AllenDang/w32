@@ -7,7 +7,7 @@ package shell32
 import (
     "syscall"
     "unsafe"
-    "os"
+    "errors"
     . "w32"
 )
 
@@ -120,7 +120,7 @@ func DragFinish(hDrop HDROP) {
         0)
 }
 
-func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory string, nShowCmd int) (int, os.Error) {
+func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory string, nShowCmd int) (int, error) {
     var op, param, directory uintptr
     if len(lpOperation) != 0 {
         op = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpOperation)))
@@ -170,7 +170,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
         }
     }
 
-    return int(ret), os.NewError(errorMsg)
+    return int(ret), errors.New(errorMsg)
 }
 
 func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {

@@ -74,6 +74,7 @@ var (
     procPeekMessage              uintptr
     procTranslateAccelerator     uintptr
     procDestroyIcon              uintptr
+    procSetWindowPos uintptr
 )
 
 func init() {
@@ -139,6 +140,7 @@ func init() {
     procPeekMessage = GetProcAddr(lib, "PeekMessageW")
     procTranslateAccelerator = GetProcAddr(lib, "TranslateAcceleratorW")
     procDestroyIcon = GetProcAddr(lib, "DestroyIcon")
+    procSetWindowPos = GetProcAddr(lib, "SetWindowPos")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -745,5 +747,20 @@ func DestroyIcon(hIcon HICON) bool {
         0,
         0)
 
+    return ret != 0
+}
+
+func SetWindowPos(hwnd, hWndInsertAfter HWND, x, y, cx, cy int, uFlags uint) bool {
+    ret, _, _ := syscall.Syscall9(procSetWindowPos, 7,
+        uintptr(hwnd), 
+        uintptr(hWndInsertAfter),
+        uintptr(x),
+        uintptr(y),
+        uintptr(cx),
+        uintptr(cy),
+        uintptr(uFlags),
+        0,
+        0)
+    
     return ret != 0
 }
