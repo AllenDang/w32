@@ -8,6 +8,7 @@ import (
     "syscall"
     "unsafe"
     "errors"
+    "fmt"
     . "w32"
 )
 
@@ -120,7 +121,7 @@ func DragFinish(hDrop HDROP) {
         0)
 }
 
-func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory string, nShowCmd int) (int, error) {
+func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory string, nShowCmd int) error {
     var op, param, directory uintptr
     if len(lpOperation) != 0 {
         op = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpOperation)))
@@ -141,7 +142,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
         uintptr(nShowCmd))
 
     errorMsg := ""
-    if ret != 0 {
+    if ret != 0 && ret <= 32 {
         switch int(ret) {
         case ERROR_FILE_NOT_FOUND:
             errorMsg = "The specified file was not found."
@@ -167,10 +168,14 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
             errorMsg = "There was not enough memory to complete the operation."
         case SE_ERR_SHARE:
             errorMsg = "A sharing violation occurred."
+        default:
+            errorMsg = fmt.Sprintf("Unknown error occurred with error code %i", int(ret))
         }
+    } else {
+        return nil
     }
 
-    return int(ret), errors.New(errorMsg)
+    return errors.New(errorMsg)
 }
 
 func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {
