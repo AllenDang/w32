@@ -24,18 +24,18 @@ func HIWORD(dw uint) uint16 {
 
 func LoadLib(name string) uintptr {
     lib, err := syscall.LoadLibrary(name)
-    if err != 0 {
+    if err != nil {
         panic(fmt.Sprintf("syscall.LoadLibrary('%s') failed: %s",
-            name, syscall.Errstr(err)))
+            name, err.Error()))
     }
     return uintptr(lib)
 }
 
 func GetProcAddr(lib uintptr, name string) uintptr {
     addr, err := syscall.GetProcAddress(syscall.Handle(lib), name)
-    if err != 0 {
+    if err != nil {
         panic(fmt.Sprintf("syscal.GetProcAddress(%d, '%s') failed: %s",
-            lib, name, syscall.Errstr(err)))
+            lib, name, err.Error()))
     }
     return uintptr(addr)
 }
