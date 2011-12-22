@@ -1966,3 +1966,65 @@ const (
     HWND_DESKTOP   = HWND(0)
     HWND_MESSAGE   = ^HWND(2) // -3
 )
+
+// Pen types
+const (
+    PS_COSMETIC  = 0x00000000
+    PS_GEOMETRIC = 0x00010000
+    PS_TYPE_MASK = 0x000F0000
+)
+
+// Pen styles
+const (
+    PS_SOLID       = 0
+    PS_DASH        = 1
+    PS_DOT         = 2
+    PS_DASHDOT     = 3
+    PS_DASHDOTDOT  = 4
+    PS_NULL        = 5
+    PS_INSIDEFRAME = 6
+    PS_USERSTYLE   = 7
+    PS_ALTERNATE   = 8
+    PS_STYLE_MASK  = 0x0000000F
+)
+
+// Pen cap types
+const (
+    PS_ENDCAP_ROUND  = 0x00000000
+    PS_ENDCAP_SQUARE = 0x00000100
+    PS_ENDCAP_FLAT   = 0x00000200
+    PS_ENDCAP_MASK   = 0x00000F00
+)
+
+// Pen join types
+const (
+    PS_JOIN_ROUND = 0x00000000
+    PS_JOIN_BEVEL = 0x00001000
+    PS_JOIN_MITER = 0x00002000
+    PS_JOIN_MASK  = 0x0000F000
+)
+
+// Hatch styles
+const (
+    HS_HORIZONTAL = 0
+    HS_VERTICAL   = 1
+    HS_FDIAGONAL  = 2
+    HS_BDIAGONAL  = 3
+    HS_CROSS      = 4
+    HS_DIAGCROSS  = 5
+)
+
+// Brush styles
+const (
+    BS_SOLID         = 0
+    BS_NULL          = 1
+    BS_HOLLOW        = BS_NULL
+    BS_HATCHED       = 2
+    BS_PATTERN       = 3
+    BS_INDEXED       = 4
+    BS_DIBPATTERN    = 5
+    BS_DIBPATTERNPT  = 6
+    BS_PATTERN8X8    = 7
+    BS_DIBPATTERN8X8 = 8
+    BS_MONOPATTERN   = 9
+)

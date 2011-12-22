@@ -74,7 +74,8 @@ var (
     procPeekMessage              uintptr
     procTranslateAccelerator     uintptr
     procDestroyIcon              uintptr
-    procSetWindowPos uintptr
+    procSetWindowPos             uintptr
+    procFillRect uintptr
 )
 
 func init() {
@@ -141,6 +142,7 @@ func init() {
     procTranslateAccelerator = GetProcAddr(lib, "TranslateAcceleratorW")
     procDestroyIcon = GetProcAddr(lib, "DestroyIcon")
     procSetWindowPos = GetProcAddr(lib, "SetWindowPos")
+    procFillRect = GetProcAddr(lib, "FillRect")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -762,5 +764,14 @@ func SetWindowPos(hwnd, hWndInsertAfter HWND, x, y, cx, cy int, uFlags uint) boo
         0,
         0)
     
+    return ret != 0
+}
+
+func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
+    ret, _, _ := syscall.Syscall(procFillRect, 3, 
+        uintptr(hDC), 
+        uintptr(unsafe.Pointer(lprc)), 
+        uintptr(hbr))
+
     return ret != 0
 }
