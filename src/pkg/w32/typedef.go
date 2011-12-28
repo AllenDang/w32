@@ -364,3 +364,10 @@ type TOOLINFO struct {
     LParam     uintptr
     LpReserved unsafe.Pointer
 }
+
+type TRACKMOUSEEVENT struct {
+    CbSize uint
+    DwFlags uint
+    HwndTrack HWND
+    DwHoverTime uint
+}

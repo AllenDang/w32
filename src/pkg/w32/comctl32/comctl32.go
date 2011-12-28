@@ -21,6 +21,7 @@ var (
     procImageList_Add           uintptr
     procImageList_ReplaceIcon   uintptr
     procImageList_Remove        uintptr
+    procTrackMouseEvent         uintptr
 )
 
 func init() {
@@ -34,6 +35,7 @@ func init() {
     procImageList_Add = GetProcAddr(lib, "ImageList_Add")
     procImageList_ReplaceIcon = GetProcAddr(lib, "ImageList_ReplaceIcon")
     procImageList_Remove = GetProcAddr(lib, "ImageList_Remove")
+    procTrackMouseEvent = GetProcAddr(lib, "_TrackMouseEvent")
 }
 
 func InitCommonControlsEx(lpInitCtrls *INITCOMMONCONTROLSEX) bool {
@@ -121,4 +123,13 @@ func ImageList_Remove(himl HIMAGELIST, i int) bool {
 
 func ImageList_RemoveAll(himl HIMAGELIST) bool {
     return ImageList_Remove(himl, -1)
+}
+
+func TrackMouseEvent(tme *TRACKMOUSEEVENT) bool {
+    ret, _, _ := syscall.Syscall(procTrackMouseEvent, 1,
+        uintptr(unsafe.Pointer(tme)),
+        0,
+        0)
+
+    return ret != 0
 }
