@@ -75,7 +75,8 @@ var (
     procTranslateAccelerator     uintptr
     procDestroyIcon              uintptr
     procSetWindowPos             uintptr
-    procFillRect uintptr
+    procFillRect                 uintptr
+    procDrawText                 uintptr
 )
 
 func init() {
@@ -143,6 +144,7 @@ func init() {
     procDestroyIcon = GetProcAddr(lib, "DestroyIcon")
     procSetWindowPos = GetProcAddr(lib, "SetWindowPos")
     procFillRect = GetProcAddr(lib, "FillRect")
+    procDrawText = GetProcAddr(lib, "DrawTextW")
 }
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -335,14 +337,14 @@ func GetWindowText(hwnd HWND) string {
     return syscall.UTF16ToString(buf)
 }
 
-func GetWindowRect(hwnd HWND) RECT {
+func GetWindowRect(hwnd HWND) *RECT {
     var rect RECT
     syscall.Syscall(procGetWindowRect, 2,
         uintptr(hwnd),
         uintptr(unsafe.Pointer(&rect)),
         0)
 
-    return rect
+    return &rect
 }
 
 func MoveWindow(hwnd HWND, x, y, width, height int, repaint bool) bool {
@@ -774,4 +776,16 @@ func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
         uintptr(hbr))
 
     return ret != 0
+}
+
+func DrawText(hDC HDC, text string, uCount int, lpRect *RECT, uFormat uint) int {
+    ret, _, _ := syscall.Syscall6(procDrawText, 5, 
+        uintptr(hDC), 
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
+        uintptr(uCount),
+        uintptr(unsafe.Pointer(lpRect)),
+        uintptr(uFormat),
+        0)
+
+    return int(ret)
 }

@@ -49,6 +49,7 @@ var (
     procSetBrushOrgEx        uintptr
     procSetStretchBltMode    uintptr
     procSetTextColor         uintptr
+    procSetBkColor           uintptr
     procStartDoc             uintptr
     procStartPage            uintptr
     procStretchBlt           uintptr
@@ -93,6 +94,7 @@ func init() {
     procSetBrushOrgEx = GetProcAddr(lib, "SetBrushOrgEx")
     procSetStretchBltMode = GetProcAddr(lib, "SetStretchBltMode")
     procSetTextColor = GetProcAddr(lib, "SetTextColor")
+    procSetBkColor = GetProcAddr(lib, "SetBkColor")
     procStartDoc = GetProcAddr(lib, "StartDocW")
     procStartPage = GetProcAddr(lib, "StartPage")
     procStretchBlt = GetProcAddr(lib, "StretchBlt")
@@ -422,6 +424,10 @@ func SelectObject(hdc HDC, hgdiobj HGDIOBJ) HGDIOBJ {
         uintptr(hgdiobj),
         0)
 
+    if ret == 0 {
+        panic("SelectObject failed")
+    }
+
     return HGDIOBJ(ret)
 }
 
@@ -430,6 +436,10 @@ func SetBkMode(hdc HDC, iBkMode int) int {
         uintptr(hdc),
         uintptr(iBkMode),
         0)
+
+    if ret == 0 {
+        panic("SetBkMode failed")
+    }
 
     return int(ret)
 }
@@ -460,6 +470,23 @@ func SetTextColor(hdc HDC, crColor COLORREF) COLORREF {
         uintptr(hdc),
         uintptr(crColor),
         0)
+
+    if ret == CLR_INVALID {
+        panic("SetTextColor failed")
+    }
+
+    return COLORREF(ret)
+}
+
+func SetBkColor(hdc HDC, crColor COLORREF) COLORREF {
+    ret, _, _ := syscall.Syscall(procSetBkColor, 2,
+        uintptr(hdc),
+        uintptr(crColor),
+        0)
+
+    if ret == CLR_INVALID {
+        panic("SetBkColor failed")
+    }
 
     return COLORREF(ret)
 }
