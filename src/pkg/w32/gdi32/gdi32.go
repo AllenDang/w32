@@ -136,7 +136,7 @@ func AbortDoc(hdc HDC) int {
     return int(ret)
 }
 
-func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc, nYSrc int, dwRop uint) bool {
+func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc, nYSrc int, dwRop uint) {
     ret, _, _ := syscall.Syscall9(procBitBlt, 9,
         uintptr(hdcDest),
         uintptr(nXDest),
@@ -148,7 +148,9 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
         uintptr(nYSrc),
         uintptr(dwRop))
 
-    return ret != 0
+    if ret == 0 {
+        panic("BitBlt failed")
+    }
 }
 
 func CloseEnhMetaFile(hdc HDC) HENHMETAFILE {
@@ -183,6 +185,10 @@ func CreateCompatibleDC(hdc HDC) HDC {
         uintptr(hdc),
         0,
         0)
+
+    if ret == 0 {
+        panic("Create compatible DC failed")
+    }
 
     return HDC(ret)
 }
@@ -509,7 +515,7 @@ func StartPage(hdc HDC) int {
     return int(ret)
 }
 
-func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest int, hdcSrc HDC, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc int, dwRop uint) bool {
+func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest int, hdcSrc HDC, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc int, dwRop uint) {
     ret, _, _ := syscall.Syscall12(procStretchBlt, 11,
         uintptr(hdcDest),
         uintptr(nXOriginDest),
@@ -524,5 +530,7 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
         uintptr(dwRop),
         0)
 
-    return ret != 0
+    if ret == 0 {
+        panic("StretchBlt failed")
+    }
 }

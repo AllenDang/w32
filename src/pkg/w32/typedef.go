@@ -30,6 +30,7 @@ type (
     HPEN         HANDLE
     HKEY         HANDLE
     HIMAGELIST   HANDLE
+    HGLOBAL      HANDLE
     COLORREF     uint
 )
 
@@ -222,6 +223,24 @@ type BITMAPINFO struct {
     BmiColors *RGBQUAD
 }
 
+type BITMAP struct {
+    BmType       int32
+    BmWidth      int32
+    BmHeight     int32
+    BmWidthBytes int32
+    BmPlanes     uint16
+    BmBitsPixel  uint16
+    BmBits       unsafe.Pointer
+}
+
+type DIBSECTION struct {
+    DsBm        BITMAP
+    DsBmih      BITMAPINFOHEADER
+    DsBitfields [3]uint32
+    DshSection  HANDLE
+    DsOffset    uint32
+}
+
 type ENHMETAHEADER struct {
     IType          uint
     NSize          uint
@@ -370,4 +389,16 @@ type TRACKMOUSEEVENT struct {
     DwFlags uint
     HwndTrack HWND
     DwHoverTime uint
+}
+
+type GdiplusStartupInput struct {
+    GdiplusVersion           uint32
+    DebugEventCallback       uintptr
+    SuppressBackgroundThread BOOL
+    SuppressExternalCodecs   BOOL
+}
+
+type GdiplusStartupOutput struct {
+    NotificationHook   uintptr
+    NotificationUnhook uintptr
 }

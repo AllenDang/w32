@@ -19,6 +19,10 @@ var (
     procGetUserDefaultLCID uintptr
     procLstrlen            uintptr
     procLstrcpy            uintptr
+    procGlobalAlloc        uintptr
+    procGlobalLock         uintptr
+    procGlobalUnlock       uintptr
+    procMoveMemory         uintptr
 )
 
 func init() {
@@ -30,6 +34,10 @@ func init() {
     procGetUserDefaultLCID = GetProcAddr(lib, "GetUserDefaultLCID")
     procLstrlen = GetProcAddr(lib, "lstrlenW")
     procLstrcpy = GetProcAddr(lib, "lstrcpyW")
+    procGlobalAlloc = GetProcAddr(lib, "GlobalAlloc")
+    procGlobalLock = GetProcAddr(lib, "GlobalLock")
+    procGlobalUnlock = GetProcAddr(lib, "GlobalUnlock")
+    procMoveMemory = GetProcAddr(lib, "RtlMoveMemory")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -87,4 +95,38 @@ func Lstrcpy(buf []uint16, lpString *uint16) {
         uintptr(unsafe.Pointer(&buf[0])),
         uintptr(unsafe.Pointer(lpString)),
         0)
+}
+
+func GlobalAlloc(uFlags uint, dwBytes uintptr) HGLOBAL {
+    ret, _, _ := syscall.Syscall(procGlobalAlloc, 2,
+        uintptr(uFlags),
+        dwBytes,
+        0)
+
+    return HGLOBAL(ret)
+}
+
+func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
+    ret, _, _ := syscall.Syscall(procGlobalLock, 1,
+        uintptr(hMem),
+        0,
+        0)
+
+    return unsafe.Pointer(ret)
+}
+
+func GlobalUnlock(hMem HGLOBAL) bool {
+    ret, _, _ := syscall.Syscall(procGlobalUnlock, 1,
+        uintptr(hMem),
+        0,
+        0)
+
+    return ret != 0
+}
+
+func MoveMemory(destination, source unsafe.Pointer, length uintptr) {
+    syscall.Syscall(procMoveMemory, 3,
+        uintptr(unsafe.Pointer(destination)),
+        uintptr(source),
+        uintptr(length))
 }
