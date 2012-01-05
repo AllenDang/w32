@@ -70,11 +70,11 @@ func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
     
     switch uint32(ret) {
     case E_INVALIDARG:
-        panic("CoInitializeEx failed with E_INVALIDARG")
+        panic("CreateStreamOnHGlobal failed with E_INVALIDARG")
     case E_OUTOFMEMORY:
-        panic("CoInitializeEx failed with E_OUTOFMEMORY")
+        panic("CreateStreamOnHGlobal failed with E_OUTOFMEMORY")
     case E_UNEXPECTED:
-        panic("CoInitializeEx failed with E_UNEXPECTED")
+        panic("CreateStreamOnHGlobal failed with E_UNEXPECTED")
     }
     
     return stream
