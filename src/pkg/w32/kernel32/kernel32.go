@@ -20,6 +20,7 @@ var (
     procLstrlen            uintptr
     procLstrcpy            uintptr
     procGlobalAlloc        uintptr
+    procGlobalFree         uintptr
     procGlobalLock         uintptr
     procGlobalUnlock       uintptr
     procMoveMemory         uintptr
@@ -40,6 +41,7 @@ func init() {
     procLstrlen = GetProcAddr(lib, "lstrlenW")
     procLstrcpy = GetProcAddr(lib, "lstrcpyW")
     procGlobalAlloc = GetProcAddr(lib, "GlobalAlloc")
+    procGlobalFree = GetProcAddr(lib, "GlobalFree")
     procGlobalLock = GetProcAddr(lib, "GlobalLock")
     procGlobalUnlock = GetProcAddr(lib, "GlobalUnlock")
     procMoveMemory = GetProcAddr(lib, "RtlMoveMemory")
@@ -106,13 +108,28 @@ func Lstrcpy(buf []uint16, lpString *uint16) {
         0)
 }
 
-func GlobalAlloc(uFlags uint, dwBytes uintptr) HGLOBAL {
+func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
     ret, _, _ := syscall.Syscall(procGlobalAlloc, 2,
         uintptr(uFlags),
-        dwBytes,
+        uintptr(dwBytes),
         0)
 
+    if ret == 0 {
+        panic("GlobalAlloc failed")
+    }
+
     return HGLOBAL(ret)
+}
+
+func GlobalFree(hMem HGLOBAL) {
+    ret, _, _ := syscall.Syscall(procGlobalFree, 1,
+        uintptr(hMem),
+        0,
+        0)
+    
+    if ret != 0 {
+        panic("GlobalFree failed")
+    }
 }
 
 func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
@@ -120,6 +137,10 @@ func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
         uintptr(hMem),
         0,
         0)
+    
+    if ret == 0 {
+        panic("GlobalLock failed")
+    }
 
     return unsafe.Pointer(ret)
 }
@@ -133,7 +154,7 @@ func GlobalUnlock(hMem HGLOBAL) bool {
     return ret != 0
 }
 
-func MoveMemory(destination, source unsafe.Pointer, length uintptr) {
+func MoveMemory(destination, source unsafe.Pointer, length uint32) {
     syscall.Syscall(procMoveMemory, 3,
         uintptr(unsafe.Pointer(destination)),
         uintptr(source),

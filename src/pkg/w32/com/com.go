@@ -27,9 +27,8 @@ type IDispatch struct {
     lpVtbl *pIDispatchVtbl
 }
 
-func (this *IDispatch) QueryInterface(id *GUID) (disp *IDispatch) {
-    disp = ComQueryInterface((*IUnknown)(unsafe.Pointer(this)), id)
-    return
+func (this *IDispatch) QueryInterface(id *GUID) *IDispatch {
+    return ComQueryInterface((*IUnknown)(unsafe.Pointer(this)), id)
 }
 
 func (this *IDispatch) AddRef() int32 {
@@ -59,8 +58,7 @@ type IUnknown struct {
 }
 
 func (this *IUnknown) QueryInterface(id *GUID) (disp *IDispatch) {
-    disp = ComQueryInterface(this, id)
-    return
+    return (*IDispatch)(ComQueryInterface((*IUnknown)(unsafe.Pointer(this)), id))
 }
 
 func (this *IUnknown) AddRef() int32 {
@@ -69,4 +67,26 @@ func (this *IUnknown) AddRef() int32 {
 
 func (this *IUnknown) Release() int32 {
     return ComRelease(this)
+}
+
+type pIStreamVtbl struct {
+    pQueryInterface uintptr
+    pAddRef         uintptr
+    pRelease        uintptr
+}
+
+type IStream struct {
+    lpVtbl *pIStreamVtbl
+}
+
+func (this *IStream) QueryInterface(id *GUID) *IDispatch {
+    return ComQueryInterface((*IUnknown)(unsafe.Pointer(this)), id)
+}
+
+func (this *IStream) AddRef() int32 {
+    return ComAddRef((*IUnknown)(unsafe.Pointer(this)))
+}
+
+func (this *IStream) Release() int32 {
+    return ComRelease((*IUnknown)(unsafe.Pointer(this)))
 }

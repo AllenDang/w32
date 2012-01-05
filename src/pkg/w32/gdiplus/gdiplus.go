@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"unsafe"
 	. "w32"
+	. "w32/com"
 )
 
 const (
@@ -99,6 +100,7 @@ var (
 	procGdiplusShutdown             uintptr
 	procGdiplusStartup              uintptr
 	procGdipCreateBitmapFromResource uintptr
+	procGdipCreateBitmapFromStream  uintptr
 )
 
 func init() {
@@ -108,6 +110,7 @@ func init() {
 	procGdipCreateBitmapFromHBITMAP = GetProcAddr(lib, "GdipCreateBitmapFromHBITMAP")
 	procGdipCreateHBITMAPFromBitmap = GetProcAddr(lib, "GdipCreateHBITMAPFromBitmap")
 	procGdipCreateBitmapFromResource = GetProcAddr(lib, "GdipCreateBitmapFromResource")
+	procGdipCreateBitmapFromStream = GetProcAddr(lib, "GdipCreateBitmapFromStream")
 	procGdipDisposeImage = GetProcAddr(lib, "GdipDisposeImage")
 	procGdiplusShutdown = GetProcAddr(lib, "GdiplusShutdown")
 	procGdiplusStartup = GetProcAddr(lib, "GdiplusStartup")
@@ -140,6 +143,20 @@ func GdipCreateBitmapFromResource(instance HINSTANCE, resId *uint16) (*uintptr, 
 
 	if ret != Ok {
 		return nil, errors.New(fmt.Sprintf("GdiCreateBitmapFromResource failed with status '%s'", GetGpStatus(int32(ret))))
+	}
+
+	return bitmap, nil
+}
+
+func GdipCreateBitmapFromStream(stream *IStream) (*uintptr, error) {
+	var bitmap *uintptr
+	ret, _, _ := syscall.Syscall(procGdipCreateBitmapFromStream, 2,
+		uintptr(unsafe.Pointer(stream)),
+		uintptr(unsafe.Pointer(&bitmap)),
+		0)
+	
+	if ret != Ok {
+		return nil, errors.New(fmt.Sprintf("GdipCreateBitmapFromStream failed with status '%s'", GetGpStatus(int32(ret))))
 	}
 
 	return bitmap, nil
