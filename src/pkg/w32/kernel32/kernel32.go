@@ -23,6 +23,11 @@ var (
     procGlobalLock         uintptr
     procGlobalUnlock       uintptr
     procMoveMemory         uintptr
+    procFindResource       uintptr
+    procSizeofResource     uintptr
+    procLockResource       uintptr
+    procLoadResource       uintptr
+    procCopyMemory         uintptr
 )
 
 func init() {
@@ -38,6 +43,11 @@ func init() {
     procGlobalLock = GetProcAddr(lib, "GlobalLock")
     procGlobalUnlock = GetProcAddr(lib, "GlobalUnlock")
     procMoveMemory = GetProcAddr(lib, "RtlMoveMemory")
+    procFindResource = GetProcAddr(lib, "FindResourceW")
+    procSizeofResource = GetProcAddr(lib, "SizeofResource")
+    procLockResource = GetProcAddr(lib, "LockResource")
+    procLoadResource = GetProcAddr(lib, "LoadResource")
+    procCopyMemory = GetProcAddr(lib, "RtlCopyMemory")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -129,4 +139,63 @@ func MoveMemory(destination, source unsafe.Pointer, length uintptr) {
         uintptr(unsafe.Pointer(destination)),
         uintptr(source),
         uintptr(length))
+}
+
+func FindResource(hModule HMODULE, lpName, lpType *uint16) (HRSRC, error) {
+    ret, _, _ := syscall.Syscall(procFindResource, 3,
+        uintptr(hModule),
+        uintptr(unsafe.Pointer(lpName)),
+        uintptr(unsafe.Pointer(lpType)))
+
+    if ret == 0 {
+        return 0, syscall.GetLastError()
+    }
+
+    return HRSRC(ret), nil
+}
+
+func SizeofResource(hModule HMODULE, hResInfo HRSRC) uint32 {
+    ret, _, _ := syscall.Syscall(procSizeofResource, 2,
+        uintptr(hModule),
+        uintptr(hResInfo),
+        0)
+    
+    if ret == 0 {
+        panic("SizeofResource failed")
+    }
+
+    return uint32(ret)
+}
+
+func LockResource(hResData HGLOBAL) unsafe.Pointer {
+    ret, _, _ := syscall.Syscall(procLockResource, 1,
+        uintptr(hResData),
+        0,
+        0)
+    
+    if ret == 0 {
+        panic("LockResource failed")
+    }
+
+    return unsafe.Pointer(ret)
+}
+
+func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
+    ret, _, _ := syscall.Syscall(procLoadResource, 2,
+        uintptr(hModule),
+        uintptr(hResInfo),
+        0)
+
+    if ret == 0 {
+        panic("LoadResource failed")
+    }
+
+    return HGLOBAL(ret)
+}
+
+func CopyMemory(dest unsafe.Pointer, src unsafe.Pointer, size uint32) {
+    syscall.Syscall(procCopyMemory, 3,
+        uintptr(dest),
+        uintptr(src),
+        uintptr(size))
 }

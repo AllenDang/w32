@@ -145,12 +145,12 @@ func GdipCreateBitmapFromResource(instance HINSTANCE, resId *uint16) (*uintptr, 
 	return bitmap, nil
 }
 
-func GdipCreateHBITMAPFromBitmap(bitmap *uintptr) (HBITMAP, error) {
+func GdipCreateHBITMAPFromBitmap(bitmap *uintptr, background uint32) (HBITMAP, error) {
 	var hbitmap HBITMAP
 	ret, _, _ := syscall.Syscall(procGdipCreateHBITMAPFromBitmap, 3,
 		uintptr(unsafe.Pointer(bitmap)),
 		uintptr(unsafe.Pointer(&hbitmap)),
-		0)
+		uintptr(background))
 
 	if ret != Ok {
 		return 0, errors.New(fmt.Sprintf("GdipCreateHBITMAPFromBitmap failed with status '%s'", GetGpStatus(int32(ret))))

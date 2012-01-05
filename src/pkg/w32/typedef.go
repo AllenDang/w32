@@ -31,6 +31,8 @@ type (
     HKEY         HANDLE
     HIMAGELIST   HANDLE
     HGLOBAL      HANDLE
+    HMODULE      HANDLE
+    HRSRC        HANDLE
     COLORREF     uint
 )
 
