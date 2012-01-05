@@ -47,7 +47,6 @@ func init() {
     procSizeofResource = GetProcAddr(lib, "SizeofResource")
     procLockResource = GetProcAddr(lib, "LockResource")
     procLoadResource = GetProcAddr(lib, "LoadResource")
-    procCopyMemory = GetProcAddr(lib, "RtlCopyMemory")
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -191,11 +190,4 @@ func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
     }
 
     return HGLOBAL(ret)
-}
-
-func CopyMemory(dest unsafe.Pointer, src unsafe.Pointer, size uint32) {
-    syscall.Syscall(procCopyMemory, 3,
-        uintptr(dest),
-        uintptr(src),
-        uintptr(size))
 }
