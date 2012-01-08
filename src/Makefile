@@ -5,10 +5,10 @@ all: clean
 	make -C pkg/w32/gdi32		install
 	make -C pkg/w32/comctl32	install
 	make -C pkg/w32/comdlg32	install
+	make -C pkg/w32/oleaut32	install
 	make -C pkg/w32/com			install
 	make -C pkg/w32/ole32		install
 	make -C pkg/w32/shell32		install
-	make -C pkg/w32/oleaut32	install
 	make -C pkg/w32/advapi32	install
 	make -C pkg/w32/gdiplus		install
 
