@@ -8,6 +8,7 @@ import (
     "fmt"
     "syscall"
     "unsafe"
+    "unicode/utf16"
 )
 
 func MakeIntResource(id uint16) *uint16 {
@@ -48,6 +49,17 @@ func BoolToBOOL(value bool) BOOL {
 	return 0
 }
 
-func UTF16PtrToString(s *uint16) string {
-	return syscall.UTF16ToString((*[1 << 30]uint16)(unsafe.Pointer(s))[0:])
+func UTF16PtrToString(cstr *uint16) string {
+    if cstr != nil {
+        us := make([]uint16, 0, 256)
+        for p := uintptr(unsafe.Pointer(cstr)); ; p += 2 {
+            u := *(*uint16)(unsafe.Pointer(p))
+            if u == 0 {
+                return string(utf16.Decode(us))
+            }
+            us = append(us, u)
+        }
+    }
+
+    return ""
 }
