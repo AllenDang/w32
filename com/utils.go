@@ -3,9 +3,9 @@ package com
 import (
     "syscall"
     "unsafe"
-    . "w32"
-    . "w32/kernel32"
-    . "w32/oleaut32"
+    . "github.com/AllenDang/w32"
+    . "github.com/AllenDang/w32/kernel32"
+    . "github.com/AllenDang/w32/oleaut32"
 )
 
 func ComAddRef(unknown *IUnknown) int32 {
