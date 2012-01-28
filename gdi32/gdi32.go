@@ -7,7 +7,7 @@ package gdi32
 import (
     "syscall"
     "unsafe"
-    . "w32"
+    . "github.com/AllenDang/w32"
 )
 
 var (
