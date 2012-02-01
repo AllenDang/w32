@@ -7,8 +7,8 @@ package ole32
 import (
     "syscall"
     "unsafe"
-    . "w32"
-    . "w32/com"
+    . "github.com/AllenDang/w32"
+    . "github.com/AllenDang/w32/com"
 )
 
 var (
