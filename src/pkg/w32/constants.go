@@ -2031,46 +2031,46 @@ const (
 
 // TRACKMOUSEEVENT flags
 const (
-    TME_HOVER =       0x00000001
-    TME_LEAVE =       0x00000002
-    TME_NONCLIENT =   0x00000010
-    TME_QUERY =       0x40000000
-    TME_CANCEL =      0x80000000
+    TME_HOVER     = 0x00000001
+    TME_LEAVE     = 0x00000002
+    TME_NONCLIENT = 0x00000010
+    TME_QUERY     = 0x40000000
+    TME_CANCEL    = 0x80000000
 
-    HOVER_DEFAULT =  0xFFFFFFFF
+    HOVER_DEFAULT = 0xFFFFFFFF
 )
 
 // WM_NCHITTEST and MOUSEHOOKSTRUCT Mouse Position Codes
 const (
-    HTERROR =             (-2)
-    HTTRANSPARENT =       (-1)
-    HTNOWHERE =           0
-    HTCLIENT =            1
-    HTCAPTION =           2
-    HTSYSMENU =           3
-    HTGROWBOX =           4
-    HTSIZE =              HTGROWBOX
-    HTMENU =              5
-    HTHSCROLL =           6
-    HTVSCROLL =           7
-    HTMINBUTTON =         8
-    HTMAXBUTTON =         9
-    HTLEFT =              10
-    HTRIGHT =             11
-    HTTOP =               12
-    HTTOPLEFT =           13
-    HTTOPRIGHT =          14
-    HTBOTTOM =            15
-    HTBOTTOMLEFT =        16
-    HTBOTTOMRIGHT =       17
-    HTBORDER =            18
-    HTREDUCE =            HTMINBUTTON
-    HTZOOM =              HTMAXBUTTON
-    HTSIZEFIRST =         HTLEFT
-    HTSIZELAST =          HTBOTTOMRIGHT
-    HTOBJECT =            19
-    HTCLOSE =             20
-    HTHELP =              21
+    HTERROR       = (-2)
+    HTTRANSPARENT = (-1)
+    HTNOWHERE     = 0
+    HTCLIENT      = 1
+    HTCAPTION     = 2
+    HTSYSMENU     = 3
+    HTGROWBOX     = 4
+    HTSIZE        = HTGROWBOX
+    HTMENU        = 5
+    HTHSCROLL     = 6
+    HTVSCROLL     = 7
+    HTMINBUTTON   = 8
+    HTMAXBUTTON   = 9
+    HTLEFT        = 10
+    HTRIGHT       = 11
+    HTTOP         = 12
+    HTTOPLEFT     = 13
+    HTTOPRIGHT    = 14
+    HTBOTTOM      = 15
+    HTBOTTOMLEFT  = 16
+    HTBOTTOMRIGHT = 17
+    HTBORDER      = 18
+    HTREDUCE      = HTMINBUTTON
+    HTZOOM        = HTMAXBUTTON
+    HTSIZEFIRST   = HTLEFT
+    HTSIZELAST    = HTBOTTOMRIGHT
+    HTOBJECT      = 19
+    HTCLOSE       = 20
+    HTHELP        = 21
 )
 
 // DrawText[Ex] format flags
@@ -2101,33 +2101,33 @@ const (
     DT_PREFIXONLY           = 0x00200000
 )
 
-const CLR_INVALID =     0xFFFFFFFF
+const CLR_INVALID = 0xFFFFFFFF
 
 // Background Modes
 const (
-    TRANSPARENT =         1
-    OPAQUE =              2
-    BKMODE_LAST =         2
+    TRANSPARENT = 1
+    OPAQUE      = 2
+    BKMODE_LAST = 2
 )
 
 // Global Memory Flags
 const (
-    GMEM_FIXED =          0x0000
-    GMEM_MOVEABLE =       0x0002
-    GMEM_NOCOMPACT =      0x0010
-    GMEM_NODISCARD =      0x0020
-    GMEM_ZEROINIT =       0x0040
-    GMEM_MODIFY =         0x0080
-    GMEM_DISCARDABLE =    0x0100
-    GMEM_NOT_BANKED =     0x1000
-    GMEM_SHARE =          0x2000
-    GMEM_DDESHARE =       0x2000
-    GMEM_NOTIFY =         0x4000
-    GMEM_LOWER =          GMEM_NOT_BANKED
-    GMEM_VALID_FLAGS =    0x7F72
+    GMEM_FIXED          = 0x0000
+    GMEM_MOVEABLE       = 0x0002
+    GMEM_NOCOMPACT      = 0x0010
+    GMEM_NODISCARD      = 0x0020
+    GMEM_ZEROINIT       = 0x0040
+    GMEM_MODIFY         = 0x0080
+    GMEM_DISCARDABLE    = 0x0100
+    GMEM_NOT_BANKED     = 0x1000
+    GMEM_SHARE          = 0x2000
+    GMEM_DDESHARE       = 0x2000
+    GMEM_NOTIFY         = 0x4000
+    GMEM_LOWER          = GMEM_NOT_BANKED
+    GMEM_VALID_FLAGS    = 0x7F72
     GMEM_INVALID_HANDLE = 0x8000
-    GHND =                (GMEM_MOVEABLE | GMEM_ZEROINIT)
-    GPTR =                (GMEM_FIXED | GMEM_ZEROINIT)
+    GHND                = (GMEM_MOVEABLE | GMEM_ZEROINIT)
+    GPTR                = (GMEM_FIXED | GMEM_ZEROINIT)
 )
 
 // Ternary raster operations
