@@ -9,7 +9,7 @@ import (
     "unsafe"
     "errors"
     "fmt"
-    . "w32"
+    . "github.com/AllenDang/w32"
 )
 
 var (
