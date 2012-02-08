@@ -1,9 +1,9 @@
 package oleaut32
 
 import (
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
@@ -48,7 +48,7 @@ func SysAllocString(v string) (ss *int16) {
     return
 }
 
-func SysFreeString(v *int16){
+func SysFreeString(v *int16) {
     hr, _, _ := syscall.Syscall(procSysFreeString, 1,
         uintptr(unsafe.Pointer(v)),
         0,

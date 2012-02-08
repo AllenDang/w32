@@ -5,18 +5,18 @@
 package ole32
 
 import (
-    "syscall"
-    "unsafe"
     . "github.com/AllenDang/w32"
     . "github.com/AllenDang/w32/com"
+    "syscall"
+    "unsafe"
 )
 
 var (
     lib uintptr
 
-    procCoInitializeEx uintptr
-    procCoInitialize   uintptr
-    procCoUninitialize uintptr
+    procCoInitializeEx        uintptr
+    procCoInitialize          uintptr
+    procCoUninitialize        uintptr
     procCreateStreamOnHGlobal uintptr
 )
 
@@ -67,7 +67,7 @@ func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
         uintptr(hGlobal),
         uintptr(BoolToBOOL(fDeleteOnRelease)),
         uintptr(unsafe.Pointer(&stream)))
-    
+
     switch uint32(ret) {
     case E_INVALIDARG:
         panic("CreateStreamOnHGlobal failed with E_INVALIDARG")
@@ -76,6 +76,6 @@ func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
     case E_UNEXPECTED:
         panic("CreateStreamOnHGlobal failed with E_UNEXPECTED")
     }
-    
+
     return stream
 }
