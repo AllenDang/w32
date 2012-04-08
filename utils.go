@@ -7,8 +7,8 @@ package w32
 import (
     "fmt"
     "syscall"
-    "unsafe"
     "unicode/utf16"
+    "unsafe"
 )
 
 func MakeIntResource(id uint16) *uint16 {
@@ -21,24 +21,6 @@ func LOWORD(dw uint) uint16 {
 
 func HIWORD(dw uint) uint16 {
     return uint16(dw >> 16 & 0xffff)
-}
-
-func LoadLib(name string) uintptr {
-    lib, err := syscall.LoadLibrary(name)
-    if err != nil {
-        panic(fmt.Sprintf("syscall.LoadLibrary('%s') failed: %s",
-            name, err.Error()))
-    }
-    return uintptr(lib)
-}
-
-func GetProcAddr(lib uintptr, name string) uintptr {
-    addr, err := syscall.GetProcAddress(syscall.Handle(lib), name)
-    if err != nil {
-        panic(fmt.Sprintf("syscal.GetProcAddress(%d, '%s') failed: %s",
-            lib, name, err.Error()))
-    }
-    return uintptr(addr)
 }
 
 func BoolToBOOL(value bool) BOOL {
