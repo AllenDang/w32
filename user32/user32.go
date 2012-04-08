@@ -83,6 +83,8 @@ var (
     procCloseClipboard                = moduser32.NewProc("CloseClipboard")
     procEnumClipboardFormats          = moduser32.NewProc("EnumClipboardFormats")
     procGetClipboardData              = moduser32.NewProc("GetClipboardData")
+    procGetClipboardFormatName        = moduser32.NewProc("GetClipboardFormatNameW")
+    procIsClipboardFormatAvailable    = moduser32.NewProc("IsClipboardFormatAvailable")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -683,4 +685,24 @@ func GetClipboardData(uFormat uint) HANDLE {
     ret, _, _ := procGetClipboardData.Call(
         uintptr(uFormat))
     return HANDLE(ret)
+}
+
+func GetClipboardFormatName(format uint) (string, bool) {
+    cchMaxCount := 255
+    buf := make([]uint16, cchMaxCount)
+    ret, _, _ := procGetClipboardFormatName.Call(
+        uintptr(format),
+        uintptr(unsafe.Pointer(&buf[0])),
+        uintptr(cchMaxCount))
+
+    if ret > 0 {
+        return syscall.UTF16ToString(buf), true
+    }
+
+    return "Requested format does not exist or is predefined", false
+}
+
+func IsClipboardFormatAvailable(format uint) bool {
+    ret, _, _ := procIsClipboardFormatAvailable.Call(uintptr(format))
+    return ret != 0
 }
