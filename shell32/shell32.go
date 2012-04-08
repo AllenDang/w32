@@ -143,7 +143,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
         case SE_ERR_SHARE:
             errorMsg = "A sharing violation occurred."
         default:
-            errorMsg = fmt.Sprintf("Unknown error occurred with error code %i", int(ret))
+            errorMsg = fmt.Sprintf("Unknown error occurred with error code %v", ret)
         }
     } else {
         return nil
