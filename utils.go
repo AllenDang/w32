@@ -5,8 +5,6 @@
 package w32
 
 import (
-    "fmt"
-    "syscall"
     "unicode/utf16"
     "unsafe"
 )
