@@ -28,6 +28,7 @@ var (
     procSizeofResource     = modkernel32.NewProc("SizeofResource")
     procLockResource       = modkernel32.NewProc("LockResource")
     procLoadResource       = modkernel32.NewProc("LoadResource")
+    procGetLastError       = modkernel32.NewProc("GetLastError")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -162,4 +163,9 @@ func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
     }
 
     return HGLOBAL(ret)
+}
+
+func GetLastError() uint32 {
+    ret, _, _ := procGetLastError.Call()
+    return uint32(ret)
 }
