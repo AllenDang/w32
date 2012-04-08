@@ -6,197 +6,127 @@ package user32
 
 import (
     "fmt"
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
-    lib uintptr
+    moduser32 = syscall.NewLazyDLL("user32.dll")
 
-    procRegisterClassEx          uintptr
-    procLoadIcon                 uintptr
-    procLoadCursor               uintptr
-    procShowWindow               uintptr
-    procUpdateWindow             uintptr
-    procCreateWindowEx           uintptr
-    procDestroyWindow            uintptr
-    procDefWindowProc            uintptr
-    procDefDlgProc               uintptr
-    procPostQuitMessage          uintptr
-    procGetMessage               uintptr
-    procTranslateMessage         uintptr
-    procDispatchMessage          uintptr
-    procSendMessage              uintptr
-    procPostMessage              uintptr
-    procSetWindowText            uintptr
-    procGetWindowTextLength      uintptr
-    procGetWindowText            uintptr
-    procGetWindowRect            uintptr
-    procMoveWindow               uintptr
-    procScreenToClient           uintptr
-    procCallWindowProc           uintptr
-    procSetWindowLongPtr         uintptr
-    procEnableWindow             uintptr
-    procIsWindowEnabled          uintptr
-    procIsWindowVisible          uintptr
-    procSetFocus                 uintptr
-    procInvalidateRect           uintptr
-    procGetClientRect            uintptr
-    procGetDC                    uintptr
-    procReleaseDC                uintptr
-    procSetCapture               uintptr
-    procReleaseCapture           uintptr
-    procGetWindowThreadProcessId uintptr
-    procMessageBox               uintptr
-    procGetSystemMetrics         uintptr
-    procGetWindowLongPtr         uintptr
-    procCopyRect                 uintptr
-    procEqualRect                uintptr
-    procInflateRect              uintptr
-    procIntersectRect            uintptr
-    procIsRectEmpty              uintptr
-    procOffsetRect               uintptr
-    procPtInRect                 uintptr
-    procSetRect                  uintptr
-    procSetRectEmpty             uintptr
-    procSubtractRect             uintptr
-    procUnionRect                uintptr
-    procCreateDialogParam        uintptr
-    procDialogBoxParam           uintptr
-    procGetDlgItem               uintptr
-    procDrawIcon                 uintptr
-    procClientToScreen           uintptr
-    procIsDialogMessage          uintptr
-    procIsWindow                 uintptr
-    procEndDialog                uintptr
-    procSetWindowLong            uintptr
-    procPeekMessage              uintptr
-    procTranslateAccelerator     uintptr
-    procDestroyIcon              uintptr
-    procSetWindowPos             uintptr
-    procFillRect                 uintptr
-    procDrawText                 uintptr
+    procRegisterClassEx               = moduser32.NewProc("RegisterClassExW")
+    procLoadIcon                      = moduser32.NewProc("LoadIconW")
+    procLoadCursor                    = moduser32.NewProc("LoadCursorW")
+    procShowWindow                    = moduser32.NewProc("ShowWindow")
+    procUpdateWindow                  = moduser32.NewProc("UpdateWindow")
+    procCreateWindowEx                = moduser32.NewProc("CreateWindowExW")
+    procDestroyWindow                 = moduser32.NewProc("DestroyWindow")
+    procDefWindowProc                 = moduser32.NewProc("DefWindowProcW")
+    procDefDlgProc                    = moduser32.NewProc("DefDlgProcW")
+    procPostQuitMessage               = moduser32.NewProc("PostQuitMessage")
+    procGetMessage                    = moduser32.NewProc("GetMessageW")
+    procTranslateMessage              = moduser32.NewProc("TranslateMessage")
+    procDispatchMessage               = moduser32.NewProc("DispatchMessageW")
+    procSendMessage                   = moduser32.NewProc("SendMessageW")
+    procPostMessage                   = moduser32.NewProc("PostMessageW")
+    procSetWindowText                 = moduser32.NewProc("SetWindowTextW")
+    procGetWindowTextLength           = moduser32.NewProc("GetWindowTextLengthW")
+    procGetWindowText                 = moduser32.NewProc("GetWindowTextW")
+    procGetWindowRect                 = moduser32.NewProc("GetWindowRect")
+    procMoveWindow                    = moduser32.NewProc("MoveWindow")
+    procScreenToClient                = moduser32.NewProc("ScreenToClient")
+    procCallWindowProc                = moduser32.NewProc("CallWindowProcW")
+    procSetWindowLongPtr              = moduser32.NewProc("SetWindowLongW")
+    procEnableWindow                  = moduser32.NewProc("EnableWindow")
+    procIsWindowEnabled               = moduser32.NewProc("IsWindowEnabled")
+    procIsWindowVisible               = moduser32.NewProc("IsWindowVisible")
+    procSetFocus                      = moduser32.NewProc("SetFocus")
+    procInvalidateRect                = moduser32.NewProc("InvalidateRect")
+    procGetClientRect                 = moduser32.NewProc("GetClientRect")
+    procGetDC                         = moduser32.NewProc("GetDC")
+    procReleaseDC                     = moduser32.NewProc("ReleaseDC")
+    procSetCapture                    = moduser32.NewProc("SetCapture")
+    procReleaseCapture                = moduser32.NewProc("ReleaseCapture")
+    procGetWindowThreadProcessId      = moduser32.NewProc("GetWindowThreadProcessId")
+    procMessageBox                    = moduser32.NewProc("MessageBoxW")
+    procGetSystemMetrics              = moduser32.NewProc("GetSystemMetrics")
+    procGetWindowLongPtr              = moduser32.NewProc("GetWindowLongW")
+    procCopyRect                      = moduser32.NewProc("CopyRect")
+    procEqualRect                     = moduser32.NewProc("EqualRect")
+    procInflateRect                   = moduser32.NewProc("InflateRect")
+    procIntersectRect                 = moduser32.NewProc("IntersectRect")
+    procIsRectEmpty                   = moduser32.NewProc("IsRectEmpty")
+    procOffsetRect                    = moduser32.NewProc("OffsetRect")
+    procPtInRect                      = moduser32.NewProc("PtInRect")
+    procSetRect                       = moduser32.NewProc("SetRect")
+    procSetRectEmpty                  = moduser32.NewProc("SetRectEmpty")
+    procSubtractRect                  = moduser32.NewProc("SubtractRect")
+    procUnionRect                     = moduser32.NewProc("UnionRect")
+    procCreateDialogParam             = moduser32.NewProc("CreateDialogParamW")
+    procDialogBoxParam                = moduser32.NewProc("DialogBoxParamW")
+    procGetDlgItem                    = moduser32.NewProc("GetDlgItem")
+    procDrawIcon                      = moduser32.NewProc("DrawIcon")
+    procClientToScreen                = moduser32.NewProc("ClientToScreen")
+    procIsDialogMessage               = moduser32.NewProc("IsDialogMessageW")
+    procIsWindow                      = moduser32.NewProc("IsWindow")
+    procEndDialog                     = moduser32.NewProc("EndDialog")
+    procSetWindowLong                 = moduser32.NewProc("SetWindowLongW")
+    procPeekMessage                   = moduser32.NewProc("PeekMessageW")
+    procTranslateAccelerator          = moduser32.NewProc("TranslateAcceleratorW")
+    procDestroyIcon                   = moduser32.NewProc("DestroyIcon")
+    procSetWindowPos                  = moduser32.NewProc("SetWindowPos")
+    procFillRect                      = moduser32.NewProc("FillRect")
+    procDrawText                      = moduser32.NewProc("DrawTextW")
+    procAddClipboardFormatListener    = moduser32.NewProc("AddClipboardFormatListener")
+    procRemoveClipboardFormatListener = moduser32.NewProc("RemoveClipboardFormatListener")
+    procOpenClipboard                 = moduser32.NewProc("OpenClipboard")
+    procCloseClipboard                = moduser32.NewProc("CloseClipboard")
+    procEnumClipboardFormats          = moduser32.NewProc("EnumClipboardFormats")
+    procGetClipboardData              = moduser32.NewProc("GetClipboardData")
 )
 
-func init() {
-    lib = LoadLib("user32.dll")
-
-    procRegisterClassEx = GetProcAddr(lib, "RegisterClassExW")
-    procLoadIcon = GetProcAddr(lib, "LoadIconW")
-    procLoadCursor = GetProcAddr(lib, "LoadCursorW")
-    procShowWindow = GetProcAddr(lib, "ShowWindow")
-    procUpdateWindow = GetProcAddr(lib, "UpdateWindow")
-    procCreateWindowEx = GetProcAddr(lib, "CreateWindowExW")
-    procDestroyWindow = GetProcAddr(lib, "DestroyWindow")
-    procDefWindowProc = GetProcAddr(lib, "DefWindowProcW")
-    procDefDlgProc = GetProcAddr(lib, "DefDlgProcW")
-    procPostQuitMessage = GetProcAddr(lib, "PostQuitMessage")
-    procGetMessage = GetProcAddr(lib, "GetMessageW")
-    procTranslateMessage = GetProcAddr(lib, "TranslateMessage")
-    procDispatchMessage = GetProcAddr(lib, "DispatchMessageW")
-    procSendMessage = GetProcAddr(lib, "SendMessageW")
-    procPostMessage = GetProcAddr(lib, "PostMessageW")
-    procSetWindowText = GetProcAddr(lib, "SetWindowTextW")
-    procGetWindowTextLength = GetProcAddr(lib, "GetWindowTextLengthW")
-    procGetWindowText = GetProcAddr(lib, "GetWindowTextW")
-    procGetWindowRect = GetProcAddr(lib, "GetWindowRect")
-    procMoveWindow = GetProcAddr(lib, "MoveWindow")
-    procScreenToClient = GetProcAddr(lib, "ScreenToClient")
-    procCallWindowProc = GetProcAddr(lib, "CallWindowProcW")
-    procSetWindowLongPtr = GetProcAddr(lib, "SetWindowLongW")
-    procEnableWindow = GetProcAddr(lib, "EnableWindow")
-    procIsWindowEnabled = GetProcAddr(lib, "IsWindowEnabled")
-    procIsWindowVisible = GetProcAddr(lib, "IsWindowVisible")
-    procSetFocus = GetProcAddr(lib, "SetFocus")
-    procInvalidateRect = GetProcAddr(lib, "InvalidateRect")
-    procGetClientRect = GetProcAddr(lib, "GetClientRect")
-    procGetDC = GetProcAddr(lib, "GetDC")
-    procReleaseDC = GetProcAddr(lib, "ReleaseDC")
-    procSetCapture = GetProcAddr(lib, "SetCapture")
-    procReleaseCapture = GetProcAddr(lib, "ReleaseCapture")
-    procGetWindowThreadProcessId = GetProcAddr(lib, "GetWindowThreadProcessId")
-    procMessageBox = GetProcAddr(lib, "MessageBoxW")
-    procGetSystemMetrics = GetProcAddr(lib, "GetSystemMetrics")
-    procGetWindowLongPtr = GetProcAddr(lib, "GetWindowLongW")
-    procCopyRect = GetProcAddr(lib, "CopyRect")
-    procEqualRect = GetProcAddr(lib, "EqualRect")
-    procInflateRect = GetProcAddr(lib, "InflateRect")
-    procIntersectRect = GetProcAddr(lib, "IntersectRect")
-    procIsRectEmpty = GetProcAddr(lib, "IsRectEmpty")
-    procOffsetRect = GetProcAddr(lib, "OffsetRect")
-    procPtInRect = GetProcAddr(lib, "PtInRect")
-    procSetRect = GetProcAddr(lib, "SetRect")
-    procSetRectEmpty = GetProcAddr(lib, "SetRectEmpty")
-    procSubtractRect = GetProcAddr(lib, "SubtractRect")
-    procUnionRect = GetProcAddr(lib, "UnionRect")
-    procCreateDialogParam = GetProcAddr(lib, "CreateDialogParamW")
-    procDialogBoxParam = GetProcAddr(lib, "DialogBoxParamW")
-    procGetDlgItem = GetProcAddr(lib, "GetDlgItem")
-    procDrawIcon = GetProcAddr(lib, "DrawIcon")
-    procClientToScreen = GetProcAddr(lib, "ClientToScreen")
-    procIsDialogMessage = GetProcAddr(lib, "IsDialogMessageW")
-    procIsWindow = GetProcAddr(lib, "IsWindow")
-    procEndDialog = GetProcAddr(lib, "EndDialog")
-    procSetWindowLong = GetProcAddr(lib, "SetWindowLongW")
-    procPeekMessage = GetProcAddr(lib, "PeekMessageW")
-    procTranslateAccelerator = GetProcAddr(lib, "TranslateAcceleratorW")
-    procDestroyIcon = GetProcAddr(lib, "DestroyIcon")
-    procSetWindowPos = GetProcAddr(lib, "SetWindowPos")
-    procFillRect = GetProcAddr(lib, "FillRect")
-    procDrawText = GetProcAddr(lib, "DrawTextW")
-}
-
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
-    ret, _, _ := syscall.Syscall(procRegisterClassEx, 1,
-        uintptr(unsafe.Pointer(wndClassEx)),
-        0,
-        0)
+    ret, _, _ := procRegisterClassEx.Call(uintptr(unsafe.Pointer(wndClassEx)))
     return ATOM(ret)
 }
 
 func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
-    ret, _, _ := syscall.Syscall(procLoadIcon, 2,
+    ret, _, _ := procLoadIcon.Call(
         uintptr(instance),
-        uintptr(unsafe.Pointer(iconName)),
-        0)
+        uintptr(unsafe.Pointer(iconName)))
 
     return HICON(ret)
 
 }
 
 func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
-    ret, _, _ := syscall.Syscall(procLoadCursor, 2,
+    ret, _, _ := procLoadCursor.Call(
         uintptr(instance),
-        uintptr(unsafe.Pointer(cursorName)),
-        0)
+        uintptr(unsafe.Pointer(cursorName)))
 
     return HCURSOR(ret)
 
 }
 
 func ShowWindow(hwnd HWND, cmdshow int) bool {
-    ret, _, _ := syscall.Syscall(procShowWindow, 2,
+    ret, _, _ := procShowWindow.Call(
         uintptr(hwnd),
-        uintptr(cmdshow),
-        0)
+        uintptr(cmdshow))
 
     return ret != 0
 
 }
 
 func UpdateWindow(hwnd HWND) bool {
-    ret, _, _ := syscall.Syscall(procUpdateWindow, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procUpdateWindow.Call(
+        uintptr(hwnd))
     return ret != 0
 }
 
 func CreateWindowEx(exStyle uint, className, windowName *uint16,
-style uint, x, y, width, height int, parent HWND, menu HMENU,
-instance HINSTANCE, param unsafe.Pointer) HWND {
-    ret, _, _ := syscall.Syscall12(procCreateWindowEx, 12,
+    style uint, x, y, width, height int, parent HWND, menu HMENU,
+    instance HINSTANCE, param unsafe.Pointer) HWND {
+    ret, _, _ := procCreateWindowEx.Call(
         uintptr(exStyle),
         uintptr(unsafe.Pointer(className)),
         uintptr(unsafe.Pointer(windowName)),
@@ -214,113 +144,92 @@ instance HINSTANCE, param unsafe.Pointer) HWND {
 }
 
 func DestroyWindow(hwnd HWND) bool {
-    ret, _, _ := syscall.Syscall(procDestroyWindow, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procDestroyWindow.Call(
+        uintptr(hwnd))
 
     return ret != 0
 }
 
 func DefWindowProc(hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
-    ret, _, _ := syscall.Syscall6(procDefWindowProc, 4,
+    ret, _, _ := procDefWindowProc.Call(
         uintptr(hwnd),
         uintptr(msg),
         wParam,
-        lParam,
-        0,
-        0)
+        lParam)
 
     return ret
 }
 
 func DefDlgProc(hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
-    ret, _, _ := syscall.Syscall6(procDefDlgProc, 4,
+    ret, _, _ := procDefDlgProc.Call(
         uintptr(hwnd),
         uintptr(msg),
         wParam,
-        lParam,
-        0,
-        0)
+        lParam)
 
     return ret
 }
 
 func PostQuitMessage(exitCode int) {
-    syscall.Syscall(procPostQuitMessage, 1,
-        uintptr(exitCode),
-        0,
-        0)
+    procPostQuitMessage.Call(
+        uintptr(exitCode))
 }
 
 func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
-    ret, _, _ := syscall.Syscall6(procGetMessage, 4,
+    ret, _, _ := procGetMessage.Call(
         uintptr(unsafe.Pointer(msg)),
         uintptr(hwnd),
         uintptr(msgFilterMin),
-        uintptr(msgFilterMax),
-        0,
-        0)
+        uintptr(msgFilterMax))
 
     return int(ret)
 }
 
 func TranslateMessage(msg *MSG) bool {
-    ret, _, _ := syscall.Syscall(procTranslateMessage, 1,
-        uintptr(unsafe.Pointer(msg)),
-        0,
-        0)
+    ret, _, _ := procTranslateMessage.Call(
+        uintptr(unsafe.Pointer(msg)))
 
     return ret != 0
 
 }
 
 func DispatchMessage(msg *MSG) uintptr {
-    ret, _, _ := syscall.Syscall(procDispatchMessage, 1,
-        uintptr(unsafe.Pointer(msg)),
-        0,
-        0)
+    ret, _, _ := procDispatchMessage.Call(
+        uintptr(unsafe.Pointer(msg)))
 
     return ret
 
 }
 
 func SendMessage(hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
-    ret, _, _ := syscall.Syscall6(procSendMessage, 4,
+    ret, _, _ := procSendMessage.Call(
         uintptr(hwnd),
         uintptr(msg),
         wParam,
-        lParam,
-        0,
-        0)
+        lParam)
 
     return ret
 }
 
 func PostMessage(hwnd HWND, msg uint, wParam, lParam uintptr) bool {
-    ret, _, _ := syscall.Syscall6(procPostMessage, 4,
+    ret, _, _ := procPostMessage.Call(
         uintptr(hwnd),
         uintptr(msg),
         wParam,
-        lParam,
-        0,
-        0)
+        lParam)
 
     return ret != 0
 }
 
 func SetWindowText(hwnd HWND, text string) {
-    syscall.Syscall(procSetWindowText, 2,
+    procSetWindowText.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
-        0)
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))))
 }
 
 func GetWindowTextLength(hwnd HWND) int {
-    ret, _, _ := syscall.Syscall(procGetWindowTextLength, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procGetWindowTextLength.Call(
+        uintptr(hwnd))
 
     return int(ret)
 }
@@ -329,7 +238,7 @@ func GetWindowText(hwnd HWND) string {
     textLen := GetWindowTextLength(hwnd) + 1
 
     buf := make([]uint16, textLen)
-    syscall.Syscall(procGetWindowText, 3,
+    procGetWindowText.Call(
         uintptr(hwnd),
         uintptr(unsafe.Pointer(&buf[0])),
         uintptr(textLen))
@@ -339,16 +248,15 @@ func GetWindowText(hwnd HWND) string {
 
 func GetWindowRect(hwnd HWND) *RECT {
     var rect RECT
-    syscall.Syscall(procGetWindowRect, 2,
+    procGetWindowRect.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(&rect)),
-        0)
+        uintptr(unsafe.Pointer(&rect)))
 
     return &rect
 }
 
 func MoveWindow(hwnd HWND, x, y, width, height int, repaint bool) bool {
-    ret, _, _ := syscall.Syscall6(procMoveWindow, 6,
+    ret, _, _ := procMoveWindow.Call(
         uintptr(hwnd),
         uintptr(x),
         uintptr(y),
@@ -365,28 +273,26 @@ func ScreenToClient(hwnd HWND, x, y int) (int, int) {
     pt.X = x
     pt.Y = y
 
-    syscall.Syscall(procScreenToClient, 2,
+    procScreenToClient.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(&pt)),
-        0)
+        uintptr(unsafe.Pointer(&pt)))
 
     return pt.X, pt.Y
 }
 
 func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
-    ret, _, _ := syscall.Syscall6(procCallWindowProc, 5,
+    ret, _, _ := procCallWindowProc.Call(
         preWndProc,
         uintptr(hwnd),
         uintptr(msg),
         wParam,
-        lParam,
-        0)
+        lParam)
 
     return ret
 }
 
 func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
-    ret, _, _ := syscall.Syscall(procSetWindowLongPtr, 3,
+    ret, _, _ := procSetWindowLongPtr.Call(
         uintptr(hwnd),
         uintptr(index),
         value)
@@ -395,42 +301,35 @@ func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
 }
 
 func EnableWindow(hwnd HWND, b bool) bool {
-    ret, _, _ := syscall.Syscall(procEnableWindow, 2,
+    ret, _, _ := procEnableWindow.Call(
         uintptr(hwnd),
-        uintptr(BoolToBOOL(b)),
-        0)
+        uintptr(BoolToBOOL(b)))
     return ret != 0
 }
 
 func IsWindowEnabled(hwnd HWND) bool {
-    ret, _, _ := syscall.Syscall(procIsWindowEnabled, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procIsWindowEnabled.Call(
+        uintptr(hwnd))
 
     return ret != 0
 }
 
 func IsWindowVisible(hwnd HWND) bool {
-    ret, _, _ := syscall.Syscall(procIsWindowVisible, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procIsWindowVisible.Call(
+        uintptr(hwnd))
 
     return ret != 0
 }
 
 func SetFocus(hwnd HWND) HWND {
-    ret, _, _ := syscall.Syscall(procSetFocus, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procSetFocus.Call(
+        uintptr(hwnd))
 
     return HWND(ret)
 }
 
 func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
-    ret, _, _ := syscall.Syscall(procInvalidateRect, 3,
+    ret, _, _ := procInvalidateRect.Call(
         uintptr(hwnd),
         uintptr(unsafe.Pointer(rect)),
         uintptr(BoolToBOOL(erase)))
@@ -440,10 +339,9 @@ func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
 
 func GetClientRect(hwnd HWND) *RECT {
     var rect RECT
-    ret, _, _ := syscall.Syscall(procGetWindowRect, 2,
+    ret, _, _ := procGetWindowRect.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(&rect)),
-        0)
+        uintptr(unsafe.Pointer(&rect)))
 
     if ret == 0 {
         panic(fmt.Sprintf("GetClientRect(%d) failed", hwnd))
@@ -453,101 +351,85 @@ func GetClientRect(hwnd HWND) *RECT {
 }
 
 func GetDC(hwnd HWND) HDC {
-    ret, _, _ := syscall.Syscall(procGetDC, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procGetDC.Call(
+        uintptr(hwnd))
 
     return HDC(ret)
 }
 
 func ReleaseDC(hwnd HWND, hDC HDC) bool {
-    ret, _, _ := syscall.Syscall(procReleaseDC, 2,
+    ret, _, _ := procReleaseDC.Call(
         uintptr(hwnd),
-        uintptr(hDC),
-        0)
+        uintptr(hDC))
 
     return ret != 0
 }
 
 func SetCapture(hwnd HWND) HWND {
-    ret, _, _ := syscall.Syscall(procSetCapture, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procSetCapture.Call(
+        uintptr(hwnd))
 
     return HWND(ret)
 }
 
 func ReleaseCapture() bool {
-    ret, _, _ := syscall.Syscall(procReleaseCapture, 0,
-        0,
-        0,
-        0)
+    ret, _, _ := procReleaseCapture.Call()
 
     return ret != 0
 }
 
 func GetWindowThreadProcessId(hwnd HWND) (HANDLE, int) {
     var processId int
-    ret, _, _ := syscall.Syscall(procGetWindowThreadProcessId, 2,
+    ret, _, _ := procGetWindowThreadProcessId.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(&processId)),
-        0)
+        uintptr(unsafe.Pointer(&processId)))
 
     return HANDLE(ret), processId
 }
 
 func MessageBox(hwnd HWND, title, caption string, flags uint) int {
-    ret, _, _ := syscall.Syscall6(procMessageBox, 4,
+    ret, _, _ := procMessageBox.Call(
         uintptr(hwnd),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
-        uintptr(flags),
-        0,
-        0)
+        uintptr(flags))
 
     return int(ret)
 }
 
 func GetSystemMetrics(index int) int {
-    ret, _, _ := syscall.Syscall(procGetSystemMetrics, 1,
-        uintptr(index),
-        0,
-        0)
+    ret, _, _ := procGetSystemMetrics.Call(
+        uintptr(index))
 
     return int(ret)
 }
 
 func GetWindowLongPtr(hwnd HWND, index int) uintptr {
-    ret, _, _ := syscall.Syscall(procGetWindowLongPtr, 2,
+    ret, _, _ := procGetWindowLongPtr.Call(
         uintptr(hwnd),
-        uintptr(index),
-        0)
+        uintptr(index))
 
     return ret
 }
 
 func CopyRect(dst, src *RECT) bool {
-    ret, _, _ := syscall.Syscall(procCopyRect, 2,
+    ret, _, _ := procCopyRect.Call(
         uintptr(unsafe.Pointer(dst)),
-        uintptr(unsafe.Pointer(src)),
-        0)
+        uintptr(unsafe.Pointer(src)))
 
     return ret != 0
 }
 
 func EqualRect(rect1, rect2 *RECT) bool {
-    ret, _, _ := syscall.Syscall(procEqualRect, 2,
+    ret, _, _ := procEqualRect.Call(
         uintptr(unsafe.Pointer(rect1)),
-        uintptr(unsafe.Pointer(rect2)),
-        0)
+        uintptr(unsafe.Pointer(rect2)))
 
     return ret != 0
 }
 
 func InflateRect(rect *RECT, dx, dy int) bool {
-    ret, _, _ := syscall.Syscall(procInflateRect, 3,
+    ret, _, _ := procInflateRect.Call(
         uintptr(unsafe.Pointer(rect)),
         uintptr(dx),
         uintptr(dy))
@@ -556,7 +438,7 @@ func InflateRect(rect *RECT, dx, dy int) bool {
 }
 
 func IntersectRect(dst, src1, src2 *RECT) bool {
-    ret, _, _ := syscall.Syscall(procIntersectRect, 3,
+    ret, _, _ := procIntersectRect.Call(
         uintptr(unsafe.Pointer(dst)),
         uintptr(unsafe.Pointer(src1)),
         uintptr(unsafe.Pointer(src2)))
@@ -565,16 +447,14 @@ func IntersectRect(dst, src1, src2 *RECT) bool {
 }
 
 func IsRectEmpty(rect *RECT) bool {
-    ret, _, _ := syscall.Syscall(procIsRectEmpty, 1,
-        uintptr(unsafe.Pointer(rect)),
-        0,
-        0)
+    ret, _, _ := procIsRectEmpty.Call(
+        uintptr(unsafe.Pointer(rect)))
 
     return ret != 0
 }
 
 func OffsetRect(rect *RECT, dx, dy int) bool {
-    ret, _, _ := syscall.Syscall(procOffsetRect, 3,
+    ret, _, _ := procOffsetRect.Call(
         uintptr(unsafe.Pointer(rect)),
         uintptr(dx),
         uintptr(dy))
@@ -584,37 +464,33 @@ func OffsetRect(rect *RECT, dx, dy int) bool {
 
 func PtInRect(rect *RECT, x, y int) bool {
     pt := POINT{X: x, Y: y}
-    ret, _, _ := syscall.Syscall(procPtInRect, 2,
+    ret, _, _ := procPtInRect.Call(
         uintptr(unsafe.Pointer(rect)),
-        uintptr(unsafe.Pointer(&pt)),
-        0)
+        uintptr(unsafe.Pointer(&pt)))
 
     return ret != 0
 }
 
 func SetRect(rect *RECT, left, top, right, bottom int) bool {
-    ret, _, _ := syscall.Syscall6(procSetRect, 5,
+    ret, _, _ := procSetRect.Call(
         uintptr(unsafe.Pointer(rect)),
         uintptr(left),
         uintptr(top),
         uintptr(right),
-        uintptr(bottom),
-        0)
+        uintptr(bottom))
 
     return ret != 0
 }
 
 func SetRectEmpty(rect *RECT) bool {
-    ret, _, _ := syscall.Syscall(procSetRectEmpty, 1,
-        uintptr(unsafe.Pointer(rect)),
-        0,
-        0)
+    ret, _, _ := procSetRectEmpty.Call(
+        uintptr(unsafe.Pointer(rect)))
 
     return ret != 0
 }
 
 func SubtractRect(dst, src1, src2 *RECT) bool {
-    ret, _, _ := syscall.Syscall(procSubtractRect, 3,
+    ret, _, _ := procSubtractRect.Call(
         uintptr(unsafe.Pointer(dst)),
         uintptr(unsafe.Pointer(src1)),
         uintptr(unsafe.Pointer(src2)))
@@ -623,7 +499,7 @@ func SubtractRect(dst, src1, src2 *RECT) bool {
 }
 
 func UnionRect(dst, src1, src2 *RECT) bool {
-    ret, _, _ := syscall.Syscall(procUnionRect, 3,
+    ret, _, _ := procUnionRect.Call(
         uintptr(unsafe.Pointer(dst)),
         uintptr(unsafe.Pointer(src1)),
         uintptr(unsafe.Pointer(src2)))
@@ -632,46 +508,41 @@ func UnionRect(dst, src1, src2 *RECT) bool {
 }
 
 func CreateDialog(hInstance HINSTANCE, lpTemplate *uint16, hWndParent HWND, lpDialogProc uintptr) HWND {
-    ret, _, _ := syscall.Syscall6(procCreateDialogParam, 5,
+    ret, _, _ := procCreateDialogParam.Call(
         uintptr(hInstance),
         uintptr(unsafe.Pointer(lpTemplate)),
         uintptr(hWndParent),
         lpDialogProc,
-        0,
         0)
 
     return HWND(ret)
 }
 
 func DialogBox(hInstance HINSTANCE, lpTemplateName *uint16, hWndParent HWND, lpDialogProc uintptr) int {
-    ret, _, _ := syscall.Syscall6(procDialogBoxParam, 5,
+    ret, _, _ := procDialogBoxParam.Call(
         uintptr(hInstance),
         uintptr(unsafe.Pointer(lpTemplateName)),
         uintptr(hWndParent),
         lpDialogProc,
-        0,
         0)
 
     return int(ret)
 }
 
 func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
-    ret, _, _ := syscall.Syscall(procGetDlgItem, 2,
+    ret, _, _ := procGetDlgItem.Call(
         uintptr(unsafe.Pointer(hDlg)),
-        uintptr(nIDDlgItem),
-        0)
+        uintptr(nIDDlgItem))
 
     return HWND(ret)
 }
 
 func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
-    ret, _, _ := syscall.Syscall6(procDrawIcon, 4,
+    ret, _, _ := procDrawIcon.Call(
         uintptr(unsafe.Pointer(hDC)),
         uintptr(x),
         uintptr(y),
-        uintptr(unsafe.Pointer(hIcon)),
-        0,
-        0)
+        uintptr(unsafe.Pointer(hIcon)))
 
     return ret != 0
 }
@@ -680,43 +551,38 @@ func ClientToScreen(hwnd HWND, x, y int) (int, int) {
     var pt POINT
     pt.X, pt.Y = x, y
 
-    syscall.Syscall(procClientToScreen, 2,
+    procClientToScreen.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(&pt)),
-        0)
+        uintptr(unsafe.Pointer(&pt)))
 
     return pt.X, pt.Y
 }
 
 func IsDialogMessage(hwnd HWND, msg *MSG) bool {
-    ret, _, _ := syscall.Syscall(procIsDialogMessage, 2,
+    ret, _, _ := procIsDialogMessage.Call(
         uintptr(hwnd),
-        uintptr(unsafe.Pointer(msg)),
-        0)
+        uintptr(unsafe.Pointer(msg)))
 
     return ret != 0
 }
 
 func IsWindow(hwnd HWND) bool {
-    ret, _, _ := syscall.Syscall(procIsWindow, 1,
-        uintptr(hwnd),
-        0,
-        0)
+    ret, _, _ := procIsWindow.Call(
+        uintptr(hwnd))
 
     return ret != 0
 }
 
 func EndDialog(hwnd HWND, nResult uintptr) bool {
-    ret, _, _ := syscall.Syscall(procEndDialog, 2,
+    ret, _, _ := procEndDialog.Call(
         uintptr(hwnd),
-        nResult,
-        0)
+        nResult)
 
     return ret != 0
 }
 
 func SetWindowLong(hwnd HWND, nIndex int, dwNewLong uint32) uint32 {
-    ret, _, _ := syscall.Syscall(procSetWindowLong, 3,
+    ret, _, _ := procSetWindowLong.Call(
         uintptr(hwnd),
         uintptr(nIndex),
         uintptr(dwNewLong))
@@ -725,19 +591,18 @@ func SetWindowLong(hwnd HWND, nIndex int, dwNewLong uint32) uint32 {
 }
 
 func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) bool {
-    ret, _, _ := syscall.Syscall6(procPeekMessage, 5,
+    ret, _, _ := procPeekMessage.Call(
         uintptr(unsafe.Pointer(lpMsg)),
         uintptr(hwnd),
         uintptr(wMsgFilterMin),
         uintptr(wMsgFilterMax),
-        uintptr(wRemoveMsg),
-        0)
+        uintptr(wRemoveMsg))
 
     return ret != 0
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
-    ret, _, _ := syscall.Syscall(procTranslateMessage, 3,
+    ret, _, _ := procTranslateMessage.Call(
         uintptr(hwnd),
         uintptr(hAccTable),
         uintptr(unsafe.Pointer(lpMsg)))
@@ -746,46 +611,76 @@ func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
 }
 
 func DestroyIcon(hIcon HICON) bool {
-    ret, _, _ := syscall.Syscall(procDestroyIcon, 1,
-        uintptr(hIcon),
-        0,
-        0)
+    ret, _, _ := procDestroyIcon.Call(
+        uintptr(hIcon))
 
     return ret != 0
 }
 
 func SetWindowPos(hwnd, hWndInsertAfter HWND, x, y, cx, cy int, uFlags uint) bool {
-    ret, _, _ := syscall.Syscall9(procSetWindowPos, 7,
-        uintptr(hwnd), 
+    ret, _, _ := procSetWindowPos.Call(
+        uintptr(hwnd),
         uintptr(hWndInsertAfter),
         uintptr(x),
         uintptr(y),
         uintptr(cx),
         uintptr(cy),
-        uintptr(uFlags),
-        0,
-        0)
-    
+        uintptr(uFlags))
+
     return ret != 0
 }
 
 func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
-    ret, _, _ := syscall.Syscall(procFillRect, 3, 
-        uintptr(hDC), 
-        uintptr(unsafe.Pointer(lprc)), 
+    ret, _, _ := procFillRect.Call(
+        uintptr(hDC),
+        uintptr(unsafe.Pointer(lprc)),
         uintptr(hbr))
 
     return ret != 0
 }
 
 func DrawText(hDC HDC, text string, uCount int, lpRect *RECT, uFormat uint) int {
-    ret, _, _ := syscall.Syscall6(procDrawText, 5, 
-        uintptr(hDC), 
+    ret, _, _ := procDrawText.Call(
+        uintptr(hDC),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
         uintptr(uCount),
         uintptr(unsafe.Pointer(lpRect)),
-        uintptr(uFormat),
-        0)
+        uintptr(uFormat))
 
     return int(ret)
+}
+
+func AddClipboardFormatListener(hwnd HWND) bool {
+    ret, _, _ := procAddClipboardFormatListener.Call(
+        uintptr(hwnd))
+    return ret != 0
+}
+
+func RemoveClipboardFormatListener(hwnd HWND) bool {
+    ret, _, _ := procRemoveClipboardFormatListener.Call(
+        uintptr(hwnd))
+    return ret != 0
+}
+
+func OpenClipboard(hWndNewOwner HWND) bool {
+    ret, _, _ := procOpenClipboard.Call(
+        uintptr(hWndNewOwner))
+    return ret != 0
+}
+
+func CloseClipboard() bool {
+    ret, _, _ := procCloseClipboard.Call()
+    return ret != 0
+}
+
+func EnumClipboardFormats(format uint) uint {
+    ret, _, _ := procEnumClipboardFormats.Call(
+        uintptr(format))
+    return uint(ret)
+}
+
+func GetClipboardData(uFormat uint) HANDLE {
+    ret, _, _ := procGetClipboardData.Call(
+        uintptr(uFormat))
+    return HANDLE(ret)
 }

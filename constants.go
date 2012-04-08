@@ -490,6 +490,7 @@ const (
     WM_MOUSELAST              = 525
     WM_MOUSEHOVER             = 0X2A1
     WM_MOUSELEAVE             = 0X2A3
+    WM_CLIPBOARDUPDATE        = 0x031D
 )
 
 const LF_FACESIZE = 32
@@ -2149,4 +2150,22 @@ const (
     WHITENESS      = 0x00FF0062
     NOMIRRORBITMAP = 0x80000000
     CAPTUREBLT     = 0x40000000
+)
+
+// Clipboard formats
+const (
+    CF_TEXT         = 1
+    CF_BITMAP       = 2
+    CF_METAFILEPICT = 3
+    CF_SYLK         = 4
+    CF_DIF          = 5
+    CF_TIFF         = 6
+    CF_OEMTEXT      = 7
+    CF_DIB          = 8
+    CF_PALETTE      = 9
+    CF_PENDATA      = 10
+    CF_RIFF         = 11
+    CF_WAVE         = 12
+    CF_UNICODETEXT  = 13
+    CF_ENHMETAFILE  = 14
 )

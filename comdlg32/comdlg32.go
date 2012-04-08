@@ -5,50 +5,35 @@
 package comdlg32
 
 import (
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
-    lib uintptr
+    modcomdlg32 = syscall.NewLazyDLL("comdlg32.dll")
 
-    procGetOpenFileName      uintptr
-    procGetSaveFileName      uintptr
-    procCommDlgExtendedError uintptr
+    procGetSaveFileName      = modcomdlg32.NewProc("GetSaveFileNameW")
+    procGetOpenFileName      = modcomdlg32.NewProc("GetOpenFileNameW")
+    procCommDlgExtendedError = modcomdlg32.NewProc("CommDlgExtendedError")
 )
 
-func init() {
-    lib = LoadLib("comdlg32.dll")
-
-    procGetSaveFileName = GetProcAddr(lib, "GetSaveFileNameW")
-    procGetOpenFileName = GetProcAddr(lib, "GetOpenFileNameW")
-    procCommDlgExtendedError = GetProcAddr(lib, "CommDlgExtendedError")
-}
-
 func GetOpenFileName(ofn *OPENFILENAME) bool {
-    ret, _, _ := syscall.Syscall(procGetOpenFileName, 1,
-        uintptr(unsafe.Pointer(ofn)),
-        0,
-        0)
+    ret, _, _ := procGetOpenFileName.Call(
+        uintptr(unsafe.Pointer(ofn)))
 
     return ret != 0
 }
 
 func GetSaveFileName(ofn *OPENFILENAME) bool {
-    ret, _, _ := syscall.Syscall(procGetSaveFileName, 1,
-        uintptr(unsafe.Pointer(ofn)),
-        0,
-        0)
+    ret, _, _ := procGetSaveFileName.Call(
+        uintptr(unsafe.Pointer(ofn)))
 
     return ret != 0
 }
 
 func CommDlgExtendedError() uint {
-    ret, _, _ := syscall.Syscall(procCommDlgExtendedError, 0,
-        0,
-        0,
-        0)
+    ret, _, _ := procCommDlgExtendedError.Call()
 
     return uint(ret)
 }

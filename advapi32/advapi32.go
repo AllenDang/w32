@@ -6,40 +6,29 @@ package advapi32
 
 import (
     "fmt"
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
-    lib uintptr
+    modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
-    procRegOpenKeyEx   uintptr
-    procRegCloseKey    uintptr
-    procRegGetValue    uintptr
-    procRegEnumKeyEx   uintptr
-    procRegSetKeyValue uintptr
+    procRegOpenKeyEx   = modadvapi32.NewProc("RegOpenKeyExW")
+    procRegCloseKey    = modadvapi32.NewProc("RegCloseKey")
+    procRegGetValue    = modadvapi32.NewProc("RegGetValueW")
+    procRegEnumKeyEx   = modadvapi32.NewProc("RegEnumKeyExW")
+    procRegSetKeyValue = modadvapi32.NewProc("RegSetKeyValueW")
 )
-
-func init() {
-    lib = LoadLib("advapi32.dll")
-
-    procRegOpenKeyEx = GetProcAddr(lib, "RegOpenKeyExW")
-    procRegCloseKey = GetProcAddr(lib, "RegCloseKey")
-    procRegGetValue = GetProcAddr(lib, "RegGetValueW")
-    procRegEnumKeyEx = GetProcAddr(lib, "RegEnumKeyExW")
-    procRegSetKeyValue = GetProcAddr(lib, "RegSetKeyValueW")
-}
 
 func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
     var result HKEY
-    ret, _, _ := syscall.Syscall6(procRegOpenKeyEx, 5,
+    ret, _, _ := procRegOpenKeyEx.Call(
         uintptr(hKey),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
         uintptr(0),
         uintptr(samDesired),
-        uintptr(unsafe.Pointer(&result)),
-        0)
+        uintptr(unsafe.Pointer(&result)))
 
     if ret != ERROR_SUCCESS {
         panic(fmt.Sprintf("RegOpenKeyEx(%d, %s, %d) failed", hKey, subKey, samDesired))
@@ -48,10 +37,8 @@ func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
 }
 
 func RegCloseKey(hKey HKEY) {
-    ret, _, _ := syscall.Syscall(procRegCloseKey, 1,
-        uintptr(hKey),
-        0,
-        0)
+    ret, _, _ := procRegCloseKey.Call(
+        uintptr(hKey))
 
     if ret != ERROR_SUCCESS {
         panic(fmt.Sprintf("RegCloseKey(%d) failed", hKey))
@@ -60,32 +47,28 @@ func RegCloseKey(hKey HKEY) {
 
 func RegGetString(hKey HKEY, subKey string, value string) string {
     var bufLen uint32
-    syscall.Syscall9(procRegGetValue, 7,
+    procRegGetValue.Call(
         uintptr(hKey),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
         uintptr(RRF_RT_REG_SZ),
         0,
         0,
-        uintptr(unsafe.Pointer(&bufLen)),
-        0,
-        0)
+        uintptr(unsafe.Pointer(&bufLen)))
 
     if bufLen == 0 {
         return ""
     }
 
     buf := make([]uint16, bufLen)
-    ret, _, _ := syscall.Syscall9(procRegGetValue, 7,
+    ret, _, _ := procRegGetValue.Call(
         uintptr(hKey),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
         uintptr(RRF_RT_REG_SZ),
         0,
         uintptr(unsafe.Pointer(&buf[0])),
-        uintptr(unsafe.Pointer(&bufLen)),
-        0,
-        0)
+        uintptr(unsafe.Pointer(&bufLen)))
 
     if ret != ERROR_SUCCESS {
         return ""
@@ -95,26 +78,25 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
 }
 
 func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint32) (errno int) {
-    ret, _, _ := syscall.Syscall6(procRegSetKeyValue, 6,
+    ret, _, _ := procRegSetKeyValue.Call(
         uintptr(hKey),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))),
         uintptr(dwType),
         data,
         uintptr(cbData))
-    
+
     return int(ret)
 }
 
 func RegEnumKeyEx(hKey HKEY, index uint32) string {
     var bufLen uint32 = 255
     buf := make([]uint16, bufLen)
-    syscall.Syscall9(procRegEnumKeyEx, 8,
+    procRegEnumKeyEx.Call(
         uintptr(hKey),
         uintptr(index),
         uintptr(unsafe.Pointer(&buf[0])),
         uintptr(unsafe.Pointer(&bufLen)),
-        0,
         0,
         0,
         0,

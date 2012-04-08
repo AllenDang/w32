@@ -5,56 +5,39 @@
 package comctl32
 
 import (
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
-    lib uintptr
+    modcomctl32 = syscall.NewLazyDLL("comctl32.dll")
 
-    procInitCommonControlsEx    uintptr
-    procImageList_Create        uintptr
-    procImageList_Destroy       uintptr
-    procImageList_GetImageCount uintptr
-    procImageList_SetImageCount uintptr
-    procImageList_Add           uintptr
-    procImageList_ReplaceIcon   uintptr
-    procImageList_Remove        uintptr
-    procTrackMouseEvent         uintptr
+    procInitCommonControlsEx    = modcomctl32.NewProc("InitCommonControlsEx")
+    procImageList_Create        = modcomctl32.NewProc("ImageList_Create")
+    procImageList_Destroy       = modcomctl32.NewProc("ImageList_Destroy")
+    procImageList_GetImageCount = modcomctl32.NewProc("ImageList_GetImageCount")
+    procImageList_SetImageCount = modcomctl32.NewProc("ImageList_SetImageCount")
+    procImageList_Add           = modcomctl32.NewProc("ImageList_Add")
+    procImageList_ReplaceIcon   = modcomctl32.NewProc("ImageList_ReplaceIcon")
+    procImageList_Remove        = modcomctl32.NewProc("ImageList_Remove")
+    procTrackMouseEvent         = modcomctl32.NewProc("_TrackMouseEvent")
 )
 
-func init() {
-    lib = LoadLib("comctl32.dll")
-
-    procInitCommonControlsEx = GetProcAddr(lib, "InitCommonControlsEx")
-    procImageList_Create = GetProcAddr(lib, "ImageList_Create")
-    procImageList_Destroy = GetProcAddr(lib, "ImageList_Destroy")
-    procImageList_GetImageCount = GetProcAddr(lib, "ImageList_GetImageCount")
-    procImageList_SetImageCount = GetProcAddr(lib, "ImageList_SetImageCount")
-    procImageList_Add = GetProcAddr(lib, "ImageList_Add")
-    procImageList_ReplaceIcon = GetProcAddr(lib, "ImageList_ReplaceIcon")
-    procImageList_Remove = GetProcAddr(lib, "ImageList_Remove")
-    procTrackMouseEvent = GetProcAddr(lib, "_TrackMouseEvent")
-}
-
 func InitCommonControlsEx(lpInitCtrls *INITCOMMONCONTROLSEX) bool {
-    ret, _, _ := syscall.Syscall(procInitCommonControlsEx, 1,
-        uintptr(unsafe.Pointer(lpInitCtrls)),
-        0,
-        0)
+    ret, _, _ := procInitCommonControlsEx.Call(
+        uintptr(unsafe.Pointer(lpInitCtrls)))
 
     return ret != 0
 }
 
 func ImageList_Create(cx, cy int, flags uint, cInitial, cGrow int) HIMAGELIST {
-    ret, _, _ := syscall.Syscall6(procImageList_Create, 5,
+    ret, _, _ := procImageList_Create.Call(
         uintptr(cx),
         uintptr(cy),
         uintptr(flags),
         uintptr(cInitial),
-        uintptr(cGrow),
-        0)
+        uintptr(cGrow))
 
     if ret == 0 {
         panic("Create image list failed")
@@ -64,34 +47,29 @@ func ImageList_Create(cx, cy int, flags uint, cInitial, cGrow int) HIMAGELIST {
 }
 
 func ImageList_Destroy(himl HIMAGELIST) bool {
-    ret, _, _ := syscall.Syscall(procImageList_Destroy, 1,
-        uintptr(himl),
-        0,
-        0)
+    ret, _, _ := procImageList_Destroy.Call(
+        uintptr(himl))
 
     return ret != 0
 }
 
 func ImageList_GetImageCount(himl HIMAGELIST) int {
-    ret, _, _ := syscall.Syscall(procImageList_GetImageCount, 1,
-        uintptr(himl),
-        0,
-        0)
+    ret, _, _ := procImageList_GetImageCount.Call(
+        uintptr(himl))
 
     return int(ret)
 }
 
 func ImageList_SetImageCount(himl HIMAGELIST, uNewCount uint) bool {
-    ret, _, _ := syscall.Syscall(procImageList_SetImageCount, 2,
+    ret, _, _ := procImageList_SetImageCount.Call(
         uintptr(himl),
-        uintptr(uNewCount),
-        0)
+        uintptr(uNewCount))
 
     return ret != 0
 }
 
 func ImageList_Add(himl HIMAGELIST, hbmImage, hbmMask HBITMAP) int {
-    ret, _, _ := syscall.Syscall(procImageList_Add, 3,
+    ret, _, _ := procImageList_Add.Call(
         uintptr(himl),
         uintptr(hbmImage),
         uintptr(hbmMask))
@@ -100,7 +78,7 @@ func ImageList_Add(himl HIMAGELIST, hbmImage, hbmMask HBITMAP) int {
 }
 
 func ImageList_ReplaceIcon(himl HIMAGELIST, i int, hicon HICON) int {
-    ret, _, _ := syscall.Syscall(procImageList_ReplaceIcon, 3,
+    ret, _, _ := procImageList_ReplaceIcon.Call(
         uintptr(himl),
         uintptr(i),
         uintptr(hicon))
@@ -113,10 +91,9 @@ func ImageList_AddIcon(himl HIMAGELIST, hicon HICON) int {
 }
 
 func ImageList_Remove(himl HIMAGELIST, i int) bool {
-    ret, _, _ := syscall.Syscall(procImageList_Remove, 2,
+    ret, _, _ := procImageList_Remove.Call(
         uintptr(himl),
-        uintptr(i),
-        0)
+        uintptr(i))
 
     return ret != 0
 }
@@ -126,10 +103,8 @@ func ImageList_RemoveAll(himl HIMAGELIST) bool {
 }
 
 func TrackMouseEvent(tme *TRACKMOUSEEVENT) bool {
-    ret, _, _ := syscall.Syscall(procTrackMouseEvent, 1,
-        uintptr(unsafe.Pointer(tme)),
-        0,
-        0)
+    ret, _, _ := procTrackMouseEvent.Call(
+        uintptr(unsafe.Pointer(tme)))
 
     return ret != 0
 }

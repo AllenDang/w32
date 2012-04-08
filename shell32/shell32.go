@@ -5,71 +5,51 @@
 package shell32
 
 import (
-    "syscall"
-    "unsafe"
     "errors"
     "fmt"
     . "github.com/AllenDang/w32"
+    "syscall"
+    "unsafe"
 )
 
 var (
-    lib uintptr
+    modshell32 = syscall.NewLazyDLL("shell32.dll")
 
-    procSHBrowseForFolder   uintptr
-    procSHGetPathFromIDList uintptr
-    procDragAcceptFiles     uintptr
-    procDragQueryFile       uintptr
-    procDragQueryPoint      uintptr
-    procDragFinish          uintptr
-    procShellExecute        uintptr
-    procExtractIcon         uintptr
+    procSHBrowseForFolder   = modshell32.NewProc("SHBrowseForFolderW")
+    procSHGetPathFromIDList = modshell32.NewProc("SHGetPathFromIDListW")
+    procDragAcceptFiles     = modshell32.NewProc("DragAcceptFiles")
+    procDragQueryFile       = modshell32.NewProc("DragQueryFileW")
+    procDragQueryPoint      = modshell32.NewProc("DragQueryPoint")
+    procDragFinish          = modshell32.NewProc("DragFinish")
+    procShellExecute        = modshell32.NewProc("ShellExecuteW")
+    procExtractIcon         = modshell32.NewProc("ExtractIconW")
 )
 
-func init() {
-    lib = LoadLib("shell32.dll")
-
-    procSHBrowseForFolder = GetProcAddr(lib, "SHBrowseForFolderW")
-    procSHGetPathFromIDList = GetProcAddr(lib, "SHGetPathFromIDListW")
-    procDragAcceptFiles = GetProcAddr(lib, "DragAcceptFiles")
-    procDragQueryFile = GetProcAddr(lib, "DragQueryFileW")
-    procDragQueryPoint = GetProcAddr(lib, "DragQueryPoint")
-    procDragFinish = GetProcAddr(lib, "DragFinish")
-    procShellExecute = GetProcAddr(lib, "ShellExecuteW")
-    procExtractIcon = GetProcAddr(lib, "ExtractIconW")
-}
-
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
-    ret, _, _ := syscall.Syscall(procSHBrowseForFolder, 1,
-        uintptr(unsafe.Pointer(bi)),
-        0,
-        0)
+    ret, _, _ := procSHBrowseForFolder.Call(uintptr(unsafe.Pointer(bi)))
 
     return ret
 }
 
 func SHGetPathFromIDList(idl uintptr) string {
     buf := make([]uint16, 1024)
-    syscall.Syscall(procSHGetPathFromIDList, 2,
+    procSHGetPathFromIDList.Call(
         idl,
-        uintptr(unsafe.Pointer(&buf[0])),
-        0)
+        uintptr(unsafe.Pointer(&buf[0])))
 
     return syscall.UTF16ToString(buf)
 }
 
 func DragAcceptFiles(hwnd HWND, accept bool) {
-    syscall.Syscall(procDragAcceptFiles, 2,
+    procDragAcceptFiles.Call(
         uintptr(hwnd),
-        uintptr(BoolToBOOL(accept)),
-        0)
+        uintptr(BoolToBOOL(accept)))
 }
 
 func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
-    ret, _, _ := syscall.Syscall6(procDragQueryFile, 4,
+    ret, _, _ := procDragQueryFile.Call(
         uintptr(hDrop),
         uintptr(iFile),
-        0,
-        0,
         0,
         0)
 
@@ -78,13 +58,11 @@ func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
     if iFile != 0xFFFFFFFF {
         buf := make([]uint16, fileCount+1)
 
-        ret, _, _ := syscall.Syscall6(procDragQueryFile, 4,
+        ret, _, _ := procDragQueryFile.Call(
             uintptr(hDrop),
             uintptr(iFile),
             uintptr(unsafe.Pointer(&buf[0])),
-            uintptr(fileCount+1),
-            0,
-            0)
+            uintptr(fileCount+1))
 
         if ret == 0 {
             panic("Invoke DragQueryFile error.")
@@ -98,10 +76,9 @@ func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
 
 func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
     var pt POINT
-    ret, _, _ := syscall.Syscall(procDragQueryPoint, 2,
+    ret, _, _ := procDragQueryPoint.Call(
         uintptr(hDrop),
-        uintptr(unsafe.Pointer(&pt)),
-        0)
+        uintptr(unsafe.Pointer(&pt)))
 
     isClientArea = false
     if ret == 1 {
@@ -115,10 +92,7 @@ func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
 }
 
 func DragFinish(hDrop HDROP) {
-    syscall.Syscall(procDragFinish, 1,
-        uintptr(hDrop),
-        0,
-        0)
+    procDragFinish.Call(uintptr(hDrop))
 }
 
 func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory string, nShowCmd int) error {
@@ -133,7 +107,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
         directory = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpDirectory)))
     }
 
-    ret, _, _ := syscall.Syscall6(procShellExecute, 6,
+    ret, _, _ := procShellExecute.Call(
         uintptr(hwnd),
         op,
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpFile))),
@@ -179,7 +153,7 @@ func ShellExecute(hwnd HWND, lpOperation, lpFile, lpParameters, lpDirectory stri
 }
 
 func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {
-    ret, _, _ := syscall.Syscall(procExtractIcon, 3,
+    ret, _, _ := procExtractIcon.Call(
         0,
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpszExeFileName))),
         uintptr(nIconIndex))

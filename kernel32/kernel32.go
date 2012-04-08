@@ -5,51 +5,30 @@
 package kernel32
 
 import (
+    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
-    . "github.com/AllenDang/w32"
 )
 
 var (
-    lib uintptr
+    modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-    procGetModuleHandle    uintptr
-    procMulDiv             uintptr
-    procGetCurrentThread   uintptr
-    procGetUserDefaultLCID uintptr
-    procLstrlen            uintptr
-    procLstrcpy            uintptr
-    procGlobalAlloc        uintptr
-    procGlobalFree         uintptr
-    procGlobalLock         uintptr
-    procGlobalUnlock       uintptr
-    procMoveMemory         uintptr
-    procFindResource       uintptr
-    procSizeofResource     uintptr
-    procLockResource       uintptr
-    procLoadResource       uintptr
-    procCopyMemory         uintptr
+    procGetModuleHandle    = modkernel32.NewProc("GetModuleHandleW")
+    procMulDiv             = modkernel32.NewProc("MulDiv")
+    procGetCurrentThread   = modkernel32.NewProc("GetCurrentThread")
+    procGetUserDefaultLCID = modkernel32.NewProc("GetUserDefaultLCID")
+    procLstrlen            = modkernel32.NewProc("lstrlenW")
+    procLstrcpy            = modkernel32.NewProc("lstrcpyW")
+    procGlobalAlloc        = modkernel32.NewProc("GlobalAlloc")
+    procGlobalFree         = modkernel32.NewProc("GlobalFree")
+    procGlobalLock         = modkernel32.NewProc("GlobalLock")
+    procGlobalUnlock       = modkernel32.NewProc("GlobalUnlock")
+    procMoveMemory         = modkernel32.NewProc("RtlMoveMemory")
+    procFindResource       = modkernel32.NewProc("FindResourceW")
+    procSizeofResource     = modkernel32.NewProc("SizeofResource")
+    procLockResource       = modkernel32.NewProc("LockResource")
+    procLoadResource       = modkernel32.NewProc("LoadResource")
 )
-
-func init() {
-    lib = LoadLib("kernel32.dll")
-
-    procGetModuleHandle = GetProcAddr(lib, "GetModuleHandleW")
-    procMulDiv = GetProcAddr(lib, "MulDiv")
-    procGetCurrentThread = GetProcAddr(lib, "GetCurrentThread")
-    procGetUserDefaultLCID = GetProcAddr(lib, "GetUserDefaultLCID")
-    procLstrlen = GetProcAddr(lib, "lstrlenW")
-    procLstrcpy = GetProcAddr(lib, "lstrcpyW")
-    procGlobalAlloc = GetProcAddr(lib, "GlobalAlloc")
-    procGlobalFree = GetProcAddr(lib, "GlobalFree")
-    procGlobalLock = GetProcAddr(lib, "GlobalLock")
-    procGlobalUnlock = GetProcAddr(lib, "GlobalUnlock")
-    procMoveMemory = GetProcAddr(lib, "RtlMoveMemory")
-    procFindResource = GetProcAddr(lib, "FindResourceW")
-    procSizeofResource = GetProcAddr(lib, "SizeofResource")
-    procLockResource = GetProcAddr(lib, "LockResource")
-    procLoadResource = GetProcAddr(lib, "LoadResource")
-}
 
 func GetModuleHandle(modulename string) HINSTANCE {
     var mn uintptr
@@ -58,15 +37,12 @@ func GetModuleHandle(modulename string) HINSTANCE {
     } else {
         mn = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(modulename)))
     }
-    ret, _, _ := syscall.Syscall(procGetModuleHandle, 1,
-        mn,
-        0,
-        0)
+    ret, _, _ := procGetModuleHandle.Call(mn)
     return HINSTANCE(ret)
 }
 
 func MulDiv(number, numerator, denominator int) int {
-    ret, _, _ := syscall.Syscall(procMulDiv, 3,
+    ret, _, _ := procMulDiv.Call(
         uintptr(number),
         uintptr(numerator),
         uintptr(denominator))
@@ -75,44 +51,33 @@ func MulDiv(number, numerator, denominator int) int {
 }
 
 func GetCurrentThread() HANDLE {
-    ret, _, _ := syscall.Syscall(procGetCurrentThread, 0,
-        0,
-        0,
-        0)
+    ret, _, _ := procGetCurrentThread.Call()
 
     return HANDLE(ret)
 }
 
 func GetUserDefaultLCID() uint32 {
-    ret, _, _ := syscall.Syscall(procGetUserDefaultLCID, 0,
-        0,
-        0,
-        0)
+    ret, _, _ := procGetUserDefaultLCID.Call()
 
     return uint32(ret)
 }
 
 func Lstrlen(lpString *uint16) int {
-    ret, _, _ := syscall.Syscall(procLstrlen, 1,
-        uintptr(unsafe.Pointer(lpString)),
-        0,
-        0)
+    ret, _, _ := procLstrlen.Call(uintptr(unsafe.Pointer(lpString)))
 
     return int(ret)
 }
 
 func Lstrcpy(buf []uint16, lpString *uint16) {
-    syscall.Syscall(procLstrcpy, 2,
+    procLstrcpy.Call(
         uintptr(unsafe.Pointer(&buf[0])),
-        uintptr(unsafe.Pointer(lpString)),
-        0)
+        uintptr(unsafe.Pointer(lpString)))
 }
 
 func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
-    ret, _, _ := syscall.Syscall(procGlobalAlloc, 2,
+    ret, _, _ := procGlobalAlloc.Call(
         uintptr(uFlags),
-        uintptr(dwBytes),
-        0)
+        uintptr(dwBytes))
 
     if ret == 0 {
         panic("GlobalAlloc failed")
@@ -122,22 +87,16 @@ func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
 }
 
 func GlobalFree(hMem HGLOBAL) {
-    ret, _, _ := syscall.Syscall(procGlobalFree, 1,
-        uintptr(hMem),
-        0,
-        0)
-    
+    ret, _, _ := procGlobalFree.Call(uintptr(hMem))
+
     if ret != 0 {
         panic("GlobalFree failed")
     }
 }
 
 func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
-    ret, _, _ := syscall.Syscall(procGlobalLock, 1,
-        uintptr(hMem),
-        0,
-        0)
-    
+    ret, _, _ := procGlobalLock.Call(uintptr(hMem))
+
     if ret == 0 {
         panic("GlobalLock failed")
     }
@@ -146,23 +105,20 @@ func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
 }
 
 func GlobalUnlock(hMem HGLOBAL) bool {
-    ret, _, _ := syscall.Syscall(procGlobalUnlock, 1,
-        uintptr(hMem),
-        0,
-        0)
+    ret, _, _ := procGlobalUnlock.Call(uintptr(hMem))
 
     return ret != 0
 }
 
 func MoveMemory(destination, source unsafe.Pointer, length uint32) {
-    syscall.Syscall(procMoveMemory, 3,
+    procMoveMemory.Call(
         uintptr(unsafe.Pointer(destination)),
         uintptr(source),
         uintptr(length))
 }
 
 func FindResource(hModule HMODULE, lpName, lpType *uint16) (HRSRC, error) {
-    ret, _, _ := syscall.Syscall(procFindResource, 3,
+    ret, _, _ := procFindResource.Call(
         uintptr(hModule),
         uintptr(unsafe.Pointer(lpName)),
         uintptr(unsafe.Pointer(lpType)))
@@ -175,11 +131,10 @@ func FindResource(hModule HMODULE, lpName, lpType *uint16) (HRSRC, error) {
 }
 
 func SizeofResource(hModule HMODULE, hResInfo HRSRC) uint32 {
-    ret, _, _ := syscall.Syscall(procSizeofResource, 2,
+    ret, _, _ := procSizeofResource.Call(
         uintptr(hModule),
-        uintptr(hResInfo),
-        0)
-    
+        uintptr(hResInfo))
+
     if ret == 0 {
         panic("SizeofResource failed")
     }
@@ -188,11 +143,8 @@ func SizeofResource(hModule HMODULE, hResInfo HRSRC) uint32 {
 }
 
 func LockResource(hResData HGLOBAL) unsafe.Pointer {
-    ret, _, _ := syscall.Syscall(procLockResource, 1,
-        uintptr(hResData),
-        0,
-        0)
-    
+    ret, _, _ := procLockResource.Call(uintptr(hResData))
+
     if ret == 0 {
         panic("LockResource failed")
     }
@@ -201,10 +153,9 @@ func LockResource(hResData HGLOBAL) unsafe.Pointer {
 }
 
 func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
-    ret, _, _ := syscall.Syscall(procLoadResource, 2,
+    ret, _, _ := procLoadResource.Call(
         uintptr(hModule),
-        uintptr(hResInfo),
-        0)
+        uintptr(hResInfo))
 
     if ret == 0 {
         panic("LoadResource failed")

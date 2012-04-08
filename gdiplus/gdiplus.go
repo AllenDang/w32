@@ -5,12 +5,12 @@
 package gdiplus
 
 import (
-	"fmt"
 	"errors"
-	"syscall"
-	"unsafe"
+	"fmt"
 	. "github.com/AllenDang/w32"
 	. "github.com/AllenDang/w32/com"
+	"syscall"
+	"unsafe"
 )
 
 const (
@@ -91,30 +91,19 @@ func GetGpStatus(s int32) string {
 var (
 	token uintptr
 
-	lib uintptr
+	modgdiplus = syscall.NewLazyDLL("gdiplus.dll")
 
-	procGdipCreateBitmapFromFile    uintptr
-	procGdipCreateBitmapFromHBITMAP uintptr
-	procGdipCreateHBITMAPFromBitmap uintptr
-	procGdipDisposeImage            uintptr
-	procGdiplusShutdown             uintptr
-	procGdiplusStartup              uintptr
-	procGdipCreateBitmapFromResource uintptr
-	procGdipCreateBitmapFromStream  uintptr
+	procGdipCreateBitmapFromFile     = modgdiplus.NewProc("GdipCreateBitmapFromFile")
+	procGdipCreateBitmapFromHBITMAP  = modgdiplus.NewProc("GdipCreateBitmapFromHBITMAP")
+	procGdipCreateHBITMAPFromBitmap  = modgdiplus.NewProc("GdipCreateHBITMAPFromBitmap")
+	procGdipCreateBitmapFromResource = modgdiplus.NewProc("GdipCreateBitmapFromResource")
+	procGdipCreateBitmapFromStream   = modgdiplus.NewProc("GdipCreateBitmapFromStream")
+	procGdipDisposeImage             = modgdiplus.NewProc("GdipDisposeImage")
+	procGdiplusShutdown              = modgdiplus.NewProc("GdiplusShutdown")
+	procGdiplusStartup               = modgdiplus.NewProc("GdiplusStartup")
 )
 
 func init() {
-	lib = LoadLib("gdiplus.dll")
-
-	procGdipCreateBitmapFromFile = GetProcAddr(lib, "GdipCreateBitmapFromFile")
-	procGdipCreateBitmapFromHBITMAP = GetProcAddr(lib, "GdipCreateBitmapFromHBITMAP")
-	procGdipCreateHBITMAPFromBitmap = GetProcAddr(lib, "GdipCreateHBITMAPFromBitmap")
-	procGdipCreateBitmapFromResource = GetProcAddr(lib, "GdipCreateBitmapFromResource")
-	procGdipCreateBitmapFromStream = GetProcAddr(lib, "GdipCreateBitmapFromStream")
-	procGdipDisposeImage = GetProcAddr(lib, "GdipDisposeImage")
-	procGdiplusShutdown = GetProcAddr(lib, "GdiplusShutdown")
-	procGdiplusStartup = GetProcAddr(lib, "GdiplusStartup")
-
 	var si GdiplusStartupInput
 	si.GdiplusVersion = 1
 	GdiplusStartup(&si, nil)
@@ -122,10 +111,9 @@ func init() {
 
 func GdipCreateBitmapFromFile(filename string) (*uintptr, error) {
 	var bitmap *uintptr
-	ret, _, _ := syscall.Syscall(procGdipCreateBitmapFromFile, 2,
+	ret, _, _ := procGdipCreateBitmapFromFile.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(filename))),
-		uintptr(unsafe.Pointer(&bitmap)),
-		0)
+		uintptr(unsafe.Pointer(&bitmap)))
 
 	if ret != Ok {
 		return nil, errors.New(fmt.Sprintf("GdipCreateBitmapFromFile failed with status '%s' for file '%s'", GetGpStatus(int32(ret)), filename))
@@ -136,7 +124,7 @@ func GdipCreateBitmapFromFile(filename string) (*uintptr, error) {
 
 func GdipCreateBitmapFromResource(instance HINSTANCE, resId *uint16) (*uintptr, error) {
 	var bitmap *uintptr
-	ret, _, _ := syscall.Syscall(procGdipCreateBitmapFromResource, 3,
+	ret, _, _ := procGdipCreateBitmapFromResource.Call(
 		uintptr(instance),
 		uintptr(unsafe.Pointer(resId)),
 		uintptr(unsafe.Pointer(&bitmap)))
@@ -150,11 +138,10 @@ func GdipCreateBitmapFromResource(instance HINSTANCE, resId *uint16) (*uintptr, 
 
 func GdipCreateBitmapFromStream(stream *IStream) (*uintptr, error) {
 	var bitmap *uintptr
-	ret, _, _ := syscall.Syscall(procGdipCreateBitmapFromStream, 2,
+	ret, _, _ := procGdipCreateBitmapFromStream.Call(
 		uintptr(unsafe.Pointer(stream)),
-		uintptr(unsafe.Pointer(&bitmap)),
-		0)
-	
+		uintptr(unsafe.Pointer(&bitmap)))
+
 	if ret != Ok {
 		return nil, errors.New(fmt.Sprintf("GdipCreateBitmapFromStream failed with status '%s'", GetGpStatus(int32(ret))))
 	}
@@ -164,7 +151,7 @@ func GdipCreateBitmapFromStream(stream *IStream) (*uintptr, error) {
 
 func GdipCreateHBITMAPFromBitmap(bitmap *uintptr, background uint32) (HBITMAP, error) {
 	var hbitmap HBITMAP
-	ret, _, _ := syscall.Syscall(procGdipCreateHBITMAPFromBitmap, 3,
+	ret, _, _ := procGdipCreateHBITMAPFromBitmap.Call(
 		uintptr(unsafe.Pointer(bitmap)),
 		uintptr(unsafe.Pointer(&hbitmap)),
 		uintptr(background))
@@ -177,21 +164,15 @@ func GdipCreateHBITMAPFromBitmap(bitmap *uintptr, background uint32) (HBITMAP, e
 }
 
 func GdipDisposeImage(image *uintptr) {
-	syscall.Syscall(procGdipDisposeImage, 1, 
-		uintptr(unsafe.Pointer(image)), 
-		0, 
-		0)
+	procGdipDisposeImage.Call(uintptr(unsafe.Pointer(image)))
 }
 
 func GdiplusShutdown() {
-	syscall.Syscall(procGdiplusShutdown, 1,
-		token,
-		0,
-		0)
+	procGdiplusShutdown.Call(token)
 }
 
 func GdiplusStartup(input *GdiplusStartupInput, output *GdiplusStartupOutput) {
-	ret, _, _ := syscall.Syscall(procGdiplusStartup, 3,
+	ret, _, _ := procGdiplusStartup.Call(
 		uintptr(unsafe.Pointer(&token)),
 		uintptr(unsafe.Pointer(input)),
 		uintptr(unsafe.Pointer(output)))

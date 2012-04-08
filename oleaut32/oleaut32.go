@@ -7,32 +7,18 @@ import (
 )
 
 var (
-    lib uintptr
+    modoleaut32 = syscall.NewLazyDLL("oleaut32")
 
-    procVariantInit        uintptr
-    procSysAllocString     uintptr
-    procSysFreeString      uintptr
-    procSysStringLen       uintptr
-    procCreateDispTypeInfo uintptr
-    procCreateStdDispatch  uintptr
+    procVariantInit        = modoleaut32.NewProc("VariantInit")
+    procSysAllocString     = modoleaut32.NewProc("SysAllocString")
+    procSysFreeString      = modoleaut32.NewProc("SysFreeString")
+    procSysStringLen       = modoleaut32.NewProc("SysStringLen")
+    procCreateDispTypeInfo = modoleaut32.NewProc("CreateDispTypeInfo")
+    procCreateStdDispatch  = modoleaut32.NewProc("CreateStdDispatch")
 )
 
-func init() {
-    lib = LoadLib("oleaut32")
-
-    procVariantInit = GetProcAddr(lib, "VariantInit")
-    procSysAllocString = GetProcAddr(lib, "SysAllocString")
-    procSysFreeString = GetProcAddr(lib, "SysFreeString")
-    procSysStringLen = GetProcAddr(lib, "SysStringLen")
-    procCreateDispTypeInfo = GetProcAddr(lib, "CreateDispTypeInfo")
-    procCreateStdDispatch = GetProcAddr(lib, "CreateStdDispatch")
-}
-
 func VariantInit(v *VARIANT) {
-    hr, _, _ := syscall.Syscall(procVariantInit, 1,
-        uintptr(unsafe.Pointer(v)),
-        0,
-        0)
+    hr, _, _ := procVariantInit.Call(uintptr(unsafe.Pointer(v)))
     if hr != 0 {
         panic("Invoke VariantInit error.")
     }
@@ -40,19 +26,13 @@ func VariantInit(v *VARIANT) {
 }
 
 func SysAllocString(v string) (ss *int16) {
-    pss, _, _ := syscall.Syscall(procSysAllocString, 1,
-        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v))),
-        0,
-        0)
+    pss, _, _ := procSysAllocString.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v))))
     ss = (*int16)(unsafe.Pointer(pss))
     return
 }
 
 func SysFreeString(v *int16) {
-    hr, _, _ := syscall.Syscall(procSysFreeString, 1,
-        uintptr(unsafe.Pointer(v)),
-        0,
-        0)
+    hr, _, _ := procSysFreeString.Call(uintptr(unsafe.Pointer(v)))
     if hr != 0 {
         panic("Invoke SysFreeString error.")
     }
@@ -60,9 +40,6 @@ func SysFreeString(v *int16) {
 }
 
 func SysStringLen(v *int16) uint {
-    l, _, _ := syscall.Syscall(procSysStringLen, 1,
-        uintptr(unsafe.Pointer(v)),
-        0,
-        0)
+    l, _, _ := procSysStringLen.Call(uintptr(unsafe.Pointer(v)))
     return uint(l)
 }

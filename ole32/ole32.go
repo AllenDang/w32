@@ -12,28 +12,18 @@ import (
 )
 
 var (
-    lib uintptr
+    modole32 = syscall.NewLazyDLL("ole32.dll")
 
-    procCoInitializeEx        uintptr
-    procCoInitialize          uintptr
-    procCoUninitialize        uintptr
-    procCreateStreamOnHGlobal uintptr
+    procCoInitializeEx        = modole32.NewProc("CoInitializeEx")
+    procCoInitialize          = modole32.NewProc("CoInitialize")
+    procCoUninitialize        = modole32.NewProc("CoUninitialize")
+    procCreateStreamOnHGlobal = modole32.NewProc("CreateStreamOnHGlobal")
 )
 
-func init() {
-    lib = LoadLib("ole32.dll")
-
-    procCoInitializeEx = GetProcAddr(lib, "CoInitializeEx")
-    procCoInitialize = GetProcAddr(lib, "CoInitialize")
-    procCoUninitialize = GetProcAddr(lib, "CoUninitialize")
-    procCreateStreamOnHGlobal = GetProcAddr(lib, "CreateStreamOnHGlobal")
-}
-
 func CoInitializeEx(coInit uintptr) HRESULT {
-    ret, _, _ := syscall.Syscall(procCoInitializeEx, 2,
+    ret, _, _ := procCoInitializeEx.Call(
         0,
-        coInit,
-        0)
+        coInit)
 
     switch uint32(ret) {
     case E_INVALIDARG:
@@ -48,22 +38,16 @@ func CoInitializeEx(coInit uintptr) HRESULT {
 }
 
 func CoInitialize() {
-    syscall.Syscall(procCoInitialize, 1,
-        0,
-        0,
-        0)
+    procCoInitialize.Call(0)
 }
 
 func CoUninitialize() {
-    syscall.Syscall(procCoUninitialize, 0,
-        0,
-        0,
-        0)
+    procCoUninitialize.Call()
 }
 
 func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
     stream := new(IStream)
-    ret, _, _ := syscall.Syscall(procCreateStreamOnHGlobal, 3,
+    ret, _, _ := procCreateStreamOnHGlobal.Call(
         uintptr(hGlobal),
         uintptr(BoolToBOOL(fDeleteOnRelease)),
         uintptr(unsafe.Pointer(&stream)))
