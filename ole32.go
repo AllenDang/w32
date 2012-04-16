@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package ole32
+package w32
 
 import (
-    . "github.com/AllenDang/w32"
-    . "github.com/AllenDang/w32/com"
     "syscall"
     "unsafe"
 )

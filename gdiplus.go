@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package gdiplus
+package w32
 
 import (
 	"errors"
 	"fmt"
-	. "github.com/AllenDang/w32"
-	. "github.com/AllenDang/w32/com"
 	"syscall"
 	"unsafe"
 )
@@ -102,12 +100,6 @@ var (
 	procGdiplusShutdown              = modgdiplus.NewProc("GdiplusShutdown")
 	procGdiplusStartup               = modgdiplus.NewProc("GdiplusStartup")
 )
-
-func init() {
-	var si GdiplusStartupInput
-	si.GdiplusVersion = 1
-	GdiplusStartup(&si, nil)
-}
 
 func GdipCreateBitmapFromFile(filename string) (*uintptr, error) {
 	var bitmap *uintptr

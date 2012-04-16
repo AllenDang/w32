@@ -1,8 +1,4 @@
-package com
-
-import (
-	. "github.com/AllenDang/w32"
-)
+package w32
 
 type pIUnknownVtbl struct {
 	pQueryInterface uintptr

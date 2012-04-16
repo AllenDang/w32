@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-package shell32
+package w32
 
 import (
     "errors"
     "fmt"
-    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
 )

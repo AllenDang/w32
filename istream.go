@@ -1,7 +1,6 @@
-package com
+package w32
 
 import (
-	. "github.com/AllenDang/w32"
 	"unsafe"
 )
 

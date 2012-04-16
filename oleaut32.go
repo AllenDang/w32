@@ -1,7 +1,6 @@
-package oleaut32
+package w32
 
 import (
-    . "github.com/AllenDang/w32"
     "syscall"
     "unsafe"
 )
