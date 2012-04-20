@@ -52,6 +52,9 @@ var (
     procStartDoc             = modgdi32.NewProc("StartDocW")
     procStartPage            = modgdi32.NewProc("StartPage")
     procStretchBlt           = modgdi32.NewProc("StretchBlt")
+    procTextOut              = modgid32.NewProc("TextOutW")
+    procSaveDC               = modgid32.NewProc("SaveDC")
+	procRestoreDC            = modgid32.NewProc("RestoreDC")
 )
 
 func GetDeviceCaps(hdc HDC, index int) int {
@@ -433,4 +436,29 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
     if ret == 0 {
         panic("StretchBlt failed")
     }
+}
+
+func TextOut(hdc HDC, nXStart, nYStart, text string, size int) bool {
+    ret, _, _ := procTextOut.Call(
+		uintptr(hdc),
+		uintptr(nXStart),
+		uintptr(nYStart),
+		unsafe.Pointer(syscall.StringToUTF16Ptr(text)),
+		uintptr(size))
+	return ret != 0
+}
+
+func SaveDC(hdc HDC) int {
+	ret, _, _ := procSaveDC.Call(
+		uintptr(hdc))
+
+	return int(ret)
+}
+
+func RestoreDC(hdc HDC, nSavedDC int) int {
+	ret, _, _ := procRestoreDC.Call(
+		uintptr(hdc),
+		uintptr(nSavedDC))
+
+	return ret != 0
 }
