@@ -404,3 +404,12 @@ type GdiplusStartupOutput struct {
     NotificationHook   uintptr
     NotificationUnhook uintptr
 }
+
+type PAINTSTRUCT struct {
+	Hdc         HDC
+	FErase      BOOL
+	RcPaint     RECT
+	FRestore    BOOL
+	FIncUpdate  BOOL
+	RgbReserved [32]byte
+}

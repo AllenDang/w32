@@ -84,6 +84,8 @@ var (
     procGetClipboardData              = moduser32.NewProc("GetClipboardData")
     procGetClipboardFormatName        = moduser32.NewProc("GetClipboardFormatNameW")
     procIsClipboardFormatAvailable    = moduser32.NewProc("IsClipboardFormatAvailable")
+	procBeginPaint                    = moduser32.NewProc("BeginPaint")
+	procEndPaint                      = moduser32.NewProc("EndPaint")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -704,4 +706,17 @@ func GetClipboardFormatName(format uint) (string, bool) {
 func IsClipboardFormatAvailable(format uint) bool {
     ret, _, _ := procIsClipboardFormatAvailable.Call(uintptr(format))
     return ret != 0
+}
+
+func BeginPaint(hwnd HWND, paint *PAINTSTRUCT) HDC {
+    ret, _, _ := procBeginPaint.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(paint)))
+    return HDC(ret)
+}
+
+func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
+    procBeginPaint.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(paint)))
 }
