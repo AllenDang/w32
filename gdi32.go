@@ -436,7 +436,7 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
 	}
 }
 
-func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int, uStartScan, cScanLines uint, lpvBits *[]byte, lpbmi *BITMAPINFO, fuColorUse uint) int {
+func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int, uStartScan, cScanLines uint, lpvBits []byte, lpbmi *BITMAPINFO, fuColorUse uint) int {
 	ret, _, _ := procSetDIBitsToDevice.Call(
 		uintptr(hdc),
 		uintptr(xDest),
@@ -447,7 +447,7 @@ func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int,
 		uintptr(ySrc),
 		uintptr(uStartScan),
 		uintptr(cScanLines),
-		uintptr(unsafe.Pointer(lpvBits)),
+		uintptr(unsafe.Pointer(&lpvBits[0])),
 		uintptr(unsafe.Pointer(lpbmi)),
 		uintptr(fuColorUse))
 
