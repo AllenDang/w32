@@ -406,6 +406,15 @@ type GdiplusStartupOutput struct {
     NotificationUnhook uintptr
 }
 
+type PAINTSTRUCT struct {
+    Hdc         HDC
+    FErase      BOOL
+    RcPaint     RECT
+    FRestore    BOOL
+    FIncUpdate  BOOL
+    RgbReserved [32]byte
+}
+
 type SERVICE_STATUS struct {
     DwServiceType             DWORD
     DwCurrentState            DWORD
@@ -415,3 +424,25 @@ type SERVICE_STATUS struct {
     DwCheckPoint              DWORD
     DwWaitHint                DWORD
 }
+<<<<<<< .mine}
+
+type SERVICE_STATUS struct {
+    DwServiceType             DWORD
+    DwCurrentState            DWORD
+    DwControlsAccepted        DWORD
+    DwWin32ExitCode           DWORD
+    DwServiceSpecificExitCode DWORD
+    DwCheckPoint              DWORD
+    DwWaitHint                DWORD
+}
+=======}
+
+type PAINTSTRUCT struct {
+    Hdc         HDC
+    FErase      BOOL
+    RcPaint     RECT
+    FRestore    BOOL
+    FIncUpdate  BOOL
+    RgbReserved [32]byte
+}
+>>>>>>> .theirs

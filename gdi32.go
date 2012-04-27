@@ -52,6 +52,7 @@ var (
     procStartDoc             = modgdi32.NewProc("StartDocW")
     procStartPage            = modgdi32.NewProc("StartPage")
     procStretchBlt           = modgdi32.NewProc("StretchBlt")
+    procSetDIBitsToDevice    = modgdi32.NewProc("SetDIBitsToDevice")
 )
 
 func GetDeviceCaps(hdc HDC, index int) int {
@@ -433,4 +434,22 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
     if ret == 0 {
         panic("StretchBlt failed")
     }
+}
+
+func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int, uStartScan, cScanLines uint, lpvBits []byte, lpbmi *BITMAPINFO, fuColorUse uint) int {
+    ret, _, _ := procSetDIBitsToDevice.Call(
+        uintptr(hdc),
+        uintptr(xDest),
+        uintptr(yDest),
+        uintptr(dwWidth),
+        uintptr(dwHeight),
+        uintptr(xSrc),
+        uintptr(ySrc),
+        uintptr(uStartScan),
+        uintptr(cScanLines),
+        uintptr(unsafe.Pointer(&lpvBits[0])),
+        uintptr(unsafe.Pointer(lpbmi)),
+        uintptr(fuColorUse))
+
+    return int(ret)
 }
