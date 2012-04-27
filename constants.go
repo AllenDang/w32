@@ -2182,3 +2182,19 @@ const (
     CF_GDIOBJFIRST     = 0x0300
     CF_GDIOBJLAST      = 0x03FF
 )
+
+// Bitmap compression formats
+const (
+    BI_RGB       = 0
+    BI_RLE8      = 1
+    BI_RLE4      = 2
+    BI_BITFIELDS = 3
+    BI_JPEG      = 4
+    BI_PNG       = 5
+)
+
+// SetDIBitsToDevice fuColorUse
+const (
+    DIB_PAL_COLORS = 1
+    DIB_RGB_COLORS = 0
+)

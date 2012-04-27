@@ -23,11 +23,11 @@ func HIWORD(dw uint) uint16 {
 }
 
 func BoolToBOOL(value bool) BOOL {
-	if value {
-		return 1
-	}
+    if value {
+        return 1
+    }
 
-	return 0
+    return 0
 }
 
 func UTF16PtrToString(cstr *uint16) string {
