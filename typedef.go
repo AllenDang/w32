@@ -11,6 +11,7 @@ import (
 type (
     BOOL         int
     ATOM         uint16
+    DWORD        uint16
     HANDLE       uintptr
     HINSTANCE    HANDLE
     HACCEL       HANDLE
@@ -387,9 +388,9 @@ type TOOLINFO struct {
 }
 
 type TRACKMOUSEEVENT struct {
-    CbSize uint
-    DwFlags uint
-    HwndTrack HWND
+    CbSize      uint
+    DwFlags     uint
+    HwndTrack   HWND
     DwHoverTime uint
 }
 
@@ -403,4 +404,14 @@ type GdiplusStartupInput struct {
 type GdiplusStartupOutput struct {
     NotificationHook   uintptr
     NotificationUnhook uintptr
+}
+
+type SERVICE_STATUS struct {
+    DwServiceType             DWORD
+    DwCurrentState            DWORD
+    DwControlsAccepted        DWORD
+    DwWin32ExitCode           DWORD
+    DwServiceSpecificExitCode DWORD
+    DwCheckPoint              DWORD
+    DwWaitHint                DWORD
 }

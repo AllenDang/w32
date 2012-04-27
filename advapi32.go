@@ -13,11 +13,16 @@ import (
 var (
     modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
-    procRegOpenKeyEx   = modadvapi32.NewProc("RegOpenKeyExW")
-    procRegCloseKey    = modadvapi32.NewProc("RegCloseKey")
-    procRegGetValue    = modadvapi32.NewProc("RegGetValueW")
-    procRegEnumKeyEx   = modadvapi32.NewProc("RegEnumKeyExW")
-    procRegSetKeyValue = modadvapi32.NewProc("RegSetKeyValueW")
+    procRegOpenKeyEx       = modadvapi32.NewProc("RegOpenKeyExW")
+    procRegCloseKey        = modadvapi32.NewProc("RegCloseKey")
+    procRegGetValue        = modadvapi32.NewProc("RegGetValueW")
+    procRegEnumKeyEx       = modadvapi32.NewProc("RegEnumKeyExW")
+    procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
+    procOpenSCManager      = modadvapi32.NewProc("OpenSCManagerW")
+    procCloseServiceHandle = modadvapi32.NewProc("CloseServiceHandle")
+    procOpenService        = modadvapi32.NewProc("OpenServiceW")
+    procStartService       = modadvapi32.NewProc("StartServiceW")
+    procControlService     = modadvapi32.NewProc("ControlService")
 )
 
 func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
@@ -76,7 +81,7 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
     return syscall.UTF16ToString(buf)
 }
 
-func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint32) (errno int) {
+func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType DWORD, data uintptr, cbData uint16) (errno int) {
     ret, _, _ := procRegSetKeyValue.Call(
         uintptr(hKey),
         uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
@@ -88,7 +93,7 @@ func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, d
     return int(ret)
 }
 
-func RegEnumKeyEx(hKey HKEY, index uint32) string {
+func RegEnumKeyEx(hKey HKEY, index DWORD) string {
     var bufLen uint32 = 255
     buf := make([]uint16, bufLen)
     procRegEnumKeyEx.Call(
@@ -101,4 +106,85 @@ func RegEnumKeyEx(hKey HKEY, index uint32) string {
         0,
         0)
     return syscall.UTF16ToString(buf)
+}
+
+func OpenSCManager(lpMachineName, lpDatabaseName string, dwDesiredAccess DWORD) (HANDLE, error) {
+    var p1, p2 uintptr
+    if len(lpMachineName) > 0 {
+        p1 = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpMachineName)))
+    }
+    if len(lpDatabaseName) > 0 {
+        p2 = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpDatabaseName)))
+    }
+    ret, _, _ := procOpenSCManager.Call(
+        p1,
+        p2,
+        uintptr(dwDesiredAccess))
+
+    if ret == 0 {
+        return 0, syscall.GetLastError()
+    }
+
+    return HANDLE(ret), nil
+}
+
+func CloseServiceHandle(hSCObject HANDLE) error {
+    ret, _, _ := procCloseServiceHandle.Call(uintptr(hSCObject))
+    if ret == 0 {
+        return syscall.GetLastError()
+    }
+    return nil
+}
+
+func OpenService(hSCManager HANDLE, lpServiceName string, dwDesiredAccess DWORD) (HANDLE, error) {
+    ret, _, _ := procOpenService.Call(
+        uintptr(hSCManager),
+        uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpServiceName))),
+        uintptr(dwDesiredAccess))
+
+    if ret == 0 {
+        return 0, syscall.GetLastError()
+    }
+
+    return HANDLE(ret), nil
+}
+
+func StartService(hService HANDLE, lpServiceArgVectors []string) error {
+    l := len(lpServiceArgVectors)
+    var ret uintptr
+    if l == 0 {
+        ret, _, _ = procStartService.Call(
+            uintptr(hService),
+            0,
+            0)
+    } else {
+        lpArgs := make([]uintptr, l)
+        for i := 0; i < l; i++ {
+            lpArgs[i] = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpServiceArgVectors[i])))
+        }
+
+        ret, _, _ = procStartService.Call(
+            uintptr(hService),
+            uintptr(l),
+            uintptr(unsafe.Pointer(&lpArgs[0])))
+    }
+
+    if ret == 0 {
+        return syscall.GetLastError()
+    }
+
+    return nil
+}
+
+func ControlService(hService HANDLE, dwControl DWORD, lpServiceStatus *SERVICE_STATUS) bool {
+    if lpServiceStatus == nil {
+        panic("ControlService:lpServiceStatus cannot be nil")
+    }
+
+    ret, _, _ := procControlService.Call(
+        uintptr(hService),
+        uintptr(dwControl),
+        uintptr(unsafe.Pointer(lpServiceStatus)))
+
+    return ret != 0
 }
