@@ -387,9 +387,9 @@ type TOOLINFO struct {
 }
 
 type TRACKMOUSEEVENT struct {
-    CbSize uint
-    DwFlags uint
-    HwndTrack HWND
+    CbSize      uint
+    DwFlags     uint
+    HwndTrack   HWND
     DwHoverTime uint
 }
 
@@ -403,4 +403,13 @@ type GdiplusStartupInput struct {
 type GdiplusStartupOutput struct {
     NotificationHook   uintptr
     NotificationUnhook uintptr
+}
+
+type PAINTSTRUCT struct {
+    Hdc         HDC
+    FErase      BOOL
+    RcPaint     RECT
+    FRestore    BOOL
+    FIncUpdate  BOOL
+    RgbReserved [32]byte
 }
