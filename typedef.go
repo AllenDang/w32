@@ -11,7 +11,7 @@ import (
 type (
     BOOL         int
     ATOM         uint16
-    DWORD        uint16
+    DWORD        uint32
     HANDLE       uintptr
     HINSTANCE    HANDLE
     HACCEL       HANDLE
@@ -21,7 +21,7 @@ type (
     HMENU        HANDLE
     HWND         HANDLE
     HBRUSH       HANDLE
-    HRESULT      uint
+    HRESULT      int32
     HFONT        HANDLE
     HDC          HANDLE
     HGDIOBJ      HANDLE
@@ -34,7 +34,7 @@ type (
     HGLOBAL      HANDLE
     HMODULE      HANDLE
     HRSRC        HANDLE
-    COLORREF     uint
+    COLORREF     DWORD
 )
 
 type POINT struct {
