@@ -82,10 +82,15 @@ var (
     procCloseClipboard                = moduser32.NewProc("CloseClipboard")
     procEnumClipboardFormats          = moduser32.NewProc("EnumClipboardFormats")
     procGetClipboardData              = moduser32.NewProc("GetClipboardData")
+    procSetClipboardData              = moduser32.NewProc("SetClipboardData")
+    procEmptyClipboard                = moduser32.NewProc("EmptyClipboard")
     procGetClipboardFormatName        = moduser32.NewProc("GetClipboardFormatNameW")
     procIsClipboardFormatAvailable    = moduser32.NewProc("IsClipboardFormatAvailable")
     procBeginPaint                    = moduser32.NewProc("BeginPaint")
     procEndPaint                      = moduser32.NewProc("EndPaint")
+    procGetKeyboardState              = moduser32.NewProc("GetKeyboardState")
+    procMapVirtualKey                 = moduser32.NewProc("MapVirtualKeyExA")
+    procToAscii                       = moduser32.NewProc("ToAscii")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -688,6 +693,18 @@ func GetClipboardData(uFormat uint) HANDLE {
     return HANDLE(ret)
 }
 
+func SetClipboardData(uFormat uint, hMem HANDLE) HANDLE {
+    ret, _, _ := procSetClipboardData.Call(
+        uintptr(uFormat),
+        uintptr(hMem))
+    return HANDLE(ret)
+}
+
+func EmptyClipboard() bool {
+    ret, _, _ := procEmptyClipboard.Call()
+    return ret != 0
+}
+
 func GetClipboardFormatName(format uint) (string, bool) {
     cchMaxCount := 255
     buf := make([]uint16, cchMaxCount)
@@ -719,4 +736,28 @@ func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
     procBeginPaint.Call(
         uintptr(hwnd),
         uintptr(unsafe.Pointer(paint)))
+}
+
+func GetKeyboardState(lpKeyState *[]byte) bool {
+    ret, _, _ := procGetKeyboardState.Call(
+        uintptr(unsafe.Pointer(&(*lpKeyState)[0])))
+    return ret != 0
+}
+
+func MapVirtualKeyEx(uCode, uMapType uint, dwhkl HANDLE) uint {
+    ret, _, _ := procMapVirtualKey.Call(
+        uintptr(uCode),
+        uintptr(uMapType),
+        uintptr(dwhkl))
+    return uint(ret)
+}
+
+func ToAscii(uVirtKey, uScanCode uint, lpKeyState *byte, lpChar *uint16, uFlags uint) int {
+    ret, _, _ := procToAscii.Call(
+        uintptr(uVirtKey),
+        uintptr(uScanCode),
+        uintptr(unsafe.Pointer(lpKeyState)),
+        uintptr(unsafe.Pointer(lpChar)),
+        uintptr(uFlags))
+    return int(ret)
 }
