@@ -11,6 +11,7 @@ import (
 type (
     BOOL         int
     ATOM         uint16
+    DWORD        uint32
     HANDLE       uintptr
     HINSTANCE    HANDLE
     HACCEL       HANDLE
@@ -20,7 +21,7 @@ type (
     HMENU        HANDLE
     HWND         HANDLE
     HBRUSH       HANDLE
-    HRESULT      uint
+    HRESULT      int32
     HFONT        HANDLE
     HDC          HANDLE
     HGDIOBJ      HANDLE
@@ -33,7 +34,7 @@ type (
     HGLOBAL      HANDLE
     HMODULE      HANDLE
     HRSRC        HANDLE
-    COLORREF     uint
+    COLORREF     DWORD
 )
 
 type POINT struct {
@@ -414,6 +415,7 @@ type PAINTSTRUCT struct {
     RgbReserved [32]byte
 }
 
+
 type EVENTLOGRECORD struct {
     Length              uint32
     Reserved            uint32
@@ -431,4 +433,14 @@ type EVENTLOGRECORD struct {
     UserSidOffset       uint32
     DataLength          uint32
     DataOffset          uint32
+}
+
+type SERVICE_STATUS struct {
+    DwServiceType             DWORD
+    DwCurrentState            DWORD
+    DwControlsAccepted        DWORD
+    DwWin32ExitCode           DWORD
+    DwServiceSpecificExitCode DWORD
+    DwCheckPoint              DWORD
+    DwWaitHint                DWORD
 }
