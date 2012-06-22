@@ -18,6 +18,9 @@ var (
     procRegGetValue        = modadvapi32.NewProc("RegGetValueW")
     procRegEnumKeyEx       = modadvapi32.NewProc("RegEnumKeyExW")
     procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
+    procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
+    procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
+    procCloseEventLog      = modadvapi32.NewProc("CloseEventLog")
     procOpenSCManager      = modadvapi32.NewProc("OpenSCManagerW")
     procCloseServiceHandle = modadvapi32.NewProc("CloseServiceHandle")
     procOpenService        = modadvapi32.NewProc("OpenServiceW")
@@ -106,6 +109,34 @@ func RegEnumKeyEx(hKey HKEY, index DWORD) string {
         0,
         0)
     return syscall.UTF16ToString(buf)
+}
+
+func OpenEventLog(servername, sourcename *uint16) HANDLE {
+    ret, _, _ := procOpenEventLog.Call(
+        uintptr(unsafe.Pointer(servername)),
+        uintptr(unsafe.Pointer(sourcename)))
+
+    return HANDLE(ret)
+}
+
+func ReadEventLog(eventlog HANDLE, readflags, recordoffset uint32, buffer []byte, numberofbytestoread uint32, bytesread, minnumberofbytesneeded *uint32) bool {
+    ret, _, _ := procReadEventLog.Call(
+        uintptr(eventlog),
+        uintptr(readflags),
+        uintptr(recordoffset),
+        uintptr(unsafe.Pointer(&buffer[0])),
+        uintptr(numberofbytestoread),
+        uintptr(unsafe.Pointer(bytesread)),
+        uintptr(unsafe.Pointer(minnumberofbytesneeded)))
+
+    return ret != 0
+}
+
+func CloseEventLog(eventlog HANDLE) bool {
+    ret, _, _ := procCloseEventLog.Call(
+        uintptr(eventlog))
+
+    return ret != 0
 }
 
 func OpenSCManager(lpMachineName, lpDatabaseName string, dwDesiredAccess DWORD) (HANDLE, error) {
