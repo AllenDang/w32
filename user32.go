@@ -347,7 +347,7 @@ func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
 
 func GetClientRect(hwnd HWND) *RECT {
     var rect RECT
-    ret, _, _ := procGetWindowRect.Call(
+    ret, _, _ := procGetClientRect.Call(
         uintptr(hwnd),
         uintptr(unsafe.Pointer(&rect)))
 
