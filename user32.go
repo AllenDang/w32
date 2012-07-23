@@ -19,6 +19,8 @@ var (
     procShowWindow                    = moduser32.NewProc("ShowWindow")
     procUpdateWindow                  = moduser32.NewProc("UpdateWindow")
     procCreateWindowEx                = moduser32.NewProc("CreateWindowExW")
+    procAdjustWindowRect              = moduser32.NewProc("AdjustWindowRect")
+    procAdjustWindowRectEx            = moduser32.NewProc("AdjustWindowRectEx")
     procDestroyWindow                 = moduser32.NewProc("DestroyWindow")
     procDefWindowProc                 = moduser32.NewProc("DefWindowProcW")
     procDefDlgProc                    = moduser32.NewProc("DefDlgProcW")
@@ -149,6 +151,25 @@ func CreateWindowEx(exStyle uint, className, windowName *uint16,
         uintptr(param))
 
     return HWND(ret)
+}
+
+func AdjustWindowRectEx(rect *RECT, style uint, menu bool, exStyle uint) bool {
+    ret, _, _ := procAdjustWindowRectEx.Call(
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(style),
+        uintptr(BoolToBOOL(menu)),
+        uintptr(exStyle))
+
+    return ret != 0 
+}
+
+func AdjustWindowRect(rect *RECT, style uint, menu bool) bool {
+    ret, _, _ := procAdjustWindowRect.Call(
+        uintptr(unsafe.Pointer(rect)),
+        uintptr(style),
+        uintptr(BoolToBOOL(menu)))
+
+    return ret != 0 
 }
 
 func DestroyWindow(hwnd HWND) bool {
