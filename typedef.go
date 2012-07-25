@@ -456,3 +456,8 @@ type MODULEENTRY32 struct {
     SzModule     [MAX_MODULE_NAME32 + 1]uint16
     SzExePath    [MAX_PATH]uint16
 }
+
+type FILETIME struct {
+    DwLowDateTime  DWORD
+    DwHighDateTime DWORD
+}
