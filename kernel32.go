@@ -33,6 +33,7 @@ var (
     procCreateToolhelp32Snapshot = modkernel32.NewProc("CreateToolhelp32Snapshot")
     procModule32First            = modkernel32.NewProc("Module32FirstW")
     procModule32Next             = modkernel32.NewProc("Module32NextW")
+    procGetSystemTimes           = modkernel32.NewProc("GetSystemTimes")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -217,6 +218,15 @@ func Module32Next(snapshot HANDLE, me *MODULEENTRY32) bool {
     ret, _, _ := procModule32Next.Call(
         uintptr(snapshot),
         uintptr(unsafe.Pointer(me)))
+
+    return ret != 0
+}
+
+func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
+    ret, _, _ := procGetSystemTimes.Call(
+        uintptr(unsafe.Pointer(lpIdleTime)),
+        uintptr(unsafe.Pointer(lpKernelTime)),
+        uintptr(unsafe.Pointer(lpUserTime)))
 
     return ret != 0
 }
