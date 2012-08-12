@@ -34,6 +34,7 @@ var (
     procModule32First            = modkernel32.NewProc("Module32FirstW")
     procModule32Next             = modkernel32.NewProc("Module32NextW")
     procGetSystemTimes           = modkernel32.NewProc("GetSystemTimes")
+	procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -229,4 +230,15 @@ func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
         uintptr(unsafe.Pointer(lpUserTime)))
 
     return ret != 0
+}
+
+func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_INFO {
+	var csbi CONSOLE_SCREEN_BUFFER_INFO
+	ret, _, _ := procGetConsoleScreenBufferInfo.Call(
+		uintptr(hConsoleOutput),
+		uintptr(unsafe.Pointer(&csbi)))
+	if ret != 0 {
+		return nil
+	}
+	return &csbi
 }
