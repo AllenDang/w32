@@ -238,7 +238,7 @@ func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_IN
 	ret, _, _ := procGetConsoleScreenBufferInfo.Call(
 		uintptr(hConsoleOutput),
 		uintptr(unsafe.Pointer(&csbi)))
-	if ret != 0 {
+	if ret == 0 {
 		return nil
 	}
 	return &csbi
