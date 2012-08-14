@@ -160,7 +160,7 @@ func AdjustWindowRectEx(rect *RECT, style uint, menu bool, exStyle uint) bool {
         uintptr(BoolToBOOL(menu)),
         uintptr(exStyle))
 
-    return ret != 0 
+    return ret != 0
 }
 
 func AdjustWindowRect(rect *RECT, style uint, menu bool) bool {
@@ -169,7 +169,7 @@ func AdjustWindowRect(rect *RECT, style uint, menu bool) bool {
         uintptr(style),
         uintptr(BoolToBOOL(menu)))
 
-    return ret != 0 
+    return ret != 0
 }
 
 func DestroyWindow(hwnd HWND) bool {
