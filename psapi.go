@@ -5,21 +5,21 @@
 package w32
 
 import (
-	"syscall"
-	"unsafe"
+    "syscall"
+    "unsafe"
 )
 
 var (
-	modpsapi = syscall.NewLazyDLL("psapi.dll")
+    modpsapi = syscall.NewLazyDLL("psapi.dll")
 
-	procEnumProcesses = modpsapi.NewProc("EnumProcesses")
+    procEnumProcesses = modpsapi.NewProc("EnumProcesses")
 )
 
 func EnumProcesses(processIds []uint32, cb uint32, bytesReturned *uint32) bool {
-	ret, _, _ := procEnumProcesses.Call(
-		uintptr(unsafe.Pointer(&processIds[0])),
-		uintptr(cb),
-		uintptr(unsafe.Pointer(bytesReturned)))
+    ret, _, _ := procEnumProcesses.Call(
+        uintptr(unsafe.Pointer(&processIds[0])),
+        uintptr(cb),
+        uintptr(unsafe.Pointer(bytesReturned)))
 
-	return ret != 0
+    return ret != 0
 }
