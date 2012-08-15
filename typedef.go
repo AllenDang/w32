@@ -461,3 +461,19 @@ type FILETIME struct {
     DwLowDateTime  DWORD
     DwHighDateTime DWORD
 }
+
+type COORD struct {
+    X, Y int16
+}
+
+type SMALL_RECT struct {
+    Left, Top, Right, Bottom int16
+}
+
+type CONSOLE_SCREEN_BUFFER_INFO struct {
+    DwSize              COORD
+    DwCursorPosition    COORD
+    WAttributes         uint16
+    SrWindow            SMALL_RECT
+    DwMaximumWindowSize COORD
+}

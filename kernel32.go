@@ -12,28 +12,30 @@ import (
 var (
     modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-    procGetModuleHandle          = modkernel32.NewProc("GetModuleHandleW")
-    procMulDiv                   = modkernel32.NewProc("MulDiv")
-    procGetCurrentThread         = modkernel32.NewProc("GetCurrentThread")
-    procGetUserDefaultLCID       = modkernel32.NewProc("GetUserDefaultLCID")
-    procLstrlen                  = modkernel32.NewProc("lstrlenW")
-    procLstrcpy                  = modkernel32.NewProc("lstrcpyW")
-    procGlobalAlloc              = modkernel32.NewProc("GlobalAlloc")
-    procGlobalFree               = modkernel32.NewProc("GlobalFree")
-    procGlobalLock               = modkernel32.NewProc("GlobalLock")
-    procGlobalUnlock             = modkernel32.NewProc("GlobalUnlock")
-    procMoveMemory               = modkernel32.NewProc("RtlMoveMemory")
-    procFindResource             = modkernel32.NewProc("FindResourceW")
-    procSizeofResource           = modkernel32.NewProc("SizeofResource")
-    procLockResource             = modkernel32.NewProc("LockResource")
-    procLoadResource             = modkernel32.NewProc("LoadResource")
-    procGetLastError             = modkernel32.NewProc("GetLastError")
-    procOpenProcess              = modkernel32.NewProc("OpenProcess")
-    procCloseHandle              = modkernel32.NewProc("CloseHandle")
-    procCreateToolhelp32Snapshot = modkernel32.NewProc("CreateToolhelp32Snapshot")
-    procModule32First            = modkernel32.NewProc("Module32FirstW")
-    procModule32Next             = modkernel32.NewProc("Module32NextW")
-    procGetSystemTimes           = modkernel32.NewProc("GetSystemTimes")
+    procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
+    procMulDiv                     = modkernel32.NewProc("MulDiv")
+    procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
+    procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
+    procLstrlen                    = modkernel32.NewProc("lstrlenW")
+    procLstrcpy                    = modkernel32.NewProc("lstrcpyW")
+    procGlobalAlloc                = modkernel32.NewProc("GlobalAlloc")
+    procGlobalFree                 = modkernel32.NewProc("GlobalFree")
+    procGlobalLock                 = modkernel32.NewProc("GlobalLock")
+    procGlobalUnlock               = modkernel32.NewProc("GlobalUnlock")
+    procMoveMemory                 = modkernel32.NewProc("RtlMoveMemory")
+    procFindResource               = modkernel32.NewProc("FindResourceW")
+    procSizeofResource             = modkernel32.NewProc("SizeofResource")
+    procLockResource               = modkernel32.NewProc("LockResource")
+    procLoadResource               = modkernel32.NewProc("LoadResource")
+    procGetLastError               = modkernel32.NewProc("GetLastError")
+    procOpenProcess                = modkernel32.NewProc("OpenProcess")
+    procCloseHandle                = modkernel32.NewProc("CloseHandle")
+    procCreateToolhelp32Snapshot   = modkernel32.NewProc("CreateToolhelp32Snapshot")
+    procModule32First              = modkernel32.NewProc("Module32FirstW")
+    procModule32Next               = modkernel32.NewProc("Module32NextW")
+    procGetSystemTimes             = modkernel32.NewProc("GetSystemTimes")
+    procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
+    procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -228,5 +230,23 @@ func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
         uintptr(unsafe.Pointer(lpKernelTime)),
         uintptr(unsafe.Pointer(lpUserTime)))
 
+    return ret != 0
+}
+
+func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_INFO {
+    var csbi CONSOLE_SCREEN_BUFFER_INFO
+    ret, _, _ := procGetConsoleScreenBufferInfo.Call(
+        uintptr(hConsoleOutput),
+        uintptr(unsafe.Pointer(&csbi)))
+    if ret == 0 {
+        return nil
+    }
+    return &csbi
+}
+
+func SetConsoleTextAttribute(hConsoleOutput HANDLE, wAttributes uint16) bool {
+    ret, _, _ := procSetConsoleTextAttribute.Call(
+        uintptr(hConsoleOutput),
+        uintptr(wAttributes))
     return ret != 0
 }
