@@ -1,4 +1,4 @@
-// Copyright 2010 The W32 Authors. All rights reserved.
+// Copyright 2010-2012 The W32 Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
@@ -2344,4 +2344,132 @@ const (
     COMMON_LVB_GRID_RVERTICAL  = 0x1000
     COMMON_LVB_REVERSE_VIDEO   = 0x4000
     COMMON_LVB_UNDERSCORE      = 0x8000
+)
+
+// Flags used by the DWM_BLURBEHIND structure to indicate
+// which of its members contain valid information.
+const (
+	DWM_BB_ENABLE                = 0x00000001 //     A value for the fEnable member has been specified.
+	DWM_BB_BLURREGION            = 0x00000002 //     A value for the hRgnBlur member has been specified.
+	DWM_BB_TRANSITIONONMAXIMIZED = 0x00000004 //     A value for the fTransitionOnMaximized member has been specified.
+)
+
+// Flags used by the DwmEnableComposition  function
+// to change the state of Desktop Window Manager (DWM) composition.
+const (
+	DWM_EC_DISABLECOMPOSITION = 0 //     Disable composition
+	DWM_EC_ENABLECOMPOSITION  = 1 //     Enable composition
+)
+
+// enum-lite implementation for the following constant structure
+type DWM_SHOWCONTACT int32
+
+const (
+	DWMSC_DOWN      = 0x00000001
+	DWMSC_UP        = 0x00000002
+	DWMSC_DRAG      = 0x00000004
+	DWMSC_HOLD      = 0x00000008
+	DWMSC_PENBARREL = 0x00000010
+	DWMSC_NONE      = 0x00000000
+	DWMSC_ALL       = 0xFFFFFFFF
+)
+
+// enum-lite implementation for the following constant structure
+type DWM_SOURCE_FRAME_SAMPLING int32
+
+// TODO: need to verify this construction
+// Flags used by the DwmSetPresentParameters function
+// to specify the frame sampling type
+const (
+	DWM_SOURCE_FRAME_SAMPLING_POINT = iota + 1
+	DWM_SOURCE_FRAME_SAMPLING_COVERAGE
+	DWM_SOURCE_FRAME_SAMPLING_LAST
+)
+
+// Flags used by the DWM_THUMBNAIL_PROPERTIES structure to
+// indicate which of its members contain valid information.
+const (
+	DWM_TNP_RECTDESTINATION      = 0x00000001 //    A value for the rcDestination member has been specified
+	DWM_TNP_RECTSOURCE           = 0x00000002 //    A value for the rcSource member has been specified
+	DWM_TNP_OPACITY              = 0x00000004 //    A value for the opacity member has been specified
+	DWM_TNP_VISIBLE              = 0x00000008 //    A value for the fVisible member has been specified
+	DWM_TNP_SOURCECLIENTAREAONLY = 0x00000010 //    A value for the fSourceClientAreaOnly member has been specified
+)
+
+// enum-lite implementation for the following constant structure
+type DWMFLIP3DWINDOWPOLICY int32
+
+// TODO: need to verify this construction
+// Flags used by the DwmSetWindowAttribute function
+// to specify the Flip3D window policy
+const (
+	DWMFLIP3D_DEFAULT = iota + 1
+	DWMFLIP3D_EXCLUDEBELOW
+	DWMFLIP3D_EXCLUDEABOVE
+	DWMFLIP3D_LAST
+)
+
+// enum-lite implementation for the following constant structure
+type DWMNCRENDERINGPOLICY int32
+
+// TODO: need to verify this construction
+// Flags used by the DwmSetWindowAttribute function
+// to specify the non-client area rendering policy
+const (
+	DWMNCRP_USEWINDOWSTYLE = iota + 1
+	DWMNCRP_DISABLED
+	DWMNCRP_ENABLED
+	DWMNCRP_LAST
+)
+
+// enum-lite implementation for the following constant structure
+type DWMTRANSITION_OWNEDWINDOW_TARGET int32
+
+const (
+	DWMTRANSITION_OWNEDWINDOW_NULL       = -1
+	DWMTRANSITION_OWNEDWINDOW_REPOSITION = 0
+)
+
+// enum-lite implementation for the following constant structure
+type DWMWINDOWATTRIBUTE int32
+
+// TODO: need to verify this construction
+// Flags used by the DwmGetWindowAttribute and DwmSetWindowAttribute functions
+// to specify window attributes for non-client rendering
+const (
+	DWMWA_NCRENDERING_ENABLED = iota + 1
+	DWMWA_NCRENDERING_POLICY
+	DWMWA_TRANSITIONS_FORCEDISABLED
+	DWMWA_ALLOW_NCPAINT
+	DWMWA_CAPTION_BUTTON_BOUNDS
+	DWMWA_NONCLIENT_RTL_LAYOUT
+	DWMWA_FORCE_ICONIC_REPRESENTATION
+	DWMWA_FLIP3D_POLICY
+	DWMWA_EXTENDED_FRAME_BOUNDS
+	DWMWA_HAS_ICONIC_BITMAP
+	DWMWA_DISALLOW_PEEK
+	DWMWA_EXCLUDED_FROM_PEEK
+	DWMWA_CLOAK
+	DWMWA_CLOAKED
+	DWMWA_FREEZE_REPRESENTATION
+	DWMWA_LAST
+)
+
+// enum-lite implementation for the following constant structure
+type GESTURE_TYPE int32
+
+// TODO: use iota?
+// Identifies the gesture type
+const (
+	GT_PEN_TAP                 = 0
+	GT_PEN_DOUBLETAP           = 1
+	GT_PEN_RIGHTTAP            = 2
+	GT_PEN_PRESSANDHOLD        = 3
+	GT_PEN_PRESSANDHOLDABORT   = 4
+	GT_TOUCH_TAP               = 5
+	GT_TOUCH_DOUBLETAP         = 6
+	GT_TOUCH_RIGHTTAP          = 7
+	GT_TOUCH_PRESSANDHOLD      = 8
+	GT_TOUCH_PRESSANDHOLDABORT = 9
+	GT_TOUCH_PRESSANDTAP       = 10
 )
