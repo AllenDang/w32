@@ -106,15 +106,21 @@ func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGener
 }
 
 // TODO: verify handling of variable arguments
-func DwmGetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute *PVOID) HRESULT {
-	var pvAttrSize uintptr
+func DwmGetWindowAttribute(hWnd HWND, dwAttribute DWORD) (pAttribute interface{}, result HRESULT) {
+	var pvAttribute, pvAttrSize uintptr
 	switch dwAttribute {
 	case DWMWA_NCRENDERING_ENABLED:
-		pvAttrSize = 32 // TODO: sizeof(BOOL)
+		v := new(BOOL)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
 	case DWMWA_CAPTION_BUTTON_BOUNDS, DWMWA_EXTENDED_FRAME_BOUNDS:
-		pvAttrSize = 32 * 4 // TODO: sizeof(RECT)
+		v := new(RECT)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
 	case DWMWA_CLOAKED:
-		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not curreently supported.", dwAttribute))
+		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not currently supported.", dwAttribute))
 	default:
 		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not valid.", dwAttribute))
 	}
@@ -122,9 +128,10 @@ func DwmGetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute *PVOID) HRE
 	ret, _, _ := procDwmGetWindowAttribute.Call(
 		uintptr(hWnd),
 		uintptr(dwAttribute),
-		uintptr(unsafe.Pointer(&pvAttribute)),
+		pvAttribute,
 		pvAttrSize)
-	return HRESULT(ret)
+	result = HRESULT(ret)
+	return
 }
 
 func DwmInvalidateIconicBitmaps(hWnd HWND) HRESULT {
