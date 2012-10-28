@@ -9,7 +9,8 @@ import (
 )
 
 // From MSDN: Windows Data Types
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa383751%28v=vs.85%29.aspx
+// http://msdn.microsoft.com/en-us/library/s3f49ktz.aspx
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa383751.aspx
 // ATOM                  WORD
 // BOOL                  int32
 // BOOLEAN               byte
@@ -177,9 +178,8 @@ import (
 type (
 	ATOM            uint16
 	BOOL            int32
-	COLORREF        DWORD
+	COLORREF        uint32
 	DWM_FRAME_COUNT uint64
-	DWORD           uint32
 	HACCEL          HANDLE
 	HANDLE          uintptr
 	HBITMAP         HANDLE
@@ -209,20 +209,23 @@ type (
 	QPC_TIME        uint64
 )
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
 type POINT struct {
-	X, Y int
+	X, Y int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162897.aspx
 type RECT struct {
-	Left, Top, Right, Bottom int
+	Left, Top, Right, Bottom int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms633577.aspx
 type WNDCLASSEX struct {
-	Size       uint
-	Style      uint
+	Size       uint32
+	Style      uint32
 	WndProc    uintptr
-	ClsExtra   int
-	WndExtra   int
+	ClsExtra   int32
+	WndExtra   int32
 	Instance   HINSTANCE
 	Icon       HICON
 	Cursor     HCURSOR
@@ -232,21 +235,23 @@ type WNDCLASSEX struct {
 	IconSm     HICON
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms644958.aspx
 type MSG struct {
 	Hwnd    HWND
-	Message uint
+	Message uint32
 	WParam  uintptr
 	LParam  uintptr
-	Time    uint
+	Time    uint32
 	Pt      POINT
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145037.aspx
 type LOGFONT struct {
-	Height         int
-	Width          int
-	Escapement     int
-	Orientation    int
-	Weight         int
+	Height         int32
+	Width          int32
+	Escapement     int32
+	Orientation    int32
+	Weight         int32
 	Italic         byte
 	Underline      byte
 	StrikeOut      byte
@@ -258,21 +263,22 @@ type LOGFONT struct {
 	FaceName       [LF_FACESIZE]uint16
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646839.aspx
 type OPENFILENAME struct {
-	StructSize      uint
+	StructSize      uint32
 	Owner           HWND
 	Instance        HINSTANCE
 	Filter          *uint16
 	CustomFilter    *uint16
-	MaxCustomFilter uint
-	FilterIndex     uint
+	MaxCustomFilter uint32
+	FilterIndex     uint32
 	File            *uint16
-	MaxFile         uint
+	MaxFile         uint32
 	FileTitle       *uint16
-	MaxFileTitle    uint
+	MaxFileTitle    uint32
 	InitialDir      *uint16
 	Title           *uint16
-	Flags           uint
+	Flags           uint32
 	FileOffset      uint16
 	FileExtension   uint16
 	DefExt          *uint16
@@ -280,28 +286,31 @@ type OPENFILENAME struct {
 	FnHook          uintptr
 	TemplateName    *uint16
 	PvReserved      unsafe.Pointer
-	DwReserved      uint
-	FlagsEx         uint
+	DwReserved      uint32
+	FlagsEx         uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb773205.aspx
 type BROWSEINFO struct {
 	Owner        HWND
 	Root         *uint16
 	DisplayName  *uint16
 	Title        *uint16
-	Flags        uint
+	Flags        uint32
 	CallbackFunc uintptr
 	LParam       uintptr
-	Image        int
+	Image        int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa373931.aspx
 type GUID struct {
-	Data1 uint
+	Data1 uint32
 	Data2 uint16
 	Data3 uint16
 	Data4 [8]byte
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms221627.aspx
 type VARIANT struct {
 	VT         uint16 //  2
 	WReserved1 uint16 //  4
@@ -310,38 +319,42 @@ type VARIANT struct {
 	Val        int64  // 16
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms221416.aspx
 type DISPPARAMS struct {
 	Rgvarg            uintptr
 	RgdispidNamedArgs uintptr
-	CArgs             uint
-	CNamedArgs        uint
+	CArgs             uint32
+	CNamedArgs        uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms221133.aspx
 type EXCEPINFO struct {
 	WCode             uint16
 	WReserved         uint16
 	BstrSource        *uint16
 	BstrDescription   *uint16
 	BstrHelpFile      *uint16
-	DwHelpContext     uint
+	DwHelpContext     uint32
 	PvReserved        uintptr
 	PfnDeferredFillIn uintptr
-	Scode             int
+	Scode             int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145035.aspx
 type LOGBRUSH struct {
-	LbStyle uint
+	LbStyle uint32
 	LbColor COLORREF
 	LbHatch uintptr
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183565.aspx
 type DEVMODE struct {
 	DmDeviceName       [CCHDEVICENAME]uint16
 	DmSpecVersion      uint16
 	DmDriverVersion    uint16
 	DmSize             uint16
 	DmDriverExtra      uint16
-	DmFields           uint
+	DmFields           uint32
 	DmOrientation      int16
 	DmPaperSize        int16
 	DmPaperLength      int16
@@ -357,35 +370,37 @@ type DEVMODE struct {
 	DmCollate          int16
 	DmFormName         [CCHFORMNAME]uint16
 	DmLogPixels        uint16
-	DmBitsPerPel       uint
-	DmPelsWidth        uint
-	DmPelsHeight       uint
-	DmDisplayFlags     uint
-	DmDisplayFrequency uint
-	DmICMMethod        uint
-	DmICMIntent        uint
-	DmMediaType        uint
-	DmDitherType       uint
-	DmReserved1        uint
-	DmReserved2        uint
-	DmPanningWidth     uint
-	DmPanningHeight    uint
+	DmBitsPerPel       uint32
+	DmPelsWidth        uint32
+	DmPelsHeight       uint32
+	DmDisplayFlags     uint32
+	DmDisplayFrequency uint32
+	DmICMMethod        uint32
+	DmICMIntent        uint32
+	DmMediaType        uint32
+	DmDitherType       uint32
+	DmReserved1        uint32
+	DmReserved2        uint32
+	DmPanningWidth     uint32
+	DmPanningHeight    uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183376.aspx
 type BITMAPINFOHEADER struct {
-	BiSize          uint
-	BiWidth         int
-	BiHeight        int
+	BiSize          uint32
+	BiWidth         int32
+	BiHeight        int32
 	BiPlanes        uint16
 	BiBitCount      uint16
-	BiCompression   uint
-	BiSizeImage     uint
-	BiXPelsPerMeter int
-	BiYPelsPerMeter int
-	BiClrUsed       uint
-	BiClrImportant  uint
+	BiCompression   uint32
+	BiSizeImage     uint32
+	BiXPelsPerMeter int32
+	BiYPelsPerMeter int32
+	BiClrUsed       uint32
+	BiClrImportant  uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162938.aspx
 type RGBQUAD struct {
 	RgbBlue     byte
 	RgbGreen    byte
@@ -393,11 +408,13 @@ type RGBQUAD struct {
 	RgbReserved byte
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183375.aspx
 type BITMAPINFO struct {
 	BmiHeader BITMAPINFOHEADER
 	BmiColors *RGBQUAD
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183371.aspx
 type BITMAP struct {
 	BmType       int32
 	BmWidth      int32
@@ -408,6 +425,7 @@ type BITMAP struct {
 	BmBits       unsafe.Pointer
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183567.aspx
 type DIBSECTION struct {
 	DsBm        BITMAP
 	DsBmih      BITMAPINFOHEADER
@@ -416,44 +434,47 @@ type DIBSECTION struct {
 	DsOffset    uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162607.aspx
 type ENHMETAHEADER struct {
-	IType          uint
-	NSize          uint
+	IType          uint32
+	NSize          uint32
 	RclBounds      RECT
 	RclFrame       RECT
-	DSignature     uint
-	NVersion       uint
-	NBytes         uint
-	NRecords       uint
+	DSignature     uint32
+	NVersion       uint32
+	NBytes         uint32
+	NRecords       uint32
 	NHandles       uint16
 	SReserved      uint16
-	NDescription   uint
-	OffDescription uint
-	NPalEntries    uint
+	NDescription   uint32
+	OffDescription uint32
+	NPalEntries    uint32
 	SzlDevice      SIZE
 	SzlMillimeters SIZE
-	CbPixelFormat  uint
-	OffPixelFormat uint
-	BOpenGL        uint
+	CbPixelFormat  uint32
+	OffPixelFormat uint32
+	BOpenGL        uint32
 	SzlMicrometers SIZE
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145106.aspx
 type SIZE struct {
-	CX, CY int
+	CX, CY int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145132.aspx
 type TEXTMETRIC struct {
-	TmHeight           int
-	TmAscent           int
-	TmDescent          int
-	TmInternalLeading  int
-	TmExternalLeading  int
-	TmAveCharWidth     int
-	TmMaxCharWidth     int
-	TmWeight           int
-	TmOverhang         int
-	TmDigitizedAspectX int
-	TmDigitizedAspectY int
+	TmHeight           int32
+	TmAscent           int32
+	TmDescent          int32
+	TmInternalLeading  int32
+	TmExternalLeading  int32
+	TmAveCharWidth     int32
+	TmMaxCharWidth     int32
+	TmWeight           int32
+	TmOverhang         int32
+	TmDigitizedAspectX int32
+	TmDigitizedAspectY int32
 	TmFirstChar        uint16
 	TmLastChar         uint16
 	TmDefaultChar      uint16
@@ -465,91 +486,101 @@ type TEXTMETRIC struct {
 	TmCharSet          byte
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd183574.aspx
 type DOCINFO struct {
-	CbSize       int
+	CbSize       int32
 	LpszDocName  *uint16
 	LpszOutput   *uint16
 	LpszDatatype *uint16
-	FwType       uint
+	FwType       uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb775514.aspx
 type NMHDR struct {
 	HwndFrom HWND
 	IdFrom   uintptr
-	Code     uint
+	Code     uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774743.aspx
 type LVCOLUMN struct {
-	Mask       uint
-	Fmt        int
-	Cx         int
+	Mask       uint32
+	Fmt        int32
+	Cx         int32
 	PszText    *uint16
-	CchTextMax int
-	ISubItem   int
-	IImage     int
-	IOrder     int
+	CchTextMax int32
+	ISubItem   int32
+	IImage     int32
+	IOrder     int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774760.aspx
 type LVITEM struct {
-	Mask       uint
-	IItem      int
-	ISubItem   int
-	State      uint
-	StateMask  uint
+	Mask       uint32
+	IItem      int32
+	ISubItem   int32
+	State      uint32
+	StateMask  uint32
 	PszText    *uint16
-	CchTextMax int
-	IImage     int
+	CchTextMax int32
+	IImage     int32
 	LParam     uintptr
-	IIndent    int
-	IGroupId   int
-	CColumns   uint
-	PuColumns  uint
+	IIndent    int32
+	IGroupId   int32
+	CColumns   uint32
+	PuColumns  uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774754.aspx
 type LVHITTESTINFO struct {
 	Pt       POINT
-	Flags    uint
-	IItem    int
-	ISubItem int
-	IGroup   int
+	Flags    uint32
+	IItem    int32
+	ISubItem int32
+	IGroup   int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774771.aspx
 type NMITEMACTIVATE struct {
 	Hdr       NMHDR
-	IItem     int
-	ISubItem  int
-	UNewState uint
-	UOldState uint
-	UChanged  uint
+	IItem     int32
+	ISubItem  int32
+	UNewState uint32
+	UOldState uint32
+	UChanged  uint32
 	PtAction  POINT
 	LParam    uintptr
-	UKeyFlags uint
+	UKeyFlags uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774773.aspx
 type NMLISTVIEW struct {
 	Hdr       NMHDR
-	IItem     int
-	ISubItem  int
-	UNewState uint
-	UOldState uint
-	UChanged  uint
+	IItem     int32
+	ISubItem  int32
+	UNewState uint32
+	UOldState uint32
+	UChanged  uint32
 	PtAction  POINT
 	LParam    uintptr
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb774780.aspx
 type NMLVDISPINFO struct {
 	Hdr  NMHDR
 	Item LVITEM
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb775507.aspx
 type INITCOMMONCONTROLSEX struct {
-	DwSize uint
-	DwICC  uint
+	DwSize uint32
+	DwICC  uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb760256.aspx
 type TOOLINFO struct {
-	CbSize     uint
-	UFlags     uint
+	CbSize     uint32
+	UFlags     uint32
 	Hwnd       HWND
 	UId        uintptr
 	Rect       RECT
@@ -559,13 +590,15 @@ type TOOLINFO struct {
 	LpReserved unsafe.Pointer
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms645604.aspx
 type TRACKMOUSEEVENT struct {
-	CbSize      uint
-	DwFlags     uint
+	CbSize      uint32
+	DwFlags     uint32
 	HwndTrack   HWND
-	DwHoverTime uint
+	DwHoverTime uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms534067.aspx
 type GdiplusStartupInput struct {
 	GdiplusVersion           uint32
 	DebugEventCallback       uintptr
@@ -573,11 +606,13 @@ type GdiplusStartupInput struct {
 	SuppressExternalCodecs   BOOL
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms534068.aspx
 type GdiplusStartupOutput struct {
 	NotificationHook   uintptr
 	NotificationUnhook uintptr
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd162768.aspx
 type PAINTSTRUCT struct {
 	Hdc         HDC
 	FErase      BOOL
@@ -587,6 +622,7 @@ type PAINTSTRUCT struct {
 	RgbReserved [32]byte
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa363646.aspx
 type EVENTLOGRECORD struct {
 	Length              uint32
 	Reserved            uint32
@@ -606,16 +642,18 @@ type EVENTLOGRECORD struct {
 	DataOffset          uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996.aspx
 type SERVICE_STATUS struct {
-	DwServiceType             DWORD
-	DwCurrentState            DWORD
-	DwControlsAccepted        DWORD
-	DwWin32ExitCode           DWORD
-	DwServiceSpecificExitCode DWORD
-	DwCheckPoint              DWORD
-	DwWaitHint                DWORD
+	DwServiceType             uint32
+	DwCurrentState            uint32
+	DwControlsAccepted        uint32
+	DwWin32ExitCode           uint32
+	DwServiceSpecificExitCode uint32
+	DwCheckPoint              uint32
+	DwWaitHint                uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms684225.aspx
 type MODULEENTRY32 struct {
 	Size         uint32
 	ModuleID     uint32
@@ -629,19 +667,23 @@ type MODULEENTRY32 struct {
 	SzExePath    [MAX_PATH]uint16
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724284.aspx
 type FILETIME struct {
-	DwLowDateTime  DWORD
-	DwHighDateTime DWORD
+	DwLowDateTime  uint32
+	DwHighDateTime uint32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx
 type COORD struct {
 	X, Y int16
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms686311.aspx
 type SMALL_RECT struct {
 	Left, Top, Right, Bottom int16
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms682093.aspx
 type CONSOLE_SCREEN_BUFFER_INFO struct {
 	DwSize              COORD
 	DwCursorPosition    COORD
@@ -650,33 +692,34 @@ type CONSOLE_SCREEN_BUFFER_INFO struct {
 	DwMaximumWindowSize COORD
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb773244.aspx
 type MARGINS struct {
-	cxLeftWidth    int
-	cxRightWidth   int
-	cyTopHeight    int
-	cyBottomHeight int
+	CxLeftWidth, CxRightWidth, CyTopHeight, CyBottomHeight int32
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa969500.aspx
 type DWM_BLURBEHIND struct {
-	DwFlags                DWORD
+	DwFlags                uint32
 	fEnable                BOOL
 	hRgnBlur               HRGN
 	fTransitionOnMaximized BOOL
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa969501.aspx
 type DWM_PRESENT_PARAMETERS struct {
 	cbSize             uint32
 	fQueue             BOOL
 	cRefreshStart      DWM_FRAME_COUNT
-	cBuffer            uint
+	cBuffer            uint32
 	fUseSourceRate     BOOL
 	rateSource         UNSIGNED_RATIO
-	cRefreshesPerFrame uint
+	cRefreshesPerFrame uint32
 	eSampling          DWM_SOURCE_FRAME_SAMPLING
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa969502.aspx
 type DWM_THUMBNAIL_PROPERTIES struct {
-	dwFlags               DWORD
+	dwFlags               uint32
 	rcDestination         RECT
 	rcSource              RECT
 	opacity               byte
@@ -684,6 +727,7 @@ type DWM_THUMBNAIL_PROPERTIES struct {
 	fSourceClientAreaOnly BOOL
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa969503.aspx
 type DWM_TIMING_INFO struct {
 	cbSize                 uint32
 	rateRefresh            UNSIGNED_RATIO
@@ -691,19 +735,19 @@ type DWM_TIMING_INFO struct {
 	rateCompose            UNSIGNED_RATIO
 	qpcVBlank              QPC_TIME
 	cRefresh               DWM_FRAME_COUNT
-	cDXRefresh             uint
+	cDXRefresh             uint32
 	qpcCompose             QPC_TIME
 	cFrame                 DWM_FRAME_COUNT
-	cDXPresent             uint
+	cDXPresent             uint32
 	cRefreshFrame          DWM_FRAME_COUNT
 	cFrameSubmitted        DWM_FRAME_COUNT
-	cDXPresentSubmitted    uint
+	cDXPresentSubmitted    uint32
 	cFrameConfirmed        DWM_FRAME_COUNT
-	cDXPresentConfirmed    uint
+	cDXPresentConfirmed    uint32
 	cRefreshConfirmed      DWM_FRAME_COUNT
-	cDXRefreshConfirmed    uint
+	cDXRefreshConfirmed    uint32
 	cFramesLate            DWM_FRAME_COUNT
-	cFramesOutstanding     uint
+	cFramesOutstanding     uint32
 	cFrameDisplayed        DWM_FRAME_COUNT
 	qpcFrameDisplayed      QPC_TIME
 	cRefreshFrameDisplayed DWM_FRAME_COUNT
@@ -727,15 +771,13 @@ type DWM_TIMING_INFO struct {
 	cBuffersEmpty          DWM_FRAME_COUNT
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd389402.aspx
 type MilMatrix3x2D struct {
-	S_11 float64
-	S_12 float64
-	S_21 float64
-	S_22 float64
-	DX   float64
-	DY   float64
+	S_11, S_12, S_21, S_22 float64
+	DX, DY                 float64
 }
 
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa969505.aspx
 type UNSIGNED_RATIO struct {
 	uiNumerator   uint32
 	uiDenominator uint32

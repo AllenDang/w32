@@ -84,7 +84,7 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
 	return syscall.UTF16ToString(buf)
 }
 
-func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType DWORD, data uintptr, cbData uint16) (errno int) {
+func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint16) (errno int) {
 	ret, _, _ := procRegSetKeyValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
@@ -96,7 +96,7 @@ func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType DWORD, da
 	return int(ret)
 }
 
-func RegEnumKeyEx(hKey HKEY, index DWORD) string {
+func RegEnumKeyEx(hKey HKEY, index uint32) string {
 	var bufLen uint32 = 255
 	buf := make([]uint16, bufLen)
 	procRegEnumKeyEx.Call(
@@ -139,7 +139,7 @@ func CloseEventLog(eventlog HANDLE) bool {
 	return ret != 0
 }
 
-func OpenSCManager(lpMachineName, lpDatabaseName string, dwDesiredAccess DWORD) (HANDLE, error) {
+func OpenSCManager(lpMachineName, lpDatabaseName string, dwDesiredAccess uint32) (HANDLE, error) {
 	var p1, p2 uintptr
 	if len(lpMachineName) > 0 {
 		p1 = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpMachineName)))
@@ -167,7 +167,7 @@ func CloseServiceHandle(hSCObject HANDLE) error {
 	return nil
 }
 
-func OpenService(hSCManager HANDLE, lpServiceName string, dwDesiredAccess DWORD) (HANDLE, error) {
+func OpenService(hSCManager HANDLE, lpServiceName string, dwDesiredAccess uint32) (HANDLE, error) {
 	ret, _, _ := procOpenService.Call(
 		uintptr(hSCManager),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpServiceName))),
@@ -207,7 +207,7 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 	return nil
 }
 
-func ControlService(hService HANDLE, dwControl DWORD, lpServiceStatus *SERVICE_STATUS) bool {
+func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_STATUS) bool {
 	if lpServiceStatus == nil {
 		panic("ControlService:lpServiceStatus cannot be nil")
 	}

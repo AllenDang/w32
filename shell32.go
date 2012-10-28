@@ -79,15 +79,7 @@ func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
 		uintptr(hDrop),
 		uintptr(unsafe.Pointer(&pt)))
 
-	isClientArea = false
-	if ret == 1 {
-		isClientArea = true
-	}
-
-	x = pt.X
-	y = pt.Y
-
-	return
+	return int(pt.X), int(pt.Y), (ret == 1)
 }
 
 func DragFinish(hDrop HDROP) {

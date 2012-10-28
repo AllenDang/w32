@@ -14,11 +14,11 @@ func MakeIntResource(id uint16) *uint16 {
 	return (*uint16)(unsafe.Pointer(uintptr(id)))
 }
 
-func LOWORD(dw uint) uint16 {
+func LOWORD(dw uint32) uint16 {
 	return uint16(dw)
 }
 
-func HIWORD(dw uint) uint16 {
+func HIWORD(dw uint32) uint16 {
 	return uint16(dw >> 16 & 0xffff)
 }
 
@@ -169,7 +169,7 @@ func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interfac
 			}
 		}
 		dispparams.Rgvarg = uintptr(unsafe.Pointer(&vargs[0]))
-		dispparams.CArgs = uint(len(params))
+		dispparams.CArgs = uint32(len(params))
 	}
 
 	var ret VARIANT

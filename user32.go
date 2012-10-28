@@ -299,15 +299,12 @@ func MoveWindow(hwnd HWND, x, y, width, height int, repaint bool) bool {
 }
 
 func ScreenToClient(hwnd HWND, x, y int) (int, int) {
-	var pt POINT
-	pt.X = x
-	pt.Y = y
-
+	pt := POINT{X: int32(x), Y: int32(y)}
 	procScreenToClient.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&pt)))
 
-	return pt.X, pt.Y
+	return int(pt.X), int(pt.Y)
 }
 
 func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint, wParam, lParam uintptr) uintptr {
@@ -493,7 +490,7 @@ func OffsetRect(rect *RECT, dx, dy int) bool {
 }
 
 func PtInRect(rect *RECT, x, y int) bool {
-	pt := POINT{X: x, Y: y}
+	pt := POINT{X: int32(x), Y: int32(y)}
 	ret, _, _ := procPtInRect.Call(
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(unsafe.Pointer(&pt)))
@@ -578,14 +575,13 @@ func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
 }
 
 func ClientToScreen(hwnd HWND, x, y int) (int, int) {
-	var pt POINT
-	pt.X, pt.Y = x, y
+	pt := POINT{X: int32(x), Y: int32(y)}
 
 	procClientToScreen.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&pt)))
 
-	return pt.X, pt.Y
+	return int(pt.X), int(pt.Y)
 }
 
 func IsDialogMessage(hwnd HWND, msg *MSG) bool {
