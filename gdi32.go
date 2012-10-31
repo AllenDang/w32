@@ -12,47 +12,53 @@ import (
 var (
 	modgdi32 = syscall.NewLazyDLL("gdi32.dll")
 
-	procGetDeviceCaps        = modgdi32.NewProc("GetDeviceCaps")
-	procDeleteObject         = modgdi32.NewProc("DeleteObject")
-	procCreateFontIndirect   = modgdi32.NewProc("CreateFontIndirectW")
-	procAbortDoc             = modgdi32.NewProc("AbortDoc")
-	procBitBlt               = modgdi32.NewProc("BitBlt")
-	procCloseEnhMetaFile     = modgdi32.NewProc("CloseEnhMetaFile")
-	procCopyEnhMetaFile      = modgdi32.NewProc("CopyEnhMetaFileW")
-	procCreateBrushIndirect  = modgdi32.NewProc("CreateBrushIndirect")
-	procCreateCompatibleDC   = modgdi32.NewProc("CreateCompatibleDC")
-	procCreateDC             = modgdi32.NewProc("CreateDCW")
-	procCreateDIBSection     = modgdi32.NewProc("CreateDIBSection")
-	procCreateEnhMetaFile    = modgdi32.NewProc("CreateEnhMetaFileW")
-	procCreateIC             = modgdi32.NewProc("CreateICW")
-	procDeleteDC             = modgdi32.NewProc("DeleteDC")
-	procDeleteEnhMetaFile    = modgdi32.NewProc("DeleteEnhMetaFile")
-	procEllipse              = modgdi32.NewProc("Ellipse")
-	procEndDoc               = modgdi32.NewProc("EndDoc")
-	procEndPage              = modgdi32.NewProc("EndPage")
-	procExtCreatePen         = modgdi32.NewProc("ExtCreatePen")
-	procGetEnhMetaFile       = modgdi32.NewProc("GetEnhMetaFileW")
-	procGetEnhMetaFileHeader = modgdi32.NewProc("GetEnhMetaFileHeader")
-	procGetObject            = modgdi32.NewProc("GetObjectW")
-	procGetStockObject       = modgdi32.NewProc("GetStockObject")
-	procGetTextExtentExPoint = modgdi32.NewProc("GetTextExtentExPointW")
-	procGetTextExtentPoint32 = modgdi32.NewProc("GetTextExtentPoint32W")
-	procGetTextMetrics       = modgdi32.NewProc("GetTextMetricsW")
-	procLineTo               = modgdi32.NewProc("LineTo")
-	procMoveToEx             = modgdi32.NewProc("MoveToEx")
-	procPlayEnhMetaFile      = modgdi32.NewProc("PlayEnhMetaFile")
-	procRectangle            = modgdi32.NewProc("Rectangle")
-	procResetDC              = modgdi32.NewProc("ResetDCW")
-	procSelectObject         = modgdi32.NewProc("SelectObject")
-	procSetBkMode            = modgdi32.NewProc("SetBkMode")
-	procSetBrushOrgEx        = modgdi32.NewProc("SetBrushOrgEx")
-	procSetStretchBltMode    = modgdi32.NewProc("SetStretchBltMode")
-	procSetTextColor         = modgdi32.NewProc("SetTextColor")
-	procSetBkColor           = modgdi32.NewProc("SetBkColor")
-	procStartDoc             = modgdi32.NewProc("StartDocW")
-	procStartPage            = modgdi32.NewProc("StartPage")
-	procStretchBlt           = modgdi32.NewProc("StretchBlt")
-	procSetDIBitsToDevice    = modgdi32.NewProc("SetDIBitsToDevice")
+	procGetDeviceCaps             = modgdi32.NewProc("GetDeviceCaps")
+	procDeleteObject              = modgdi32.NewProc("DeleteObject")
+	procCreateFontIndirect        = modgdi32.NewProc("CreateFontIndirectW")
+	procAbortDoc                  = modgdi32.NewProc("AbortDoc")
+	procBitBlt                    = modgdi32.NewProc("BitBlt")
+	procCloseEnhMetaFile          = modgdi32.NewProc("CloseEnhMetaFile")
+	procCopyEnhMetaFile           = modgdi32.NewProc("CopyEnhMetaFileW")
+	procCreateBrushIndirect       = modgdi32.NewProc("CreateBrushIndirect")
+	procCreateCompatibleDC        = modgdi32.NewProc("CreateCompatibleDC")
+	procCreateDC                  = modgdi32.NewProc("CreateDCW")
+	procCreateDIBSection          = modgdi32.NewProc("CreateDIBSection")
+	procCreateEnhMetaFile         = modgdi32.NewProc("CreateEnhMetaFileW")
+	procCreateIC                  = modgdi32.NewProc("CreateICW")
+	procDeleteDC                  = modgdi32.NewProc("DeleteDC")
+	procDeleteEnhMetaFile         = modgdi32.NewProc("DeleteEnhMetaFile")
+	procEllipse                   = modgdi32.NewProc("Ellipse")
+	procEndDoc                    = modgdi32.NewProc("EndDoc")
+	procEndPage                   = modgdi32.NewProc("EndPage")
+	procExtCreatePen              = modgdi32.NewProc("ExtCreatePen")
+	procGetEnhMetaFile            = modgdi32.NewProc("GetEnhMetaFileW")
+	procGetEnhMetaFileHeader      = modgdi32.NewProc("GetEnhMetaFileHeader")
+	procGetObject                 = modgdi32.NewProc("GetObjectW")
+	procGetStockObject            = modgdi32.NewProc("GetStockObject")
+	procGetTextExtentExPoint      = modgdi32.NewProc("GetTextExtentExPointW")
+	procGetTextExtentPoint32      = modgdi32.NewProc("GetTextExtentPoint32W")
+	procGetTextMetrics            = modgdi32.NewProc("GetTextMetricsW")
+	procLineTo                    = modgdi32.NewProc("LineTo")
+	procMoveToEx                  = modgdi32.NewProc("MoveToEx")
+	procPlayEnhMetaFile           = modgdi32.NewProc("PlayEnhMetaFile")
+	procRectangle                 = modgdi32.NewProc("Rectangle")
+	procResetDC                   = modgdi32.NewProc("ResetDCW")
+	procSelectObject              = modgdi32.NewProc("SelectObject")
+	procSetBkMode                 = modgdi32.NewProc("SetBkMode")
+	procSetBrushOrgEx             = modgdi32.NewProc("SetBrushOrgEx")
+	procSetStretchBltMode         = modgdi32.NewProc("SetStretchBltMode")
+	procSetTextColor              = modgdi32.NewProc("SetTextColor")
+	procSetBkColor                = modgdi32.NewProc("SetBkColor")
+	procStartDoc                  = modgdi32.NewProc("StartDocW")
+	procStartPage                 = modgdi32.NewProc("StartPage")
+	procStretchBlt                = modgdi32.NewProc("StretchBlt")
+	procSetDIBitsToDevice         = modgdi32.NewProc("SetDIBitsToDevice")
+	procChoosePixelFormat         = modgdi32.NewProc("ChoosePixelFormat")
+	procDescribePixelFormat       = modgdi32.NewProc("DescribePixelFormat")
+	procGetEnhMetaFilePixelFormat = modgdi32.NewProc("GetEnhMetaFilePixelFormat")
+	procGetPixelFormat            = modgdi32.NewProc("GetPixelFormat")
+	procSetPixelFormat            = modgdi32.NewProc("SetPixelFormat")
+	procSwapBuffers               = modgdi32.NewProc("SwapBuffers")
 )
 
 func GetDeviceCaps(hdc HDC, index int) int {
@@ -452,4 +458,52 @@ func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int,
 		uintptr(fuColorUse))
 
 	return int(ret)
+}
+
+func ChoosePixelFormat(hdc HDC, pfd *PIXELFORMATDESCRIPTOR) int {
+	ret, _, _ := procChoosePixelFormat.Call(
+		uintptr(hdc),
+		uintptr(unsafe.Pointer(pfd)),
+	)
+	return int(ret)
+}
+
+func DescribePixelFormat(hdc HDC, iPixelFormat int, nBytes uint, pfd *PIXELFORMATDESCRIPTOR) int {
+	ret, _, _ := procDescribePixelFormat.Call(
+		uintptr(hdc),
+		uintptr(iPixelFormat),
+		uintptr(nBytes),
+		uintptr(unsafe.Pointer(pfd)),
+	)
+	return int(ret)
+}
+
+func GetEnhMetaFilePixelFormat(hemf HENHMETAFILE, cbBuffer uint32, pfd *PIXELFORMATDESCRIPTOR) uint {
+	ret, _, _ := procGetEnhMetaFilePixelFormat.Call(
+		uintptr(hemf),
+		uintptr(cbBuffer),
+		uintptr(unsafe.Pointer(pfd)),
+	)
+	return uint(ret)
+}
+
+func GetPixelFormat(hdc HDC) int {
+	ret, _, _ := procGetPixelFormat.Call(
+		uintptr(hdc),
+	)
+	return int(ret)
+}
+
+func SetPixelFormat(hdc HDC, iPixelFormat int, pfd *PIXELFORMATDESCRIPTOR) bool {
+	ret, _, _ := procSetPixelFormat.Call(
+		uintptr(hdc),
+		uintptr(iPixelFormat),
+		uintptr(unsafe.Pointer(pfd)),
+	)
+	return ret == TRUE
+}
+
+func SwapBuffers(hdc HDC) bool {
+	ret, _, _ := procSwapBuffers.Call(uintptr(hdc))
+	return ret == TRUE
 }

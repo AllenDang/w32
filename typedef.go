@@ -192,12 +192,15 @@ type (
 	HFONT           HANDLE
 	HGDIOBJ         HANDLE
 	HGLOBAL         HANDLE
+	HGLRC           HANDLE
 	HICON           HANDLE
 	HIMAGELIST      HANDLE
 	HINSTANCE       HANDLE
 	HKEY            HANDLE
+	HKL             HANDLE
 	HMENU           HANDLE
 	HMODULE         HANDLE
+	HMONITOR        HANDLE
 	HPEN            HANDLE
 	HRESULT         int32
 	HRGN            HANDLE
@@ -781,4 +784,57 @@ type MilMatrix3x2D struct {
 type UNSIGNED_RATIO struct {
 	uiNumerator   uint32
 	uiDenominator uint32
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms632603.aspx
+type CREATESTRUCT struct {
+	CreateParams uintptr
+	Instance     HINSTANCE
+	Menu         HMENU
+	Parent       HWND
+	Cy, Cx       int32
+	Y, X         int32
+	Style        int32
+	Name         *uint16
+	Class        *uint16
+	dwExStyle    uint32
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145065.aspx
+type MONITORINFO struct {
+	CbSize    uint32
+	RcMonitor RECT
+	RcWork    RECT
+	DwFlags   uint32
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd145066.aspx
+type MONITORINFOEX struct {
+	MONITORINFO
+	SzDevice [CCHDEVICENAME]uint16
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/dd368826.aspx
+type PIXELFORMATDESCRIPTOR struct {
+	Size                   uint16
+	Version                uint16
+	DwFlags                uint32
+	IPixelType             byte
+	ColorBits              byte
+	RedBits, RedShift      byte
+	GreenBits, GreenShift  byte
+	BlueBits, BlueShift    byte
+	AlphaBits, AlphaShift  byte
+	AccumBits              byte
+	AccumRedBits           byte
+	AccumGreenBits         byte
+	AccumBlueBits          byte
+	AccumAlphaBits         byte
+	DepthBits, StencilBits byte
+	AuxBuffers             byte
+	ILayerType             byte
+	Reserved               byte
+	DwLayerMask            uint32
+	DwVisibleMask          uint32
+	DwDamageMask           uint32
 }
