@@ -9,7 +9,7 @@ import (
 	"syscall"
 	"unsafe"
 )
- 
+
 // DEFINED IN THE DWM API BUT NOT IMPLEMENTED BY MS:
 // DwmAttachMilContent
 // DwmDetachMilContent
@@ -83,7 +83,7 @@ func DwmFlush() HRESULT {
 	return HRESULT(ret)
 }
 
-func DwmGetColorizationColor(pcrColorization *DWORD, pfOpaqueBlend *BOOL) HRESULT {
+func DwmGetColorizationColor(pcrColorization *uint32, pfOpaqueBlend *BOOL) HRESULT {
 	ret, _, _ := procDwmGetColorizationColor.Call(
 		uintptr(unsafe.Pointer(pcrColorization)),
 		uintptr(unsafe.Pointer(pfOpaqueBlend)))
@@ -97,7 +97,7 @@ func DwmGetCompositionTimingInfo(hWnd HWND, pTimingInfo *DWM_TIMING_INFO) HRESUL
 	return HRESULT(ret)
 }
 
-func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGeneration *DWORD) HRESULT {
+func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGeneration *uint32) HRESULT {
 	ret, _, _ := procDwmGetTransportAttributes.Call(
 		uintptr(unsafe.Pointer(pfIsRemoting)),
 		uintptr(unsafe.Pointer(pfIsConnected)),
@@ -106,15 +106,21 @@ func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGener
 }
 
 // TODO: verify handling of variable arguments
-func DwmGetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute *PVOID) HRESULT {
-	var pvAttrSize uintptr
+func DwmGetWindowAttribute(hWnd HWND, dwAttribute uint32) (pAttribute interface{}, result HRESULT) {
+	var pvAttribute, pvAttrSize uintptr
 	switch dwAttribute {
 	case DWMWA_NCRENDERING_ENABLED:
-		pvAttrSize = 32 // TODO: sizeof(BOOL)
+		v := new(BOOL)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
 	case DWMWA_CAPTION_BUTTON_BOUNDS, DWMWA_EXTENDED_FRAME_BOUNDS:
-		pvAttrSize = 32 * 4 // TODO: sizeof(RECT)
+		v := new(RECT)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
 	case DWMWA_CLOAKED:
-		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not curreently supported.", dwAttribute))
+		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not currently supported.", dwAttribute))
 	default:
 		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not valid.", dwAttribute))
 	}
@@ -122,9 +128,10 @@ func DwmGetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute *PVOID) HRE
 	ret, _, _ := procDwmGetWindowAttribute.Call(
 		uintptr(hWnd),
 		uintptr(dwAttribute),
-		uintptr(unsafe.Pointer(&pvAttribute)),
+		pvAttribute,
 		pvAttrSize)
-	return HRESULT(ret)
+	result = HRESULT(ret)
+	return
 }
 
 func DwmInvalidateIconicBitmaps(hWnd HWND) HRESULT {
@@ -162,7 +169,7 @@ func DwmRegisterThumbnail(hWndDestination HWND, hWndSource HWND, phThumbnailId *
 	return HRESULT(ret)
 }
 
-func DwmRenderGesture(gt GESTURE_TYPE, cContacts uint, pdwPointerID *DWORD, pPoints *POINT) {
+func DwmRenderGesture(gt GESTURE_TYPE, cContacts uint, pdwPointerID *uint32, pPoints *POINT) {
 	procDwmRenderGesture.Call(
 		uintptr(gt),
 		uintptr(cContacts),
@@ -178,7 +185,7 @@ func DwmSetDxFrameDuration(hWnd HWND, cRefreshes int) HRESULT {
 	return HRESULT(ret)
 }
 
-func DwmSetIconicLivePreviewBitmap(hWnd HWND, hbmp HBITMAP, pptClient *POINT, dwSITFlags DWORD) HRESULT {
+func DwmSetIconicLivePreviewBitmap(hWnd HWND, hbmp HBITMAP, pptClient *POINT, dwSITFlags uint32) HRESULT {
 	ret, _, _ := procDwmSetIconicLivePreviewBitmap.Call(
 		uintptr(hWnd),
 		uintptr(hbmp),
@@ -187,7 +194,7 @@ func DwmSetIconicLivePreviewBitmap(hWnd HWND, hbmp HBITMAP, pptClient *POINT, dw
 	return HRESULT(ret)
 }
 
-func DwmSetIconicThumbnail(hWnd HWND, hbmp HBITMAP, dwSITFlags DWORD) HRESULT {
+func DwmSetIconicThumbnail(hWnd HWND, hbmp HBITMAP, dwSITFlags uint32) HRESULT {
 	ret, _, _ := procDwmSetIconicThumbnail.Call(
 		uintptr(hWnd),
 		uintptr(hbmp),
@@ -202,7 +209,7 @@ func DwmSetPresentParameters(hWnd HWND, pPresentParams *DWM_PRESENT_PARAMETERS) 
 	return HRESULT(ret)
 }
 
-func DwmSetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute LPCVOID, cbAttribute DWORD) HRESULT {
+func DwmSetWindowAttribute(hWnd HWND, dwAttribute uint32, pvAttribute LPCVOID, cbAttribute uint32) HRESULT {
 	ret, _, _ := procDwmSetWindowAttribute.Call(
 		uintptr(hWnd),
 		uintptr(dwAttribute),
@@ -211,14 +218,14 @@ func DwmSetWindowAttribute(hWnd HWND, dwAttribute DWORD, pvAttribute LPCVOID, cb
 	return HRESULT(ret)
 }
 
-func DwmShowContact(dwPointerID DWORD, eShowContact DWM_SHOWCONTACT) {
+func DwmShowContact(dwPointerID uint32, eShowContact DWM_SHOWCONTACT) {
 	procDwmShowContact.Call(
 		uintptr(dwPointerID),
 		uintptr(eShowContact))
 	return
 }
 
-func DwmTetherContact(dwPointerID DWORD, fEnable bool, ptTether POINT) {
+func DwmTetherContact(dwPointerID uint32, fEnable bool, ptTether POINT) {
 	procDwmTetherContact.Call(
 		uintptr(dwPointerID),
 		uintptr(BoolToBOOL(fEnable)),
