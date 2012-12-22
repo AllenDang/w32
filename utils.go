@@ -22,6 +22,11 @@ func HIWORD(dw uint32) uint16 {
 	return uint16(dw >> 16 & 0xffff)
 }
 
+func GetXYLparam(lparam uintptr) (int, int) {
+        lo, hi := lparam & 0xffff, lparam >> 16 & 0xffff
+        return int(int16(lo)), int(int16(hi))
+}
+
 func BoolToBOOL(value bool) BOOL {
 	if value {
 		return 1
