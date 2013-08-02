@@ -15,6 +15,7 @@ var (
 	procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
 	procMulDiv                     = modkernel32.NewProc("MulDiv")
 	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
+	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
 	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
 	procLstrlen                    = modkernel32.NewProc("lstrlenW")
 	procLstrcpy                    = modkernel32.NewProc("lstrcpyW")
@@ -62,6 +63,12 @@ func GetCurrentThread() HANDLE {
 	ret, _, _ := procGetCurrentThread.Call()
 
 	return HANDLE(ret)
+}
+
+func GetLogicalDrives() uint32 {
+	ret, _, _ := procGetLogicalDrives.Call()
+
+	return uint32(ret)
 }
 
 func GetUserDefaultLCID() uint32 {
