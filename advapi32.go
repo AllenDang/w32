@@ -189,10 +189,10 @@ func RegEnumKeyEx(hKey HKEY, index uint32) string {
 	return syscall.UTF16ToString(buf)
 }
 
-func OpenEventLog(servername, sourcename *uint16) HANDLE {
+func OpenEventLog(servername string, sourcename string) HANDLE {
 	ret, _, _ := procOpenEventLog.Call(
-		uintptr(unsafe.Pointer(servername)),
-		uintptr(unsafe.Pointer(sourcename)))
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(servername))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sourcename))))
 
 	return HANDLE(ret)
 }
