@@ -14,6 +14,7 @@ var (
 
 	procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
 	procMulDiv                     = modkernel32.NewProc("MulDiv")
+	procGetConsoleWindow           = modkernel32.NewProc("GetConsoleWindow")
 	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
 	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
 	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
@@ -57,6 +58,12 @@ func MulDiv(number, numerator, denominator int) int {
 		uintptr(denominator))
 
 	return int(ret)
+}
+
+func GetConsoleWindow() HWND {
+	ret, _, _ := procGetConsoleWindow.Call()
+
+	return HWND(ret)
 }
 
 func GetCurrentThread() HANDLE {
