@@ -37,6 +37,7 @@ var (
 	procGetSystemTimes             = modkernel32.NewProc("GetSystemTimes")
 	procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
 	procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
+	procGetStdHandle               = modkernel32.NewProc("GetStdHandle")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -256,4 +257,11 @@ func SetConsoleTextAttribute(hConsoleOutput HANDLE, wAttributes uint16) bool {
 		uintptr(hConsoleOutput),
 		uintptr(wAttributes))
 	return ret != 0
+}
+
+func GetStdHandle(dwStdHandle uint32) HANDLE {
+	ret, _, _ := procGetStdHandle.Call(
+		uintptr(dwStdHandle))
+
+	return HANDLE(ret)
 }
