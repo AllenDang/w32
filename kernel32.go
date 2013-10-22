@@ -14,6 +14,7 @@ var (
 
 	procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
 	procMulDiv                     = modkernel32.NewProc("MulDiv")
+	procGetConsoleWindow           = modkernel32.NewProc("GetConsoleWindow")
 	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
 	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
 	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
@@ -37,6 +38,7 @@ var (
 	procGetSystemTimes             = modkernel32.NewProc("GetSystemTimes")
 	procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
 	procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
+	procGetDiskFreeSpaceEx         = modkernel32.NewProc("GetDiskFreeSpaceExW")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -57,6 +59,12 @@ func MulDiv(number, numerator, denominator int) int {
 		uintptr(denominator))
 
 	return int(ret)
+}
+
+func GetConsoleWindow() HWND {
+	ret, _, _ := procGetConsoleWindow.Call()
+
+	return HWND(ret)
 }
 
 func GetCurrentThread() HANDLE {
@@ -256,4 +264,15 @@ func SetConsoleTextAttribute(hConsoleOutput HANDLE, wAttributes uint16) bool {
 		uintptr(hConsoleOutput),
 		uintptr(wAttributes))
 	return ret != 0
+}
+
+func GetDiskFreeSpaceEx(dirName string) (r bool,
+	freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes uint64) {
+	ret, _, _ := procGetDiskFreeSpaceEx.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(dirName))),
+		uintptr(unsafe.Pointer(&freeBytesAvailable)),
+		uintptr(unsafe.Pointer(&totalNumberOfBytes)),
+		uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)))
+	return ret != 0,
+		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
 }
