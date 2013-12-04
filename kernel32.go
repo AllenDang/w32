@@ -31,6 +31,7 @@ var (
 	procLoadResource               = modkernel32.NewProc("LoadResource")
 	procGetLastError               = modkernel32.NewProc("GetLastError")
 	procOpenProcess                = modkernel32.NewProc("OpenProcess")
+	procTerminateProcess           = modkernel32.NewProc("TerminateProcess")
 	procCloseHandle                = modkernel32.NewProc("CloseHandle")
 	procCreateToolhelp32Snapshot   = modkernel32.NewProc("CreateToolhelp32Snapshot")
 	procModule32First              = modkernel32.NewProc("Module32FirstW")
@@ -203,6 +204,13 @@ func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) HAN
 		uintptr(inherit),
 		uintptr(processId))
 	return HANDLE(ret)
+}
+
+func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
+	ret, _, _ := procTerminateProcess.Call(
+		uintptr(hProcess),
+		uintptr(uExitCode))
+	return ret != 0
 }
 
 func CloseHandle(object HANDLE) bool {
