@@ -5,7 +5,8 @@
 package w32
 
 import (
-	// #include <WTypes.h>
+	// #include <wtypes.h>
+	// #include <winable.h>
 	"C"
 	"fmt"
 	"syscall"
