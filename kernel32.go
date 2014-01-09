@@ -39,6 +39,7 @@ var (
 	procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
 	procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
 	procGetDiskFreeSpaceEx         = modkernel32.NewProc("GetDiskFreeSpaceExW")
+	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -242,6 +243,17 @@ func Module32Next(snapshot HANDLE, me *MODULEENTRY32) bool {
 func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
 	ret, _, _ := procGetSystemTimes.Call(
 		uintptr(unsafe.Pointer(lpIdleTime)),
+		uintptr(unsafe.Pointer(lpKernelTime)),
+		uintptr(unsafe.Pointer(lpUserTime)))
+
+	return ret != 0
+}
+
+func GetProcessTimes(hProcess HANDLE, lpCreationTime, lpExitTime, lpKernelTime, lpUserTime *FILETIME) bool {
+	ret, _, _ := procGetProcessTimes.Call(
+		uintptr(hProcess),
+		uintptr(unsafe.Pointer(lpCreationTime)),
+		uintptr(unsafe.Pointer(lpExitTime)),
 		uintptr(unsafe.Pointer(lpKernelTime)),
 		uintptr(unsafe.Pointer(lpUserTime)))
 
