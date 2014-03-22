@@ -112,7 +112,7 @@ var (
 	procEnumDisplaySettingsEx         = moduser32.NewProc("EnumDisplaySettingsExW")
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
-	procGetWindow 					  = moduser32.NewProc("GetWindow")
+	procGetWindow                     = moduser32.NewProc("GetWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
