@@ -112,6 +112,7 @@ var (
 	procEnumDisplaySettingsEx         = moduser32.NewProc("EnumDisplaySettingsExW")
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
+	procGetWindow 					  = moduser32.NewProc("GetWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -946,4 +947,9 @@ func SendInput(inputs []INPUT) uint32 {
 		uintptr(unsafe.Sizeof(C.INPUT{})),
 	)
 	return uint32(ret)
+}
+
+func GetWindow(hWnd HWND, uCmd uint) HWND {
+	ret, _, _ := procGetWindow.Call(uintptr(hWnd), uintptr(uCmd))
+	return HWND(ret)
 }

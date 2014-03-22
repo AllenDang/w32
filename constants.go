@@ -2659,3 +2659,15 @@ const (
 	MOUSEEVENTF_XDOWN           = 0x0080
 	MOUSEEVENTF_XUP             = 0x0100
 )
+
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms633515%28v=vs.85%29.aspx
+const (
+	GW_HWNDFIRST        = 0
+	GW_HWNDLAST         = 1
+	GW_HWNDNEXT 		= 2
+	GW_HWNDPREV 		= 3
+	GW_OWNER 			= 4
+	GW_CHILD 			= 5
+	GW_ENABLEDPOPUP     = 6
+)
