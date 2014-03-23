@@ -113,6 +113,11 @@ var (
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
 	procGetWindow                     = moduser32.NewProc("GetWindow")
+	procLoadImage                     = moduser32.NewProc("LoadImageW")
+	procCreatePopupMenu               = moduser32.NewProc("CreatePopupMenu")
+	procAppendMenu                    = moduser32.NewProc("AppendMenuW")
+	procTrackPopupMenu                = moduser32.NewProc("TrackPopupMenu")
+	procSetForegroundWindow           = moduser32.NewProc("SetForegroundWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -952,4 +957,50 @@ func SendInput(inputs []INPUT) uint32 {
 func GetWindow(hWnd HWND, uCmd uint) HWND {
 	ret, _, _ := procGetWindow.Call(uintptr(hWnd), uintptr(uCmd))
 	return HWND(ret)
+}
+
+func LoadImage(hinst HINSTANCE, lpszName string, uType uint, cxDesired, cyDesired int, fuLoad uint) HANDLE {
+	ret, _, _ := procLoadImage.Call(
+		uintptr(hinst),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpszName))),
+		uintptr(uType),
+		uintptr(cxDesired),
+		uintptr(cyDesired),
+		uintptr(fuLoad),
+	)
+	return HANDLE(ret)
+}
+
+func CreatePopupMenu() HMENU {
+	ret, _, _ := procCreatePopupMenu.Call()
+	return HMENU(ret)
+}
+
+
+func AppendMenu(menu HMENU, uFlags uint, uIDNewItem uintptr, newItem string) bool {
+	ret, _, _ := procAppendMenu.Call(
+		uintptr(menu),
+		uintptr(uFlags),
+		uintptr(uIDNewItem),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(newItem))),
+	)
+	return ret != 0
+}
+
+func TrackPopupMenu(menu HMENU, uFlags uint, x, y, reserved int, window HWND, prcRect *RECT) bool {
+	ret, _, _ := procTrackPopupMenu.Call(
+		uintptr(menu),
+		uintptr(uFlags),
+		uintptr(x),
+		uintptr(y),
+		uintptr(reserved),
+		uintptr(window),
+		uintptr(unsafe.Pointer(prcRect)),
+	)
+	return ret != 0
+}
+
+func SetForegroundWindow(wnd HWND) bool {
+	ret, _, _ := procSetForegroundWindow.Call(uintptr(wnd))
+	return ret != 0
 }

@@ -2671,3 +2671,94 @@ const (
 	GW_CHILD            = 5
 	GW_ENABLEDPOPUP     = 6
 )
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms648045%28v=vs.85%29.aspx
+const (
+	IMAGE_BITMAP           = 0
+	IMAGE_CURSOR           = 1
+	IMAGE_ICON             = 2
+)
+
+const (
+	LR_CREATEDIBSECTION    = 0x00002000
+	LR_DEFAULTCOLOR        = 0x00000000
+	LR_DEFAULTSIZE         = 0x00000040
+	LR_LOADFROMFILE        = 0x00000010
+	LR_LOADMAP3DCOLORS     = 0x00001000
+	LR_LOADTRANSPARENT     = 0x00000020
+	LR_MONOCHROME          = 0x00000001
+	LR_SHARED              = 0x00008000
+	LR_VGACOLOR            = 0x00000080
+)
+
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb773352%28v=vs.85%29.aspx
+const (
+	NIF_MESSAGE        = 0x00000001
+	NIF_ICON           = 0x00000002
+	NIF_TIP            = 0x00000004
+	NIF_STATE          = 0x00000008
+	NIF_INFO           = 0x00000010
+	NIF_GUID           = 0x00000020
+	NIF_REALTIME       = 0x00000040
+	NIF_SHOWTIP        = 0x00000080
+)
+
+const (
+	NIIF_NONE                  = 0x00000000
+	NIIF_INFO                  = 0x00000001
+	NIIF_WARNING               = 0x00000002
+	NIIF_ERROR                 = 0x00000003
+	NIIF_USER                  = 0x00000004
+	NIIF_NOSOUND               = 0x00000010
+	NIIF_LARGE_ICON            = 0x00000020
+	NIIF_RESPECT_QUIET_TIME    = 0x00000080
+	NIIF_ICON_MASK             = 0x0000000F
+)
+
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/bb762159%28v=vs.85%29.aspx
+const (
+	NIM_ADD          = 0x00000000
+	NIM_MODIFY       = 0x00000001
+	NIM_DELETE       = 0x00000002
+	NIM_SETFOCUS     = 0x00000003
+	NIM_SETVERSION   = 0x00000004
+)
+
+
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms647616%28v=vs.85%29.aspx
+const (
+	MF_BITMAP          = 0x00000004
+	MF_CHECKED         = 0x00000008
+	MF_DISABLED        = 0x00000002
+	MF_ENABLED         = 0x00000000
+	MF_GRAYED          = 0x00000001
+	MF_MENUBARBREAK    = 0x00000020
+	MF_MENUBREAK       = 0x00000040
+	MF_OWNERDRAW       = 0x00000100
+	MF_POPUP           = 0x00000010
+	MF_SEPARATOR       = 0x00000800
+	MF_STRING          = 0x00000000
+	MF_UNCHECKED       = 0x00000000
+)
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms648002%28v=vs.85%29.aspx
+const (
+	TPM_CENTERALIGN          = 0x0004
+	TPM_LEFTALIGN            = 0x0000
+	TPM_RIGHTALIGN           = 0x0008
+	TPM_BOTTOMALIGN          = 0x0020
+	TPM_TOPALIGN             = 0x0000
+	TPM_VCENTERALIGN         = 0x0010
+	TPM_NONOTIFY             = 0x0080
+	TPM_RETURNCMD            = 0x0100
+	TPM_LEFTBUTTON           = 0x0000
+	TPM_RIGHTBUTTON          = 0x0002
+	TPM_HORNEGANIMATION      = 0x0800
+	TPM_HORPOSANIMATION      = 0x0400
+	TPM_NOANIMATION          = 0x4000
+	TPM_VERNEGANIMATION      = 0x2000
+	TPM_VERPOSANIMATION      = 0x1000
+)
