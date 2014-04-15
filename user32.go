@@ -118,6 +118,7 @@ var (
 	procAppendMenu                    = moduser32.NewProc("AppendMenuW")
 	procTrackPopupMenu                = moduser32.NewProc("TrackPopupMenu")
 	procSetForegroundWindow           = moduser32.NewProc("SetForegroundWindow")
+	procSetTimer                      = moduser32.NewProc("SetTimer")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1003,4 +1004,14 @@ func TrackPopupMenu(menu HMENU, uFlags uint, x, y, reserved int, window HWND, pr
 func SetForegroundWindow(wnd HWND) bool {
 	ret, _, _ := procSetForegroundWindow.Call(uintptr(wnd))
 	return ret != 0
+}
+
+func SetTimer(wnd HWND, nIDEvent uintptr, uElapse uint) uintptr {
+	ret, _, _ := procSetTimer.Call(
+		uintptr(wnd),
+		nIDEvent,
+		uintptr(uElapse),
+		0,
+	)
+	return ret
 }
