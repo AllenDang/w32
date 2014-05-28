@@ -59,6 +59,7 @@ var (
 	procGetPixelFormat            = modgdi32.NewProc("GetPixelFormat")
 	procSetPixelFormat            = modgdi32.NewProc("SetPixelFormat")
 	procSwapBuffers               = modgdi32.NewProc("SwapBuffers")
+	procCreateSolidBrush          = modgdi32.NewProc("CreateSolidBrush")
 )
 
 func GetDeviceCaps(hdc HDC, index int) int {
@@ -507,3 +508,9 @@ func SwapBuffers(hdc HDC) bool {
 	ret, _, _ := procSwapBuffers.Call(uintptr(hdc))
 	return ret == TRUE
 }
+
+func CreateSolidBrush(colorRef COLORREF) HBRUSH {
+	res, _, _ := procCreateSolidBrush.Call(uintptr(colorRef))
+	return HBRUSH(res)
+}
+
