@@ -1637,54 +1637,6 @@ const (
 	DWL_USER      = 8
 )
 
-// Registry predefined keys
-const (
-	HKEY_CLASSES_ROOT     HKEY = 0x80000000
-	HKEY_CURRENT_USER     HKEY = 0x80000001
-	HKEY_LOCAL_MACHINE    HKEY = 0x80000002
-	HKEY_USERS            HKEY = 0x80000003
-	HKEY_PERFORMANCE_DATA HKEY = 0x80000004
-	HKEY_CURRENT_CONFIG   HKEY = 0x80000005
-	HKEY_DYN_DATA         HKEY = 0x80000006
-)
-
-// Registry Key Security and Access Rights
-const (
-	KEY_ALL_ACCESS         = 0xF003F
-	KEY_CREATE_SUB_KEY     = 0x0004
-	KEY_ENUMERATE_SUB_KEYS = 0x0008
-	KEY_NOTIFY             = 0x0010
-	KEY_QUERY_VALUE        = 0x0001
-	KEY_SET_VALUE          = 0x0002
-	KEY_READ               = 0x20019
-	KEY_WRITE              = 0x20006
-)
-
-const (
-	NFR_ANSI    = 1
-	NFR_UNICODE = 2
-	NF_QUERY    = 3
-	NF_REQUERY  = 4
-)
-
-// Registry value types
-const (
-	RRF_RT_REG_NONE         = 0x00000001
-	RRF_RT_REG_SZ           = 0x00000002
-	RRF_RT_REG_EXPAND_SZ    = 0x00000004
-	RRF_RT_REG_BINARY       = 0x00000008
-	RRF_RT_REG_DWORD        = 0x00000010
-	RRF_RT_REG_MULTI_SZ     = 0x00000020
-	RRF_RT_REG_QWORD        = 0x00000040
-	RRF_RT_DWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_DWORD)
-	RRF_RT_QWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_QWORD)
-	RRF_RT_ANY              = 0x0000ffff
-	RRF_NOEXPAND            = 0x10000000
-	RRF_ZEROONFAILURE       = 0x20000000
-	REG_PROCESS_APPKEY      = 0x00000001
-	REG_MUI_STRING_TRUNCATE = 0x00000001
-)
-
 // PeekMessage wRemoveMsg value
 const (
 	PM_NOREMOVE = 0x000

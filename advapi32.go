@@ -14,21 +14,32 @@ import (
 var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
-	procRegCreateKeyEx = modadvapi32.NewProc("RegCreateKeyExW")
-	procRegOpenKeyEx   = modadvapi32.NewProc("RegOpenKeyExW")
-	procRegCloseKey    = modadvapi32.NewProc("RegCloseKey")
-	procRegGetValue    = modadvapi32.NewProc("RegGetValueW")
-	procRegEnumKeyEx   = modadvapi32.NewProc("RegEnumKeyExW")
 	//	procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
-	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
-	procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
-	procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
 	procCloseEventLog      = modadvapi32.NewProc("CloseEventLog")
-	procOpenSCManager      = modadvapi32.NewProc("OpenSCManagerW")
 	procCloseServiceHandle = modadvapi32.NewProc("CloseServiceHandle")
-	procOpenService        = modadvapi32.NewProc("OpenServiceW")
-	procStartService       = modadvapi32.NewProc("StartServiceW")
 	procControlService     = modadvapi32.NewProc("ControlService")
+	procControlTrace       = modadvapi32.NewProc("ControlTraceW")
+	procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
+	procOpenSCManager      = modadvapi32.NewProc("OpenSCManagerW")
+	procOpenService        = modadvapi32.NewProc("OpenServiceW")
+	procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
+	procRegCloseKey        = modadvapi32.NewProc("RegCloseKey")
+	procRegCreateKeyEx     = modadvapi32.NewProc("RegCreateKeyExW")
+	procRegEnumKeyEx       = modadvapi32.NewProc("RegEnumKeyExW")
+	procRegGetValue        = modadvapi32.NewProc("RegGetValueW")
+	procRegOpenKeyEx       = modadvapi32.NewProc("RegOpenKeyExW")
+	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
+	procStartService       = modadvapi32.NewProc("StartServiceW")
+	procStartTrace         = modadvapi32.NewProc("StartTraceW")
+)
+
+var (
+	SystemTraceControlGuid = GUID{
+		0x9e814aad,
+		0x3204,
+		0x11d2,
+		[8]byte{0x9a, 0x82, 0x00, 0x60, 0x08, 0xa8, 0x69, 0x39},
+	}
 )
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
@@ -296,4 +307,31 @@ func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_
 		uintptr(unsafe.Pointer(lpServiceStatus)))
 
 	return ret != 0
+}
+
+func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_PROPERTIES, dwControl uint32) (success bool, e error) {
+	ret, _, _ := procControlTrace.Call(
+		uintptr(unsafe.Pointer(hTrace)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
+		uintptr(unsafe.Pointer(props)),
+		uintptr(dwControl))
+
+	if ret == ERROR_SUCCESS {
+		return true, nil
+	}
+	e = errors.New(fmt.Sprintf("ControlTrace: Error: 0x%x", ret))
+	return
+}
+
+func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRACEHANDLE, e error) {
+	ret, _, _ := procStartTrace.Call(
+		uintptr(unsafe.Pointer(&hTrace)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
+		uintptr(unsafe.Pointer(props)))
+
+	if ret == ERROR_SUCCESS {
+		return
+	}
+	e = errors.New(fmt.Sprintf("StartTrace: Error: 0x%x", ret))
+	return
 }
