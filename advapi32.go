@@ -27,6 +27,7 @@ var (
 	procControlTrace                 = modadvapi32.NewProc("ControlTraceW")
 	procOpenSCManager                = modadvapi32.NewProc("OpenSCManagerW")
 	procOpenService                  = modadvapi32.NewProc("OpenServiceW")
+	procInitializeSecurityDescriptor = modadvapi32.NewProc("InitializeSecurityDescriptor")
 	procRegCloseKey                  = modadvapi32.NewProc("RegCloseKey")
 	procRegCreateKeyEx               = modadvapi32.NewProc("RegCreateKeyExW")
 	procRegEnumKeyEx                 = modadvapi32.NewProc("RegEnumKeyExW")
@@ -34,7 +35,6 @@ var (
 	procRegOpenKeyEx                 = modadvapi32.NewProc("RegOpenKeyExW")
 	procStartService                 = modadvapi32.NewProc("StartServiceW")
 	procStartTrace                   = modadvapi32.NewProc("StartTraceW")
-	procInitializeSecurityDescriptor = modadvapi32.NewProc("InitializeSecurityDescriptor")
 	procSetSecurityDescriptorDacl    = modadvapi32.NewProc("SetSecurityDescriptorDacl")
 )
 
@@ -395,10 +395,7 @@ func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_
 }
 
 func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_PROPERTIES, dwControl uint32) (success bool, e error) {
-<<<<<<< HEAD
 
-=======
->>>>>>> support kernel traces for ETW
 	ret, _, _ := procControlTrace.Call(
 		uintptr(unsafe.Pointer(hTrace)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
@@ -408,19 +405,13 @@ func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_P
 	if ret == ERROR_SUCCESS {
 		return true, nil
 	}
-<<<<<<< HEAD
+
 	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
-=======
-	e = errors.New(fmt.Sprintf("ControlTrace: Error: 0x%x", ret))
->>>>>>> support kernel traces for ETW
+
 	return
 }
 
 func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRACEHANDLE, e error) {
-<<<<<<< HEAD
-
-=======
->>>>>>> support kernel traces for ETW
 	ret, _, _ := procStartTrace.Call(
 		uintptr(unsafe.Pointer(&hTrace)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
@@ -429,7 +420,7 @@ func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRA
 	if ret == ERROR_SUCCESS {
 		return
 	}
-<<<<<<< HEAD
+
 	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
 	return
 }
@@ -479,8 +470,5 @@ func SetSecurityDescriptorDacl(pSecurityDescriptor *SECURITY_DESCRIPTOR, pDacl *
 		return
 	}
 	e = syscall.GetLastError()
-=======
-	e = errors.New(fmt.Sprintf("StartTrace: Error: 0x%x", ret))
->>>>>>> support kernel traces for ETW
 	return
 }
