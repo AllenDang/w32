@@ -210,6 +210,7 @@ type (
 	LPCVOID         unsafe.Pointer
 	PVOID           unsafe.Pointer
 	QPC_TIME        uint64
+	TRACEHANDLE     uintptr
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
@@ -623,37 +624,6 @@ type PAINTSTRUCT struct {
 	FRestore    BOOL
 	FIncUpdate  BOOL
 	RgbReserved [32]byte
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa363646.aspx
-type EVENTLOGRECORD struct {
-	Length              uint32
-	Reserved            uint32
-	RecordNumber        uint32
-	TimeGenerated       uint32
-	TimeWritten         uint32
-	EventID             uint32
-	EventType           uint16
-	NumStrings          uint16
-	EventCategory       uint16
-	ReservedFlags       uint16
-	ClosingRecordNumber uint32
-	StringOffset        uint32
-	UserSidLength       uint32
-	UserSidOffset       uint32
-	DataLength          uint32
-	DataOffset          uint32
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996.aspx
-type SERVICE_STATUS struct {
-	DwServiceType             uint32
-	DwCurrentState            uint32
-	DwControlsAccepted        uint32
-	DwWin32ExitCode           uint32
-	DwServiceSpecificExitCode uint32
-	DwCheckPoint              uint32
-	DwWaitHint                uint32
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms684225.aspx
