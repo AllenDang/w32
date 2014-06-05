@@ -2222,7 +2222,6 @@ const (
 	STANDARD_RIGHTS_REQUIRED = 0x000F
 )
 
-<<<<<<< HEAD
 // Service Control Manager object specific access types
 const (
 	SC_MANAGER_CONNECT            = 0x0001

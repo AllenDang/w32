@@ -15,28 +15,27 @@ var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
 	//	procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
-	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
-	procRegDeleteKeyValue  = modadvapi32.NewProc("RegDeleteKeyValueW")
-	procRegDeleteValue     = modadvapi32.NewProc("RegDeleteValueW")
-	procRegDeleteTree      = modadvapi32.NewProc("RegDeleteTreeW")
-	procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
-	procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
-	procCloseEventLog      = modadvapi32.NewProc("CloseEventLog")
-	procCloseServiceHandle = modadvapi32.NewProc("CloseServiceHandle")
-	procControlService     = modadvapi32.NewProc("ControlService")
-	procControlTrace       = modadvapi32.NewProc("ControlTraceW")
-	procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
-	procOpenSCManager      = modadvapi32.NewProc("OpenSCManagerW")
-	procOpenService        = modadvapi32.NewProc("OpenServiceW")
-	procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
-	procRegCloseKey        = modadvapi32.NewProc("RegCloseKey")
-	procRegCreateKeyEx     = modadvapi32.NewProc("RegCreateKeyExW")
-	procRegEnumKeyEx       = modadvapi32.NewProc("RegEnumKeyExW")
-	procRegGetValue        = modadvapi32.NewProc("RegGetValueW")
-	procRegOpenKeyEx       = modadvapi32.NewProc("RegOpenKeyExW")
-	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
-	procStartService       = modadvapi32.NewProc("StartServiceW")
-	procStartTrace         = modadvapi32.NewProc("StartTraceW")
+	procRegSetValueEx                = modadvapi32.NewProc("RegSetValueExW")
+	procRegDeleteKeyValue            = modadvapi32.NewProc("RegDeleteKeyValueW")
+	procRegDeleteValue               = modadvapi32.NewProc("RegDeleteValueW")
+	procRegDeleteTree                = modadvapi32.NewProc("RegDeleteTreeW")
+	procOpenEventLog                 = modadvapi32.NewProc("OpenEventLogW")
+	procReadEventLog                 = modadvapi32.NewProc("ReadEventLogW")
+	procCloseEventLog                = modadvapi32.NewProc("CloseEventLog")
+	procCloseServiceHandle           = modadvapi32.NewProc("CloseServiceHandle")
+	procControlService               = modadvapi32.NewProc("ControlService")
+	procControlTrace                 = modadvapi32.NewProc("ControlTraceW")
+	procOpenSCManager                = modadvapi32.NewProc("OpenSCManagerW")
+	procOpenService                  = modadvapi32.NewProc("OpenServiceW")
+	procRegCloseKey                  = modadvapi32.NewProc("RegCloseKey")
+	procRegCreateKeyEx               = modadvapi32.NewProc("RegCreateKeyExW")
+	procRegEnumKeyEx                 = modadvapi32.NewProc("RegEnumKeyExW")
+	procRegGetValue                  = modadvapi32.NewProc("RegGetValueW")
+	procRegOpenKeyEx                 = modadvapi32.NewProc("RegOpenKeyExW")
+	procStartService                 = modadvapi32.NewProc("StartServiceW")
+	procStartTrace                   = modadvapi32.NewProc("StartTraceW")
+	procInitializeSecurityDescriptor = modadvapi32.NewProc("InitializeSecurityDescriptor")
+	procSetSecurityDescriptorDacl    = modadvapi32.NewProc("SetSecurityDescriptorDacl")
 )
 
 var (
@@ -396,6 +395,7 @@ func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_
 }
 
 func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_PROPERTIES, dwControl uint32) (success bool, e error) {
+
 	ret, _, _ := procControlTrace.Call(
 		uintptr(unsafe.Pointer(hTrace)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
@@ -405,11 +405,12 @@ func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_P
 	if ret == ERROR_SUCCESS {
 		return true, nil
 	}
-	e = errors.New(fmt.Sprintf("ControlTrace: Error: 0x%x", ret))
+	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
 	return
 }
 
 func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRACEHANDLE, e error) {
+
 	ret, _, _ := procStartTrace.Call(
 		uintptr(unsafe.Pointer(&hTrace)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
@@ -418,6 +419,54 @@ func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRA
 	if ret == ERROR_SUCCESS {
 		return
 	}
-	e = errors.New(fmt.Sprintf("StartTrace: Error: 0x%x", ret))
+	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
+	return
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa378863(v=vs.85).aspx
+func InitializeSecurityDescriptor(rev uint16) (pSecurityDescriptor *SECURITY_DESCRIPTOR, e error) {
+
+	pSecurityDescriptor = &SECURITY_DESCRIPTOR{}
+
+	ret, _, _ := procInitializeSecurityDescriptor.Call(
+		uintptr(unsafe.Pointer(pSecurityDescriptor)),
+		uintptr(rev),
+	)
+
+	if ret != 0 {
+		return
+	}
+	e = syscall.GetLastError()
+	return
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/aa379583(v=vs.85).aspx
+func SetSecurityDescriptorDacl(pSecurityDescriptor *SECURITY_DESCRIPTOR, pDacl *ACL) (e error) {
+
+	if pSecurityDescriptor == nil {
+		return errors.New("null descriptor")
+	}
+
+	var ret uintptr
+	if pDacl == nil {
+		ret, _, _ = procSetSecurityDescriptorDacl.Call(
+			uintptr(unsafe.Pointer(pSecurityDescriptor)),
+			uintptr(0), // DaclPresent
+			uintptr(0), // pDacl
+			uintptr(1), // DaclDefaulted
+		)
+	} else {
+		ret, _, _ = procSetSecurityDescriptorDacl.Call(
+			uintptr(unsafe.Pointer(pSecurityDescriptor)),
+			uintptr(1), // DaclPresent
+			uintptr(unsafe.Pointer(pDacl)),
+			uintptr(0), //DaclDefaulted
+		)
+	}
+
+	if ret != 0 {
+		return
+	}
+	e = syscall.GetLastError()
 	return
 }
