@@ -6,6 +6,7 @@ package w32
 
 import (
 	"errors"
+	"fmt"
 	"syscall"
 	"unsafe"
 )
@@ -22,8 +23,8 @@ func newUnicodeString(s string) (us UNICODE_STRING, e error) {
 		e = err
 		return
 	}
-	us.Length = len(ustr)
-	us.MaximumLength = len(ustr)
+	us.Length = uint16(len(ustr))
+	us.MaximumLength = uint16(len(ustr))
 	us.Buffer = unsafe.Pointer(&ustr[0])
 	return
 }
@@ -73,7 +74,7 @@ func NtAlpcCreatePort(pObjectAttributes *OBJECT_ATTRIBUTES, pPortAttributes *ALP
 		uintptr(unsafe.Pointer(pPortAttributes)),
 	)
 	if ret != ERROR_SUCCESS {
-		return hPort, errors.New(ret)
+		return hPort, errors.New(fmt.Sprintf("0x%x", ret))
 	}
 
 	return
