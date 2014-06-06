@@ -451,9 +451,9 @@ func SetSecurityDescriptorDacl(pSecurityDescriptor *SECURITY_DESCRIPTOR, pDacl *
 	if pDacl == nil {
 		ret, _, _ = procSetSecurityDescriptorDacl.Call(
 			uintptr(unsafe.Pointer(pSecurityDescriptor)),
-			uintptr(0), // DaclPresent
+			uintptr(1), // DaclPresent
 			uintptr(0), // pDacl
-			uintptr(1), // DaclDefaulted
+			uintptr(0), // DaclDefaulted
 		)
 	} else {
 		ret, _, _ = procSetSecurityDescriptorDacl.Call(
