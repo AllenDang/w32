@@ -4,6 +4,7 @@
 
 package w32
 
+<<<<<<< HEAD
 // #include <stdlib.h>
 import (
 	"C"
@@ -12,11 +13,16 @@ import (
 import (
 	"fmt"
 	// "github.com/davecgh/go-spew/spew"
+=======
+import (
+	"errors"
+>>>>>>> add some ALPC
 	"syscall"
 	"unsafe"
 )
 
 var (
+<<<<<<< HEAD
 	modntdll = syscall.NewLazyDLL("ntdll.dll")
 
 	procAlpcGetMessageAttribute          = modntdll.NewProc("AlpcGetMessageAttribute")
@@ -51,6 +57,22 @@ func newUnicodeString(s string) (us UNICODE_STRING, e error) {
 	// work out how to manually initialize the UNICODE_STRING struct in a way
 	// that the ALPC subsystem liked.
 	us, e = RtlCreateUnicodeStringFromAsciiz(s)
+=======
+	modkernel32 = syscall.NewLazyDLL("ntdll.dll")
+
+	procNtAlpcCreatePort = modadvapi32.NewProc("NtAlpcCreatePort")
+)
+
+func newUnicodeString(s string) (us UNICODE_STRING, e error) {
+	ustr, err := syscall.UTF16FromString(s)
+	if err != nil {
+		e = err
+		return
+	}
+	us.Length = len(ustr)
+	us.MaximumLength = len(ustr)
+	us.Buffer = unsafe.Pointer(&ustr[0])
+>>>>>>> add some ALPC
 	return
 }
 
@@ -62,11 +84,16 @@ func newUnicodeString(s string) (us UNICODE_STRING, e error) {
 //   [in]            HANDLE RootDirectory,
 //   [in, optional]  PSECURITY_DESCRIPTOR SecurityDescriptor
 // )
+<<<<<<< HEAD
 func InitializeObjectAttributes(
+=======
+func NewObjectAttributes(
+>>>>>>> add some ALPC
 	name string,
 	attributes uint32,
 	rootDir HANDLE,
 	pSecurityDescriptor *SECURITY_DESCRIPTOR,
+<<<<<<< HEAD
 ) (oa OBJECT_ATTRIBUTES, e error) {
 
 	oa = OBJECT_ATTRIBUTES{
@@ -305,5 +332,42 @@ func NtAlpcDisconnectPort(hPort HANDLE, flags uint32) (e error) {
 	if ret != ERROR_SUCCESS {
 		e = fmt.Errorf("0x%x", ret)
 	}
+=======
+) (objectAttributes OBJECT_ATTRIBUTES, e error) {
+
+	unicodeString, err := newUnicodeString(name)
+	if err != nil {
+		e = err
+		return
+	}
+
+	objectAttributes = OBJECT_ATTRIBUTES{
+		RootDirectory:      rootDir,
+		ObjectName:         &unicodeString,
+		Attributes:         attributes,
+		SecurityDescriptor: pSecurityDescriptor,
+	}
+	return
+}
+
+// # NTSTATUS
+// # NtAlpcCreatePort(
+// #   __out PHANDLE PortHandle,
+// #   __in POBJECT_ATTRIBUTES ObjectAttributes,
+// #   __in_opt PALPC_PORT_ATTRIBUTES PortAttributes
+// #   );
+func NtAlpcCreatePort(pObjectAttributes *OBJECT_ATTRIBUTES, pPortAttributes *ALPC_PORT_ATTRIBUTES) (hPort HANDLE, e error) {
+
+	pHandle := &hPort
+	ret, _, _ := procNtAlpcCreatePort.Call(
+		uintptr(unsafe.Pointer(pHandle)),
+		uintptr(unsafe.Pointer(pObjectAttributes)),
+		uintptr(unsafe.Pointer(pPortAttributes)),
+	)
+	if ret != ERROR_SUCCESS {
+		return hPort, errors.New(ret)
+	}
+
+>>>>>>> add some ALPC
 	return
 }
