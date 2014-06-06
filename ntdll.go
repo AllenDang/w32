@@ -11,9 +11,9 @@ import (
 )
 
 var (
-	modkernel32 = syscall.NewLazyDLL("ntdll.dll")
+	modntdll = syscall.NewLazyDLL("ntdll.dll")
 
-	procNtAlpcCreatePort = modadvapi32.NewProc("NtAlpcCreatePort")
+	procNtAlpcCreatePort = modntdll.NewProc("NtAlpcCreatePort")
 )
 
 func newUnicodeString(s string) (us UNICODE_STRING, e error) {
