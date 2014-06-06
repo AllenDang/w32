@@ -92,8 +92,11 @@ func (pm PORT_MESSAGE) DoNotUseThisField() float64 {
 	panic("WE TOLD YOU NOT TO USE THIS FIELD")
 }
 
+<<<<<<< HEAD
 const PORT_MESSAGE_SIZE = 0x28
 
+=======
+>>>>>>> most basic test passing
 // http://www.nirsoft.net/kernel_struct/vista/SECURITY_QUALITY_OF_SERVICE.html
 type SECURITY_QUALITY_OF_SERVICE struct {
 	Length              uint32
