@@ -72,7 +72,7 @@ func (pm PORT_MESSAGE) CallbackId() uint32 {
 	return uint32(pm.ClientViewSize >> 32)
 }
 
-func (pm PORT_MESSAGE) DoNotUseThisField() float {
+func (pm PORT_MESSAGE) DoNotUseThisField() float64 {
 	panic("WE TOLD YOU NOT TO USE THIS FIELD")
 }
 
