@@ -1,17 +1,18 @@
 package w32
 
-import "testing"
+import (
+	"testing"
+)
 
 var testPortName = "\\TestAlpcPort"
 
 func TestNtAlpcCreatePort(t *testing.T) {
 
-	objAttr := NewObjectAttributes(testPortName, 0, 0, nil)
-	portAttr := ALPC_PORT_ATTRIBUTES{MaxMessageLength: 0x148}
-	hPort, err := NtAlpcCreatePort(&objAttr, &portAttr)
+	hPort, err := UnsecuredAlpcPort(testPortName)
+
 	if err != nil {
 		t.Errorf("failed to create ALPC port %v: %v", testPortName, err)
+	} else {
+		t.Logf("[OK] Created ALPC port %v with handle 0x%x", testPortName, hPort)
 	}
-
-	t.Logf("[OK] Created ALPC port %v with handle 0x%x", testPortName, hPort)
 }

@@ -27,6 +27,7 @@ type CLIENT_ID struct {
 type UNICODE_STRING struct {
 	Length        uint16
 	MaximumLength uint16
+	_             [4]byte // align to 0x08
 	Buffer        unsafe.Pointer
 }
 
@@ -39,11 +40,11 @@ type UNICODE_STRING struct {
 //  +0x028 SecurityQualityOfService : Ptr64 Void
 type OBJECT_ATTRIBUTES struct {
 	Length                   uint32
-	padding1                 [4]byte
+	_                        [4]byte // align to 0x08
 	RootDirectory            HANDLE
 	ObjectName               *UNICODE_STRING
 	Attributes               uint32
-	padding2                 [4]byte
+	_                        [4]byte // align to 0x20
 	SecurityDescriptor       *SECURITY_DESCRIPTOR
 	SecurityQualityOfService *SECURITY_QUALITY_OF_SERVICE
 }
@@ -64,7 +65,7 @@ type PORT_MESSAGE struct {
 	DataInfoOffset uint16
 	ClientId       CLIENT_ID
 	MessageId      uint32
-	padding        [4]byte
+	_              [4]byte // align up to 0x20
 	ClientViewSize uint64
 }
 
@@ -76,23 +77,13 @@ func (pm PORT_MESSAGE) DoNotUseThisField() float64 {
 	panic("WE TOLD YOU NOT TO USE THIS FIELD")
 }
 
-type SECURITY_IMPERSONATION_LEVEL int
-
-const (
-	SecurityAnonymous SECURITY_IMPERSONATION_LEVEL = iota
-	SecurityIdentification
-	SecurityImpersonation
-	SecurityDelegation
-)
-
 // http://www.nirsoft.net/kernel_struct/vista/SECURITY_QUALITY_OF_SERVICE.html
-// Added internal padding to make it 0xC bytes, as per the dt output below
 type SECURITY_QUALITY_OF_SERVICE struct {
 	Length              uint32
-	ImpersonationLevel  SECURITY_IMPERSONATION_LEVEL
+	ImpersonationLevel  uint32
 	ContextTrackingMode byte
 	EffectiveOnly       byte
-	padding             [2]byte
+	_                   [2]byte // align to 12 bytes
 }
 
 // nt!_ALPC_PORT_ATTRIBUTES
