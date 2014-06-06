@@ -1,5 +1,9 @@
 package w32
 
+import (
+	"unsafe"
+)
+
 // nt!_ALPC_MESSAGE_ATTRIBUTES
 //  +0x000 AllocatedAttributes : Uint4B
 //  +0x004 ValidAttributes  : Uint4B
