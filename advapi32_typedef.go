@@ -23,6 +23,24 @@ type SECURITY_DESCRIPTOR struct {
 	Dacl     *ACL
 }
 
+type SID_IDENTIFIER_AUTHORITY struct {
+	Value [6]byte
+}
+
+// typedef struct _SID // 4 elements, 0xC bytes (sizeof)
+// {
+// /*0x000*/     UINT8        Revision;
+// /*0x001*/     UINT8        SubAuthorityCount;
+// /*0x002*/     struct _SID_IDENTIFIER_AUTHORITY IdentifierAuthority; // 1 elements, 0x6 bytes (sizeof)
+// /*0x008*/     ULONG32      SubAuthority[1];
+// }SID, *PSID;
+type SID struct {
+	Revision            byte
+	SubAuthorityCount   byte
+	IdentifierAuthority SID_IDENTIFIER_AUTHORITY
+	SubAuthority        uint32
+}
+
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa363646.aspx
 type EVENTLOGRECORD struct {
 	Length              uint32

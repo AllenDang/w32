@@ -1,7 +1,8 @@
 package w32
 
 import (
-	"unsafe"
+	//"unsafe"
+	"errors"
 )
 
 // nt!_ALPC_MESSAGE_ATTRIBUTES
@@ -28,7 +29,7 @@ type UNICODE_STRING struct {
 	Length        uint16
 	MaximumLength uint16
 	_             [4]byte // align to 0x08
-	Buffer        unsafe.Pointer
+	Buffer        *uint16
 }
 
 // nt!_OBJECT_ATTRIBUTES
@@ -77,6 +78,8 @@ func (pm PORT_MESSAGE) DoNotUseThisField() float64 {
 	panic("WE TOLD YOU NOT TO USE THIS FIELD")
 }
 
+const PORT_MESSAGE_SIZE = 0x28
+
 // http://www.nirsoft.net/kernel_struct/vista/SECURITY_QUALITY_OF_SERVICE.html
 type SECURITY_QUALITY_OF_SERVICE struct {
 	Length              uint32
@@ -110,14 +113,35 @@ type ALPC_PORT_ATTRIBUTES struct {
 	Reserved            uint32
 }
 
-//   typedef struct _TRANSFERRED_MESSAGE
-// {
-//     PORT_MESSAGE Header;
-//     ULONG   Command;
-//     WCHAR   MessageText[48];
-// }
-type TRANSFERRED_MESSAGE struct {
-	Header      PORT_MESSAGE
-	Command     uint32
-	MessageText [48]uint16
+const SHORT_MESSAGE_MAX_SIZE = 65535
+
+type AlpcShortMessage struct {
+	PORT_MESSAGE
+	Command uint32
+	data    [SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE - 4]byte
+}
+
+func NewAlpcShortMessage() AlpcShortMessage {
+	sm := AlpcShortMessage{}
+	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
+	return sm
+}
+
+func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
+
+	copy(sm.data[:], d)
+	if len(d) > len(sm.data) {
+		e = errors.New("data too big - truncated")
+		sm.DataLength = uint16(4 + len(sm.data))
+		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.data))
+		return
+	}
+	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(d))
+	sm.DataLength = uint16(4 + len(d))
+	return
+
+}
+
+func (sm *AlpcShortMessage) GetData() []byte {
+	return sm.data[:sm.DataLength-4]
 }
