@@ -8,7 +8,7 @@ var testPortName = "\\TestAlpcPort"
 
 func TestNtAlpcCreatePort(t *testing.T) {
 
-	hPort, err := UnsecuredAlpcPort(testPortName)
+	hPort, err := BasicAlpcCreatePort(testPortName)
 
 	if err != nil {
 		t.Errorf("failed to create ALPC port %v: %v", testPortName, err)

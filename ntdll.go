@@ -84,6 +84,7 @@ func InitializeObjectAttributes(
 		}
 		oa.ObjectName = &us
 	}
+
 	return
 }
 
@@ -304,27 +305,5 @@ func NtAlpcDisconnectPort(hPort HANDLE, flags uint32) (e error) {
 	if ret != ERROR_SUCCESS {
 		e = fmt.Errorf("0x%x", ret)
 	}
-	return
-}
-
-func UnsecuredAlpcPort(name string) (hPort HANDLE, e error) {
-
-	sd, e := InitializeSecurityDescriptor(1)
-	if e != nil {
-		return
-	}
-	e = SetSecurityDescriptorDacl(sd, nil)
-	if e != nil {
-		return
-	}
-
-	objAttr, e := NewObjectAttributes(name, 0, 0, sd)
-	if e != nil {
-		return
-	}
-	portAttr := ALPC_PORT_ATTRIBUTES{MaxMessageLength: 0x148}
-
-	hPort, e = NtAlpcCreatePort(&objAttr, &portAttr)
-
 	return
 }
