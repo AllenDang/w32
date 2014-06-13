@@ -1,7 +1,6 @@
 package w32
 
 import (
-	//"unsafe"
 	"errors"
 )
 
@@ -11,6 +10,21 @@ import (
 type ALPC_MESSAGE_ATTRIBUTES struct {
 	AllocatedAttributes uint32
 	ValidAttributes     uint32
+}
+
+type ALPC_CONTEXT_ATTR struct {
+	PortContext    *AlpcPortContext
+	MessageContext uintptr
+	Sequence       uint32
+	MessageId      uint32
+	CallbackId     uint32
+}
+
+type ALPC_HANDLE_ATTR struct {
+	Flags         uint32
+	Handle        HANDLE
+	ObjectType    uint32
+	DesiredAccess uint32
 }
 
 // nt!_CLIENT_ID
@@ -89,6 +103,8 @@ type SECURITY_QUALITY_OF_SERVICE struct {
 	_                   [2]byte // align to 12 bytes
 }
 
+const SECURITY_QOS_SIZE = 12
+
 // nt!_ALPC_PORT_ATTRIBUTES
 //  +0x000 Flags            : Uint4B
 //  +0x004 SecurityQos      : _SECURITY_QUALITY_OF_SERVICE
@@ -103,7 +119,7 @@ type SECURITY_QUALITY_OF_SERVICE struct {
 type ALPC_PORT_ATTRIBUTES struct {
 	Flags               uint32
 	SecurityQos         SECURITY_QUALITY_OF_SERVICE
-	MaxMessageLength    uint64
+	MaxMessageLength    uint64 // must be filled out
 	MemoryBandwidth     uint64
 	MaxPoolUsage        uint64
 	MaxSectionSize      uint64
@@ -132,6 +148,7 @@ func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 	copy(sm.data[:], d)
 	if len(d) > len(sm.data) {
 		e = errors.New("data too big - truncated")
+		// the 4 everywhere is the Command struct member
 		sm.DataLength = uint16(4 + len(sm.data))
 		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.data))
 		return
@@ -143,5 +160,17 @@ func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 }
 
 func (sm *AlpcShortMessage) GetData() []byte {
+	if len(sm.data) < int(sm.DataLength-4) {
+		return []byte{}
+	}
 	return sm.data[:sm.DataLength-4]
+}
+
+func (sm *AlpcShortMessage) Reset() {
+	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
+	sm.DataLength = 0
+}
+
+type AlpcPortContext struct {
+	Handle HANDLE
 }

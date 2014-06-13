@@ -18,6 +18,9 @@ var (
 	procNtAlpcCreatePort          = modntdll.NewProc("NtAlpcCreatePort")
 	procNtAlpcConnectPort         = modntdll.NewProc("NtAlpcConnectPort")
 	procNtAlpcSendWaitReceivePort = modntdll.NewProc("NtAlpcSendWaitReceivePort")
+	procNtAlpcAcceptConnectPort   = modntdll.NewProc("NtAlpcAcceptConnectPort")
+	procAlpcGetMessageAttribute   = modntdll.NewProc("AlpcGetMessageAttribute")
+	procNtAlpcCancelMessage       = modntdll.NewProc("NtAlpcCancelMessage")
 )
 
 func newUnicodeString(s string) (us UNICODE_STRING, e error) {
@@ -152,6 +155,48 @@ func NtAlpcConnectPort(
 }
 
 // NTSTATUS
+// NtAlpcAcceptConnectPort(
+//     __out PHANDLE PortHandle,
+//     __in HANDLE ConnectionPortHandle,
+//     __in ULONG Flags,
+//     __in POBJECT_ATTRIBUTES ObjectAttributes,
+//     __in PALPC_PORT_ATTRIBUTES PortAttributes,
+//     __in_opt PVOID PortContext,
+//     __in PPORT_MESSAGE ConnectionRequest,
+//     __inout_opt PALPC_MESSAGE_ATTRIBUTES ConnectionMessageAttributes,
+//     __in BOOLEAN AcceptConnection
+//     );
+
+func NtAlpcAcceptConnectPort(
+	hSrvConnPort HANDLE,
+	flags uint32,
+	pObjAttr *OBJECT_ATTRIBUTES,
+	pPortAttr *ALPC_PORT_ATTRIBUTES,
+	pContext *AlpcPortContext,
+	pConnReq *AlpcShortMessage,
+	pConnMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
+	accept uintptr,
+) (hPort HANDLE, e error) {
+
+	ret, _, _ := procNtAlpcAcceptConnectPort.Call(
+		uintptr(unsafe.Pointer(&hPort)),
+		uintptr(hSrvConnPort),
+		uintptr(flags),
+		uintptr(unsafe.Pointer(pObjAttr)),
+		uintptr(unsafe.Pointer(pPortAttr)),
+		uintptr(unsafe.Pointer(pContext)),
+		uintptr(unsafe.Pointer(pConnReq)),
+		uintptr(unsafe.Pointer(pConnMsgAttrs)),
+		accept,
+	)
+
+	if ret != ERROR_SUCCESS {
+		e = errors.New(fmt.Sprintf("0x%x", ret))
+	}
+	return
+}
+
+// NTSTATUS
 // NtAlpcSendWaitReceivePort(
 //     __in HANDLE PortHandle,
 //     __in ULONG Flags,
@@ -190,42 +235,71 @@ func NtAlpcSendWaitReceivePort(
 	return
 }
 
-// // This API builds a *PORT_MESSAGE with the payload following it in memory,
-// // sets the length fields correctly and zeros the rest of the PORT_MESSAGE
-// // header fields. It is designed so that the destination buffer can be re-used
-// func ConstructPortMsg(payload []byte, dest *[65535]byte) (pPortMessage *PORT_MESSAGE, e error) {
+// NTSYSAPI
+// PVOID
+// NTAPI
+// AlpcGetMessageAttribute(
+//     __in PALPC_MESSAGE_ATTRIBUTES Buffer,
+//     __in ULONG AttributeFlag
+//     );
 
-// 	var totlen uint16
-// 	if len(payload)+PORT_MESSAGE_SIZE > 65535 {
-// 		totlen = 65535
-// 	} else {
-// 		totlen = uint16(len(payload) + PORT_MESSAGE_SIZE)
-// 	}
-// 	// truncates if the payload is too big
-// 	copy(dest[PORT_MESSAGE_SIZE:], payload)
+// This basically returns a pointer to the correct struct for whichever
+// message attribute you asked for. In Go terms, it returns unsafe.Pointer
+// which you should then cast. Example:
 
-// 	pPortMessage = (*PORT_MESSAGE)(unsafe.Pointer(dest))
-// 	pPortMessage.DataLength = uint16(len(payload))
-// 	pPortMessage.TotalLength = totlen
-// 	// Zero the rest of the fields
-// 	pPortMessage.Type = 0
-// 	pPortMessage.DataInfoOffset = 0
-// 	pPortMessage.ClientId = CLIENT_ID{}
-// 	pPortMessage.MessageId = 0
-// 	pPortMessage.ClientViewSize = 0
-
-// 	return
+// ptr := AlpcGetMessageAttribute(&recvMsgAttrs, ALPC_MESSAGE_CONTEXT_ATTRIBUTE)
+// if ptr != nil {
+//     context := (*ALPC_CONTEXT_ATTR)(ptr)
 // }
+func AlpcGetMessageAttribute(buf *ALPC_MESSAGE_ATTRIBUTES, attr uint32) uintptr {
+	ret, _, _ := procAlpcGetMessageAttribute.Call(
+		uintptr(unsafe.Pointer(buf)),
+		uintptr(attr),
+	)
+	return ret
+}
+
+// NTSYSCALLAPI
+// NTSTATUS
+// NTAPI
+// NtAlpcCancelMessage(
+//     __in HANDLE PortHandle,
+//     __in ULONG Flags,
+//     __in PALPC_CONTEXT_ATTR MessageContext
+//     );
+func NtAlpcCancelMessage(hPort HANDLE, flags uint32, pMsgContext *ALPC_CONTEXT_ATTR) (e error) {
+	ret, _, _ := procNtAlpcCancelMessage.Call(
+		uintptr(hPort),
+		uintptr(flags),
+		uintptr(unsafe.Pointer(pMsgContext)),
+	)
+	if ret != ERROR_SUCCESS {
+		e = errors.New(fmt.Sprintf("0x%x", ret))
+	}
+	return
+}
+
+var basicPortAttr = ALPC_PORT_ATTRIBUTES{
+	MaxMessageLength: uint64(SHORT_MESSAGE_MAX_SIZE),
+	SecurityQos: SECURITY_QUALITY_OF_SERVICE{
+		Length:              SECURITY_QOS_SIZE,
+		ContextTrackingMode: SECURITY_DYNAMIC_TRACKING,
+		EffectiveOnly:       1,
+		ImpersonationLevel:  SecurityAnonymous,
+	},
+	Flags:          ALPC_PORFLG_ALLOW_LPC_REQUESTS,
+	DupObjectTypes: ALPC_SYNC_OBJECT_TYPE,
+}
 
 func BasicAlpcSend(
 	hPort HANDLE,
 	msg *AlpcShortMessage,
 	flags uint32,
-	msgAttrs *ALPC_MESSAGE_ATTRIBUTES,
+	pMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
 	timeout *int64,
 ) (e error) {
 
-	e = NtAlpcSendWaitReceivePort(hPort, flags, msg, msgAttrs, nil, nil, nil, timeout)
+	e = NtAlpcSendWaitReceivePort(hPort, flags, msg, pMsgAttrs, nil, nil, nil, timeout)
 	return
 
 }
@@ -251,9 +325,8 @@ func BasicAlpcCreatePort(name string) (hPort HANDLE, e error) {
 	if e != nil {
 		return
 	}
-	portAttr := ALPC_PORT_ATTRIBUTES{MaxMessageLength: 0x148}
 
-	hPort, e = NtAlpcCreatePort(&objAttr, &portAttr)
+	hPort, e = NtAlpcCreatePort(&objAttr, &basicPortAttr)
 
 	return
 }
@@ -265,20 +338,10 @@ func BasicAlpcConnectPort(clientName, serverName string, pConnMsg *AlpcShortMess
 		return
 	}
 
-	// destPort string,
-	// pClientObjAttrs *OBJECT_ATTRIBUTES,
-	// pClientAlpcPortAttrs *ALPC_PORT_ATTRIBUTES,
-	// flags uint32,
-	// pRequiredServerSid *SID,
-	// pConnMsg *PORT_MESSAGE,
-	// pBufLen *uint32,
-	// pOutMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
-	// pInMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
-	// timeout *int64,
 	hPort, e = NtAlpcConnectPort(
 		serverName,
 		&objAttr,
-		nil,
+		&basicPortAttr,
 		0,
 		nil,
 		pConnMsg,
@@ -286,6 +349,38 @@ func BasicAlpcConnectPort(clientName, serverName string, pConnMsg *AlpcShortMess
 		nil,
 		nil,
 		nil,
+	)
+
+	return
+}
+
+func BasicAlpcAccept(
+	hSrv HANDLE,
+	context *AlpcPortContext,
+	pConnReq *AlpcShortMessage,
+	portName string,
+	accept bool,
+) (hPort HANDLE, e error) {
+
+	objAttr, e := basicObjectAttributes(portName)
+	if e != nil {
+		return
+	}
+
+	var accepted uintptr
+	if accept {
+		accepted++
+	}
+
+	hPort, e = NtAlpcAcceptConnectPort(
+		hSrv,
+		0,
+		&objAttr,
+		&basicPortAttr,
+		context,
+		pConnReq,
+		nil,
+		accepted,
 	)
 
 	return
