@@ -22,6 +22,7 @@ var (
 	procDragFinish          = modshell32.NewProc("DragFinish")
 	procShellExecute        = modshell32.NewProc("ShellExecuteW")
 	procExtractIcon         = modshell32.NewProc("ExtractIconW")
+	procNotifyIcon          = modshell32.NewProc("Shell_NotifyIcon")
 )
 
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
@@ -150,4 +151,13 @@ func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {
 		uintptr(nIconIndex))
 
 	return HICON(ret)
+}
+
+
+func ShellNotifyIcon(dwMessage uint32, lpData *NOTIFYICONDATA) bool {
+	ret, _, _ := procNotifyIcon.Call(
+		uintptr(dwMessage),
+		uintptr(unsafe.Pointer(lpData)),
+	)
+	return ret == 1
 }

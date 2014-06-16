@@ -887,3 +887,30 @@ type HardwareInput struct {
 	typ uint32
 	hi  HARDWAREINPUT
 }
+
+type NOTIFYICONDATA struct {
+	CbSize           uint32
+	HWnd             HWND
+	UID              uint32
+	UFlags           uint32
+	UCallbackMessage uint32
+	HIcon            HICON
+	SzTip            [64]uint16
+	DwState          uint32
+	DwStateMask      uint32
+	SzInfo           [256]uint16
+	UTimeoutVersion  uint32
+	SzInfoTitle      [64]uint16
+	DwInfoFlags      uint32
+	GuidItem         GUID
+	HBallonIcon      HICON
+}
+
+// http://msdn.microsoft.com/en-us/library/ms632605(v=vs.85).aspx
+type MINMAXINFO struct {
+	PtReserved 		POINT
+	PtMaxSize 		POINT
+	PtMaxPosition 	POINT
+	PtMinTrackSize 	POINT
+	PtMaxTrackSize 	POINT
+}
