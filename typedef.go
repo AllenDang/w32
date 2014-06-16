@@ -905,3 +905,12 @@ type NOTIFYICONDATA struct {
 	GuidItem         GUID
 	HBallonIcon      HICON
 }
+
+// http://msdn.microsoft.com/en-us/library/ms632605(v=vs.85).aspx
+type MINMAXINFO struct {
+	PtReserved 		POINT
+	PtMaxSize 		POINT
+	PtMaxPosition 	POINT
+	PtMinTrackSize 	POINT
+	PtMaxTrackSize 	POINT
+}
