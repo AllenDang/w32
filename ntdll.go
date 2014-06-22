@@ -4,8 +4,12 @@
 
 package w32
 
+// #include <stdlib.h>
 import (
-	"errors"
+	"C"
+)
+
+import (
 	"fmt"
 	// "github.com/davecgh/go-spew/spew"
 	"syscall"
@@ -15,23 +19,37 @@ import (
 var (
 	modntdll = syscall.NewLazyDLL("ntdll.dll")
 
-	procNtAlpcCreatePort          = modntdll.NewProc("NtAlpcCreatePort")
-	procNtAlpcConnectPort         = modntdll.NewProc("NtAlpcConnectPort")
-	procNtAlpcSendWaitReceivePort = modntdll.NewProc("NtAlpcSendWaitReceivePort")
-	procNtAlpcAcceptConnectPort   = modntdll.NewProc("NtAlpcAcceptConnectPort")
-	procAlpcGetMessageAttribute   = modntdll.NewProc("AlpcGetMessageAttribute")
-	procNtAlpcCancelMessage       = modntdll.NewProc("NtAlpcCancelMessage")
+	procNtAlpcCreatePort                 = modntdll.NewProc("NtAlpcCreatePort")
+	procNtAlpcConnectPort                = modntdll.NewProc("NtAlpcConnectPort")
+	procNtAlpcSendWaitReceivePort        = modntdll.NewProc("NtAlpcSendWaitReceivePort")
+	procNtAlpcAcceptConnectPort          = modntdll.NewProc("NtAlpcAcceptConnectPort")
+	procAlpcGetMessageAttribute          = modntdll.NewProc("AlpcGetMessageAttribute")
+	procNtAlpcCancelMessage              = modntdll.NewProc("NtAlpcCancelMessage")
+	procRtlCreateUnicodeStringFromAsciiz = modntdll.NewProc("RtlCreateUnicodeStringFromAsciiz")
 )
 
-func newUnicodeString(s string) (us UNICODE_STRING, e error) {
-	ustr, err := syscall.UTF16FromString(s)
-	if err != nil {
-		e = err
-		return
+func RtlCreateUnicodeStringFromAsciiz(s string) (us UNICODE_STRING, e error) {
+
+	cs := C.CString(s)
+	defer C.free(unsafe.Pointer(cs))
+
+	ret, _, lastErr := procRtlCreateUnicodeStringFromAsciiz.Call(
+		uintptr(unsafe.Pointer(&us)),
+		uintptr(unsafe.Pointer(cs)),
+	)
+
+	if ret != 1 { // ret is a BOOL ( I think )
+		e = lastErr
 	}
-	us.Length = uint16(len(ustr) * 2) // in bytes
-	us.MaximumLength = uint16(len(ustr) * 2)
-	us.Buffer = &ustr[0]
+
+	return
+}
+
+func newUnicodeString(s string) (us UNICODE_STRING, e error) {
+	// TODO probably not the most efficient way to do this, but I couldn't
+	// work out how to manually initialize the UNICODE_STRING struct in a way
+	// that the ALPC subsystem liked.
+	us, e = RtlCreateUnicodeStringFromAsciiz(s)
 	return
 }
 
@@ -43,41 +61,29 @@ func newUnicodeString(s string) (us UNICODE_STRING, e error) {
 //   [in]            HANDLE RootDirectory,
 //   [in, optional]  PSECURITY_DESCRIPTOR SecurityDescriptor
 // )
-func newObjectAttributes(
+func InitializeObjectAttributes(
 	name string,
 	attributes uint32,
 	rootDir HANDLE,
 	pSecurityDescriptor *SECURITY_DESCRIPTOR,
-) (objectAttributes OBJECT_ATTRIBUTES, e error) {
+) (oa OBJECT_ATTRIBUTES, e error) {
 
-	unicodeString, err := newUnicodeString(name)
-	if err != nil {
-		e = err
-		return
-	}
-
-	objectAttributes = OBJECT_ATTRIBUTES{
+	oa = OBJECT_ATTRIBUTES{
 		RootDirectory:      rootDir,
-		ObjectName:         &unicodeString,
 		Attributes:         attributes,
 		SecurityDescriptor: pSecurityDescriptor,
 	}
-	objectAttributes.Length = uint32(unsafe.Sizeof(objectAttributes))
-	return
-}
+	oa.Length = uint32(unsafe.Sizeof(oa))
 
-func basicObjectAttributes(name string) (objectAttributes OBJECT_ATTRIBUTES, e error) {
-
-	sd, e := InitializeSecurityDescriptor(1)
-	if e != nil {
-		return
-	}
-	e = SetSecurityDescriptorDacl(sd, nil)
-	if e != nil {
-		return
+	if len(name) > 0 {
+		us, err := newUnicodeString(name)
+		if err != nil {
+			e = err
+			return
+		}
+		oa.ObjectName = &us
 	}
 
-	objectAttributes, e = newObjectAttributes(name, 0, 0, sd)
 	return
 }
 
@@ -95,8 +101,9 @@ func NtAlpcCreatePort(pObjectAttributes *OBJECT_ATTRIBUTES, pPortAttributes *ALP
 		uintptr(unsafe.Pointer(pObjectAttributes)),
 		uintptr(unsafe.Pointer(pPortAttributes)),
 	)
+
 	if ret != ERROR_SUCCESS {
-		return hPort, errors.New(fmt.Sprintf("0x%x", ret))
+		return hPort, fmt.Errorf("0x%x", ret)
 	}
 
 	return
@@ -149,7 +156,7 @@ func NtAlpcConnectPort(
 	)
 
 	if ret != ERROR_SUCCESS {
-		e = errors.New(fmt.Sprintf("0x%x", ret))
+		e = fmt.Errorf("0x%x", ret)
 	}
 	return
 }
@@ -191,7 +198,7 @@ func NtAlpcAcceptConnectPort(
 	)
 
 	if ret != ERROR_SUCCESS {
-		e = errors.New(fmt.Sprintf("0x%x", ret))
+		e = fmt.Errorf("0x%x", ret)
 	}
 	return
 }
@@ -230,7 +237,7 @@ func NtAlpcSendWaitReceivePort(
 	)
 
 	if ret != ERROR_SUCCESS {
-		e = errors.New(fmt.Sprintf("0x%x", ret))
+		e = fmt.Errorf("0x%x", ret)
 	}
 	return
 }
@@ -251,12 +258,13 @@ func NtAlpcSendWaitReceivePort(
 // if ptr != nil {
 //     context := (*ALPC_CONTEXT_ATTR)(ptr)
 // }
-func AlpcGetMessageAttribute(buf *ALPC_MESSAGE_ATTRIBUTES, attr uint32) uintptr {
+func AlpcGetMessageAttribute(buf *ALPC_MESSAGE_ATTRIBUTES, attr uint32) unsafe.Pointer {
+
 	ret, _, _ := procAlpcGetMessageAttribute.Call(
 		uintptr(unsafe.Pointer(buf)),
 		uintptr(attr),
 	)
-	return ret
+	return unsafe.Pointer(ret)
 }
 
 // NTSYSCALLAPI
@@ -274,114 +282,7 @@ func NtAlpcCancelMessage(hPort HANDLE, flags uint32, pMsgContext *ALPC_CONTEXT_A
 		uintptr(unsafe.Pointer(pMsgContext)),
 	)
 	if ret != ERROR_SUCCESS {
-		e = errors.New(fmt.Sprintf("0x%x", ret))
+		e = fmt.Errorf("0x%x", ret)
 	}
-	return
-}
-
-var basicPortAttr = ALPC_PORT_ATTRIBUTES{
-	MaxMessageLength: uint64(SHORT_MESSAGE_MAX_SIZE),
-	SecurityQos: SECURITY_QUALITY_OF_SERVICE{
-		Length:              SECURITY_QOS_SIZE,
-		ContextTrackingMode: SECURITY_DYNAMIC_TRACKING,
-		EffectiveOnly:       1,
-		ImpersonationLevel:  SecurityAnonymous,
-	},
-	Flags:          ALPC_PORFLG_ALLOW_LPC_REQUESTS,
-	DupObjectTypes: ALPC_SYNC_OBJECT_TYPE,
-}
-
-func BasicAlpcSend(
-	hPort HANDLE,
-	msg *AlpcShortMessage,
-	flags uint32,
-	pMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
-	timeout *int64,
-) (e error) {
-
-	e = NtAlpcSendWaitReceivePort(hPort, flags, msg, pMsgAttrs, nil, nil, nil, timeout)
-	return
-
-}
-
-func BasicAlpcRecv(
-	hPort HANDLE,
-	pMsg *AlpcShortMessage,
-	pMsgAttrs *ALPC_MESSAGE_ATTRIBUTES,
-	timeout *int64,
-) (bufLen uint32, e error) {
-
-	bufLen = uint32(pMsg.TotalLength)
-	e = NtAlpcSendWaitReceivePort(hPort, 0, nil, nil, pMsg, &bufLen, pMsgAttrs, timeout)
-	return
-
-}
-
-// Convenience method to create an ALPC port with a NULL DACL. Requires an
-// absolute port name ( where / is the root of the kernel object directory )
-func BasicAlpcCreatePort(name string) (hPort HANDLE, e error) {
-
-	objAttr, e := basicObjectAttributes(name)
-	if e != nil {
-		return
-	}
-
-	hPort, e = NtAlpcCreatePort(&objAttr, &basicPortAttr)
-
-	return
-}
-
-func BasicAlpcConnectPort(clientName, serverName string, pConnMsg *AlpcShortMessage) (hPort HANDLE, e error) {
-
-	objAttr, e := basicObjectAttributes(clientName)
-	if e != nil {
-		return
-	}
-
-	hPort, e = NtAlpcConnectPort(
-		serverName,
-		&objAttr,
-		&basicPortAttr,
-		0,
-		nil,
-		pConnMsg,
-		nil,
-		nil,
-		nil,
-		nil,
-	)
-
-	return
-}
-
-func BasicAlpcAccept(
-	hSrv HANDLE,
-	context *AlpcPortContext,
-	pConnReq *AlpcShortMessage,
-	portName string,
-	accept bool,
-) (hPort HANDLE, e error) {
-
-	objAttr, e := basicObjectAttributes(portName)
-	if e != nil {
-		return
-	}
-
-	var accepted uintptr
-	if accept {
-		accepted++
-	}
-
-	hPort, e = NtAlpcAcceptConnectPort(
-		hSrv,
-		0,
-		&objAttr,
-		&basicPortAttr,
-		context,
-		pConnReq,
-		nil,
-		accepted,
-	)
-
 	return
 }
