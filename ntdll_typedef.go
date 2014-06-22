@@ -64,7 +64,7 @@ type OBJECT_ATTRIBUTES struct {
 	SecurityQualityOfService *SECURITY_QUALITY_OF_SERVICE
 }
 
-// cf: http://j00ru.vexillium.org/?p=502
+// cf: http://j00ru.vexillium.org/?p=502 for legacy RPC
 // nt!_PORT_MESSAGE
 //    +0x000 u1               : <unnamed-tag>
 //    +0x004 u2               : <unnamed-tag>
@@ -129,12 +129,12 @@ type ALPC_PORT_ATTRIBUTES struct {
 	Reserved            uint32
 }
 
-const SHORT_MESSAGE_MAX_SIZE = 65535
+const SHORT_MESSAGE_MAX_SIZE = 65535 // MAX_USHORT
 
 type AlpcShortMessage struct {
 	PORT_MESSAGE
 	Command uint32
-	data    [SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE - 4]byte
+	Data    [SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE - 4]byte
 }
 
 func NewAlpcShortMessage() AlpcShortMessage {
@@ -145,12 +145,12 @@ func NewAlpcShortMessage() AlpcShortMessage {
 
 func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 
-	copy(sm.data[:], d)
-	if len(d) > len(sm.data) {
+	copy(sm.Data[:], d)
+	if len(d) > len(sm.Data) {
 		e = errors.New("data too big - truncated")
 		// the 4 everywhere is the Command struct member
-		sm.DataLength = uint16(4 + len(sm.data))
-		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.data))
+		sm.DataLength = uint16(4 + len(sm.Data))
+		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.Data))
 		return
 	}
 	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(d))
@@ -160,13 +160,15 @@ func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 }
 
 func (sm *AlpcShortMessage) GetData() []byte {
-	if len(sm.data) < int(sm.DataLength-4) {
+	if len(sm.Data) < int(sm.DataLength-4) {
 		return []byte{}
 	}
-	return sm.data[:sm.DataLength-4]
+	return sm.Data[:sm.DataLength-4]
 }
 
 func (sm *AlpcShortMessage) Reset() {
+	// zero the PORT_MESSAGE header
+	sm.PORT_MESSAGE = PORT_MESSAGE{}
 	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
 	sm.DataLength = 0
 }
