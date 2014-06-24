@@ -954,7 +954,7 @@ func SetWindowsHookEx(idHook int, lpfn syscall.Callback, hMod HINSTANCE, dwThrea
 		uintptr(idHook),
 		uintptr(lpfn),
 		uintptr(hMod),
-		uintptr(dwThreadId)
+		uintptr(dwThreadId),
 	)
 	return ret
 }
