@@ -112,6 +112,7 @@ var (
 	procEnumDisplaySettingsEx         = moduser32.NewProc("EnumDisplaySettingsExW")
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
+	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -946,4 +947,14 @@ func SendInput(inputs []INPUT) uint32 {
 		uintptr(unsafe.Sizeof(C.INPUT{})),
 	)
 	return uint32(ret)
+}
+
+func SetWindowsHookEx(idHook int, lpfn syscall.Callback, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
+	ret, _, _ := procSetWindowsHookEx.Call(
+		uintptr(idHook),
+		uintptr(lpfn),
+		uintptr(hMod),
+		uintptr(dwThreadId)
+	)
+	return ret
 }
