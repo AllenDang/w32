@@ -887,3 +887,15 @@ type HardwareInput struct {
 	typ uint32
 	hi  HARDWAREINPUT
 }
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms724950(v=vs.85).aspx
+type SYSTEMTIME struct {
+	Year         uint16
+	Month        uint16
+	DayOfWeek    uint16
+	Day          uint16
+	Hour         uint16
+	Minute       uint16
+	Second       uint16
+	Milliseconds uint16
+}
