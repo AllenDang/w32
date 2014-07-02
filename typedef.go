@@ -214,6 +214,7 @@ type (
 	LRESULT			uintptr
 	PVOID           unsafe.Pointer
 	QPC_TIME        uint64
+	ULONG_PTR       uintptr
 	WPARAM			uintptr
 )
 
@@ -891,6 +892,15 @@ type MouseInput struct {
 type HardwareInput struct {
 	typ uint32
 	hi  HARDWAREINPUT
+}
+
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms644967(v=vs.85).aspx
+type KBDLLHOOKSTRUCT struct {
+	VkCode 		DWORD
+	ScanCode 	DWORD
+	Flags		DWORD
+	Time		DWORD
+	DwExtraInfo ULONG_PTR
 }
 
 type HOOKPROC func(int, WPARAM, LPARAM) LRESULT

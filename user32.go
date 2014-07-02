@@ -961,11 +961,11 @@ func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWOR
 	return HHOOK(ret)
 }
 
-func UnhookWindowsHookEx(hhk HHOOK) BOOL {
+func UnhookWindowsHookEx(hhk HHOOK) bool {
 	ret, _, _ := procUnhookWindowsHookEx.Call(
 		uintptr(hhk),
 	)
-	return BOOL(ret)
+	return ret != 0
 }
 
 func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT {
