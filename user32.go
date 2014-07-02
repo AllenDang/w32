@@ -113,6 +113,8 @@ var (
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
+	procUnhookWindowsHookEx			  = moduser32.NewProc("UnhookWindowsHookEx")
+	procCallNextHookEx				  = moduser32.NewProc("CallNextHookEx")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -957,4 +959,21 @@ func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWOR
 		uintptr(dwThreadId),
 	)
 	return HHOOK(ret)
+}
+
+func UnhookWindowsHookEx(hhk HHOOK) BOOL {
+	ret, _, _ := procUnhookWindowsHookEx.Call(
+		uintptr(hhk),
+	)
+	return BOOL(ret)
+}
+
+func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT {
+	ret, _, _ := procCallNextHookEx.Call(
+		uintptr(hhk),
+		uintptr(nCode),
+		uintptr(wParam),
+		uintptr(lParam),
+	)
+	return LRESULT(ret)
 }
