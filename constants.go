@@ -1047,7 +1047,7 @@ const (
 	MB_DEFBUTTON4        = 0x00000300
 )
 
-//COM 
+//COM
 const (
 	E_INVALIDARG  = 0x80070057
 	E_OUTOFMEMORY = 0x8007000E
@@ -2281,7 +2281,7 @@ const (
 	SC_MANAGER_ALL_ACCESS         = STANDARD_RIGHTS_REQUIRED | SC_MANAGER_CONNECT | SC_MANAGER_CREATE_SERVICE | SC_MANAGER_ENUMERATE_SERVICE | SC_MANAGER_LOCK | SC_MANAGER_QUERY_LOCK_STATUS | SC_MANAGER_MODIFY_BOOT_CONFIG
 )
 
-// Service Types (Bit Mask) 
+// Service Types (Bit Mask)
 const (
 	SERVICE_KERNEL_DRIVER       = 0x00000001
 	SERVICE_FILE_SYSTEM_DRIVER  = 0x00000002
@@ -2658,4 +2658,24 @@ const (
 	MOUSEEVENTF_WHEEL           = 0x0800
 	MOUSEEVENTF_XDOWN           = 0x0080
 	MOUSEEVENTF_XUP             = 0x0100
+)
+
+// Windows Hooks (WH_*)
+// http://msdn.microsoft.com/en-us/library/windows/desktop/ms644990(v=vs.85).aspx
+const (
+	WH_CALLWNDPROC     = 4
+	WH_CALLWNDPROCRET  = 12
+	WH_CBT             = 5
+	WH_DEBUG           = 9
+	WH_FOREGROUNDIDLE  = 11
+	WH_GETMESSAGE      = 3
+	WH_JOURNALPLAYBACK = 1
+	WH_JOURNALRECORD   = 0
+	WH_KEYBOARD        = 2
+	WH_KEYBOARD_LL     = 13
+	WH_MOUSE           = 7
+	WH_MOUSE_LL        = 14
+	WH_MSGFILTER       = -1
+	WH_SHELL           = 10
+	WH_SYSMSGFILTER    = 6
 )

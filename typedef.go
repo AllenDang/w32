@@ -193,6 +193,7 @@ type (
 	HGDIOBJ         HANDLE
 	HGLOBAL         HANDLE
 	HGLRC           HANDLE
+	HHOOK           HANDLE
 	HICON           HANDLE
 	HIMAGELIST      HANDLE
 	HINSTANCE       HANDLE
