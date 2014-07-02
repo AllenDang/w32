@@ -180,6 +180,7 @@ type (
 	BOOL            int32
 	COLORREF        uint32
 	DWM_FRAME_COUNT uint64
+	DWORD			uint32
 	HACCEL          HANDLE
 	HANDLE          uintptr
 	HBITMAP         HANDLE
@@ -208,9 +209,12 @@ type (
 	HRSRC           HANDLE
 	HTHUMBNAIL      HANDLE
 	HWND            HANDLE
+	LPARAM			uintptr
 	LPCVOID         unsafe.Pointer
+	LRESULT			uintptr
 	PVOID           unsafe.Pointer
 	QPC_TIME        uint64
+	WPARAM			uintptr
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
@@ -888,3 +892,5 @@ type HardwareInput struct {
 	typ uint32
 	hi  HARDWAREINPUT
 }
+
+type HOOKPROC func(int, WPARAM, LPARAM) LRESULT

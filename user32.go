@@ -949,12 +949,12 @@ func SendInput(inputs []INPUT) uint32 {
 	return uint32(ret)
 }
 
-func SetWindowsHookEx(idHook int, lpfn syscall.Callback, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
+func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
 	ret, _, _ := procSetWindowsHookEx.Call(
 		uintptr(idHook),
-		uintptr(lpfn),
+		uintptr(syscall.NewCallback(lpfn)),
 		uintptr(hMod),
 		uintptr(dwThreadId),
 	)
-	return ret
+	return HHOOK(ret)
 }
