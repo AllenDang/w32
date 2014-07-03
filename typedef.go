@@ -180,7 +180,7 @@ type (
 	BOOL            int32
 	COLORREF        uint32
 	DWM_FRAME_COUNT uint64
-	DWORD			uint32
+	DWORD           uint32
 	HACCEL          HANDLE
 	HANDLE          uintptr
 	HBITMAP         HANDLE
@@ -209,13 +209,13 @@ type (
 	HRSRC           HANDLE
 	HTHUMBNAIL      HANDLE
 	HWND            HANDLE
-	LPARAM			uintptr
+	LPARAM          uintptr
 	LPCVOID         unsafe.Pointer
-	LRESULT			uintptr
+	LRESULT         uintptr
 	PVOID           unsafe.Pointer
 	QPC_TIME        uint64
 	ULONG_PTR       uintptr
-	WPARAM			uintptr
+	WPARAM          uintptr
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
@@ -896,10 +896,10 @@ type HardwareInput struct {
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms644967(v=vs.85).aspx
 type KBDLLHOOKSTRUCT struct {
-	VkCode 		DWORD
-	ScanCode 	DWORD
-	Flags		DWORD
-	Time		DWORD
+	VkCode      DWORD
+	ScanCode    DWORD
+	Flags       DWORD
+	Time        DWORD
 	DwExtraInfo ULONG_PTR
 }
 
