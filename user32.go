@@ -112,6 +112,9 @@ var (
 	procEnumDisplaySettingsEx         = moduser32.NewProc("EnumDisplaySettingsExW")
 	procChangeDisplaySettingsEx       = moduser32.NewProc("ChangeDisplaySettingsExW")
 	procSendInput                     = moduser32.NewProc("SendInput")
+	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
+	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
+	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -946,4 +949,31 @@ func SendInput(inputs []INPUT) uint32 {
 		uintptr(unsafe.Sizeof(C.INPUT{})),
 	)
 	return uint32(ret)
+}
+
+func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
+	ret, _, _ := procSetWindowsHookEx.Call(
+		uintptr(idHook),
+		uintptr(syscall.NewCallback(lpfn)),
+		uintptr(hMod),
+		uintptr(dwThreadId),
+	)
+	return HHOOK(ret)
+}
+
+func UnhookWindowsHookEx(hhk HHOOK) bool {
+	ret, _, _ := procUnhookWindowsHookEx.Call(
+		uintptr(hhk),
+	)
+	return ret != 0
+}
+
+func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT {
+	ret, _, _ := procCallNextHookEx.Call(
+		uintptr(hhk),
+		uintptr(nCode),
+		uintptr(wParam),
+		uintptr(lParam),
+	)
+	return LRESULT(ret)
 }
