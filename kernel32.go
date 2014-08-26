@@ -41,6 +41,7 @@ var (
 	procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
 	procGetDiskFreeSpaceEx         = modkernel32.NewProc("GetDiskFreeSpaceExW")
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
+	procBeep                       = modkernel32.NewProc("Beep")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -295,4 +296,8 @@ func GetDiskFreeSpaceEx(dirName string) (r bool,
 		uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)))
 	return ret != 0,
 		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
+}
+
+func Beep(freq, duration uintptr) {
+	procBeep.Call(freq, duration)
 }
