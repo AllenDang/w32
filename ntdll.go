@@ -19,12 +19,13 @@ import (
 var (
 	modntdll = syscall.NewLazyDLL("ntdll.dll")
 
-	procNtAlpcCreatePort                 = modntdll.NewProc("NtAlpcCreatePort")
-	procNtAlpcConnectPort                = modntdll.NewProc("NtAlpcConnectPort")
-	procNtAlpcSendWaitReceivePort        = modntdll.NewProc("NtAlpcSendWaitReceivePort")
-	procNtAlpcAcceptConnectPort          = modntdll.NewProc("NtAlpcAcceptConnectPort")
 	procAlpcGetMessageAttribute          = modntdll.NewProc("AlpcGetMessageAttribute")
+	procNtAlpcAcceptConnectPort          = modntdll.NewProc("NtAlpcAcceptConnectPort")
 	procNtAlpcCancelMessage              = modntdll.NewProc("NtAlpcCancelMessage")
+	procNtAlpcConnectPort                = modntdll.NewProc("NtAlpcConnectPort")
+	procNtAlpcCreatePort                 = modntdll.NewProc("NtAlpcCreatePort")
+	procNtAlpcDisconnectPort             = modntdll.NewProc("NtAlpcDisconnectPort")
+	procNtAlpcSendWaitReceivePort        = modntdll.NewProc("NtAlpcSendWaitReceivePort")
 	procRtlCreateUnicodeStringFromAsciiz = modntdll.NewProc("RtlCreateUnicodeStringFromAsciiz")
 )
 
@@ -95,9 +96,8 @@ func InitializeObjectAttributes(
 //   );
 func NtAlpcCreatePort(pObjectAttributes *OBJECT_ATTRIBUTES, pPortAttributes *ALPC_PORT_ATTRIBUTES) (hPort HANDLE, e error) {
 
-	pHandle := &hPort
 	ret, _, _ := procNtAlpcCreatePort.Call(
-		uintptr(unsafe.Pointer(pHandle)),
+		uintptr(unsafe.Pointer(&hPort)),
 		uintptr(unsafe.Pointer(pObjectAttributes)),
 		uintptr(unsafe.Pointer(pPortAttributes)),
 	)
@@ -173,7 +173,6 @@ func NtAlpcConnectPort(
 //     __inout_opt PALPC_MESSAGE_ATTRIBUTES ConnectionMessageAttributes,
 //     __in BOOLEAN AcceptConnection
 //     );
-
 func NtAlpcAcceptConnectPort(
 	hSrvConnPort HANDLE,
 	flags uint32,
@@ -276,11 +275,33 @@ func AlpcGetMessageAttribute(buf *ALPC_MESSAGE_ATTRIBUTES, attr uint32) unsafe.P
 //     __in PALPC_CONTEXT_ATTR MessageContext
 //     );
 func NtAlpcCancelMessage(hPort HANDLE, flags uint32, pMsgContext *ALPC_CONTEXT_ATTR) (e error) {
+
 	ret, _, _ := procNtAlpcCancelMessage.Call(
 		uintptr(hPort),
 		uintptr(flags),
 		uintptr(unsafe.Pointer(pMsgContext)),
 	)
+
+	if ret != ERROR_SUCCESS {
+		e = fmt.Errorf("0x%x", ret)
+	}
+	return
+}
+
+// NTSYSCALLAPI
+// NTSTATUS
+// NTAPI
+// NtAlpcDisconnectPort(
+//     __in HANDLE PortHandle,
+//     __in ULONG Flags
+//     );
+func NtAlpcDisconnectPort(hPort HANDLE, flags uint32) (e error) {
+
+	ret, _, _ := procNtAlpcDisconnectPort.Call(
+		uintptr(hPort),
+		uintptr(flags),
+	)
+
 	if ret != ERROR_SUCCESS {
 		e = fmt.Errorf("0x%x", ret)
 	}

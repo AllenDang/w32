@@ -129,47 +129,50 @@ type ALPC_PORT_ATTRIBUTES struct {
 	Reserved            uint32
 }
 
-const SHORT_MESSAGE_MAX_SIZE = 65535 // MAX_USHORT
+const SHORT_MESSAGE_MAX_SIZE uint16 = 65535 // MAX_USHORT
+const SHORT_MESSAGE_MAX_PAYLOAD uint16 = SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE
 
+// LPC uses the first 4 bytes of the payload as an LPC Command, but this is
+// NOT represented here, to allow the use of raw ALPC. For legacy LPC, callers
+// must include the command as part of their payload.
 type AlpcShortMessage struct {
 	PORT_MESSAGE
-	Command uint32
-	Data    [SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE - 4]byte
+	Data [SHORT_MESSAGE_MAX_PAYLOAD]byte
 }
 
 func NewAlpcShortMessage() AlpcShortMessage {
 	sm := AlpcShortMessage{}
-	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
+	sm.TotalLength = SHORT_MESSAGE_MAX_SIZE
 	return sm
 }
 
 func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 
 	copy(sm.Data[:], d)
-	if len(d) > len(sm.Data) {
+	if len(d) > int(SHORT_MESSAGE_MAX_PAYLOAD) {
 		e = errors.New("data too big - truncated")
-		// the 4 everywhere is the Command struct member
-		sm.DataLength = uint16(4 + len(sm.Data))
-		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.Data))
+		sm.DataLength = SHORT_MESSAGE_MAX_PAYLOAD
+		sm.TotalLength = SHORT_MESSAGE_MAX_SIZE
 		return
 	}
-	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(d))
-	sm.DataLength = uint16(4 + len(d))
+	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + len(d))
+	sm.DataLength = uint16(len(d))
 	return
 
 }
 
+// TODO - is this still useful?
 func (sm *AlpcShortMessage) GetData() []byte {
-	if len(sm.Data) < int(sm.DataLength-4) {
-		return []byte{}
+	if int(sm.DataLength) > int(SHORT_MESSAGE_MAX_PAYLOAD) {
+		return sm.Data[:] // truncate
 	}
-	return sm.Data[:sm.DataLength-4]
+	return sm.Data[:sm.DataLength]
 }
 
 func (sm *AlpcShortMessage) Reset() {
 	// zero the PORT_MESSAGE header
 	sm.PORT_MESSAGE = PORT_MESSAGE{}
-	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
+	sm.TotalLength = SHORT_MESSAGE_MAX_SIZE
 	sm.DataLength = 0
 }
 
