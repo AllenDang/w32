@@ -21,6 +21,9 @@ var (
 	procRegEnumKeyEx   = modadvapi32.NewProc("RegEnumKeyExW")
 	//	procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
 	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
+	procRegDeleteKeyValue  = modadvapi32.NewProc("RegDeleteKeyValueW")
+	procRegDeleteValue     = modadvapi32.NewProc("RegDeleteValueW")
+	procRegDeleteTree      = modadvapi32.NewProc("RegDeleteTreeW")
 	procOpenEventLog       = modadvapi32.NewProc("OpenEventLogW")
 	procReadEventLog       = modadvapi32.NewProc("ReadEventLogW")
 	procCloseEventLog      = modadvapi32.NewProc("CloseEventLog")
@@ -228,6 +231,31 @@ func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, d
 	return int(ret)
 }
 */
+
+func RegDeleteKeyValue(hKey HKEY, subKey string, valueName string) (errno int) {
+	ret, _, _ := procRegDeleteKeyValue.Call(
+		uintptr(hKey),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
+
+	return int(ret)
+}
+
+func RegDeleteValue(hKey HKEY, valueName string) (errno int) {
+	ret, _, _ := procRegDeleteValue.Call(
+		uintptr(hKey),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
+
+	return int(ret)
+}
+
+func RegDeleteTree(hKey HKEY, subKey string) (errno int) {
+	ret, _, _ := procRegDeleteTree.Call(
+		uintptr(hKey),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))))
+
+	return int(ret)
+}
 
 func RegEnumKeyEx(hKey HKEY, index uint32) string {
 	var bufLen uint32 = 255
