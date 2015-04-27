@@ -17,6 +17,7 @@ var (
 	procCreateFontIndirect        = modgdi32.NewProc("CreateFontIndirectW")
 	procAbortDoc                  = modgdi32.NewProc("AbortDoc")
 	procBitBlt                    = modgdi32.NewProc("BitBlt")
+	procPatBlt                    = modgdi32.NewProc("PatBlt")
 	procCloseEnhMetaFile          = modgdi32.NewProc("CloseEnhMetaFile")
 	procCopyEnhMetaFile           = modgdi32.NewProc("CopyEnhMetaFileW")
 	procCreateBrushIndirect       = modgdi32.NewProc("CreateBrushIndirect")
@@ -104,6 +105,20 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
 
 	if ret == 0 {
 		panic("BitBlt failed")
+	}
+}
+
+func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) {
+	ret, _, _ := procPatBlt.Call(
+		uintptr(hdc),
+		uintptr(nXLeft),
+		uintptr(nYLeft),
+		uintptr(nWidth),
+		uintptr(nHeight),
+		uintptr(dwRop))
+
+	if ret == 0 {
+		panic("PatBlt failed")
 	}
 }
 
