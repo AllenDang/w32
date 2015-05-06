@@ -216,6 +216,7 @@ type (
 	QPC_TIME        uint64
 	ULONG_PTR       uintptr
 	WPARAM          uintptr
+	ULONG           uint32
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
