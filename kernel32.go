@@ -12,37 +12,39 @@ import (
 var (
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-	procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
-	procMulDiv                     = modkernel32.NewProc("MulDiv")
-	procGetConsoleWindow           = modkernel32.NewProc("GetConsoleWindow")
-	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
-	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
-	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
-	procLstrlen                    = modkernel32.NewProc("lstrlenW")
-	procLstrcpy                    = modkernel32.NewProc("lstrcpyW")
-	procGlobalAlloc                = modkernel32.NewProc("GlobalAlloc")
-	procGlobalFree                 = modkernel32.NewProc("GlobalFree")
-	procGlobalLock                 = modkernel32.NewProc("GlobalLock")
-	procGlobalUnlock               = modkernel32.NewProc("GlobalUnlock")
-	procMoveMemory                 = modkernel32.NewProc("RtlMoveMemory")
-	procFindResource               = modkernel32.NewProc("FindResourceW")
-	procSizeofResource             = modkernel32.NewProc("SizeofResource")
-	procLockResource               = modkernel32.NewProc("LockResource")
-	procLoadResource               = modkernel32.NewProc("LoadResource")
-	procGetLastError               = modkernel32.NewProc("GetLastError")
-	procOpenProcess                = modkernel32.NewProc("OpenProcess")
-	procTerminateProcess           = modkernel32.NewProc("TerminateProcess")
-	procCloseHandle                = modkernel32.NewProc("CloseHandle")
-	procCreateToolhelp32Snapshot   = modkernel32.NewProc("CreateToolhelp32Snapshot")
-	procModule32First              = modkernel32.NewProc("Module32FirstW")
-	procModule32Next               = modkernel32.NewProc("Module32NextW")
-	procGetSystemTimes             = modkernel32.NewProc("GetSystemTimes")
-	procGetConsoleScreenBufferInfo = modkernel32.NewProc("GetConsoleScreenBufferInfo")
-	procSetConsoleTextAttribute    = modkernel32.NewProc("SetConsoleTextAttribute")
-	procGetDiskFreeSpaceEx         = modkernel32.NewProc("GetDiskFreeSpaceExW")
-	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
-	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
-	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procGetModuleHandle             = modkernel32.NewProc("GetModuleHandleW")
+	procMulDiv                      = modkernel32.NewProc("MulDiv")
+	procGetConsoleWindow            = modkernel32.NewProc("GetConsoleWindow")
+	procGetCurrentThread            = modkernel32.NewProc("GetCurrentThread")
+	procGetLogicalDrives            = modkernel32.NewProc("GetLogicalDrives")
+	procGetUserDefaultLCID          = modkernel32.NewProc("GetUserDefaultLCID")
+	procLstrlen                     = modkernel32.NewProc("lstrlenW")
+	procLstrcpy                     = modkernel32.NewProc("lstrcpyW")
+	procGlobalAlloc                 = modkernel32.NewProc("GlobalAlloc")
+	procGlobalFree                  = modkernel32.NewProc("GlobalFree")
+	procGlobalLock                  = modkernel32.NewProc("GlobalLock")
+	procGlobalUnlock                = modkernel32.NewProc("GlobalUnlock")
+	procMoveMemory                  = modkernel32.NewProc("RtlMoveMemory")
+	procFindResource                = modkernel32.NewProc("FindResourceW")
+	procSizeofResource              = modkernel32.NewProc("SizeofResource")
+	procLockResource                = modkernel32.NewProc("LockResource")
+	procLoadResource                = modkernel32.NewProc("LoadResource")
+	procGetLastError                = modkernel32.NewProc("GetLastError")
+	procOpenProcess                 = modkernel32.NewProc("OpenProcess")
+	procTerminateProcess            = modkernel32.NewProc("TerminateProcess")
+	procCloseHandle                 = modkernel32.NewProc("CloseHandle")
+	procCreateToolhelp32Snapshot    = modkernel32.NewProc("CreateToolhelp32Snapshot")
+	procModule32First               = modkernel32.NewProc("Module32FirstW")
+	procModule32Next                = modkernel32.NewProc("Module32NextW")
+	procGetSystemTimes              = modkernel32.NewProc("GetSystemTimes")
+	procGetConsoleScreenBufferInfo  = modkernel32.NewProc("GetConsoleScreenBufferInfo")
+	procSetConsoleTextAttribute     = modkernel32.NewProc("SetConsoleTextAttribute")
+	procGetDiskFreeSpaceEx          = modkernel32.NewProc("GetDiskFreeSpaceExW")
+	procGetProcessTimes             = modkernel32.NewProc("GetProcessTimes")
+	procSetSystemTime               = modkernel32.NewProc("SetSystemTime")
+	procGetSystemTime               = modkernel32.NewProc("GetSystemTime")
+	procRegisterWaitForSingleObject = modkernel32.NewProc("RegisterWaitForSingleObject")
+	procUnregisterWait              = modkernel32.NewProc("UnregisterWait")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -309,5 +311,22 @@ func GetSystemTime() *SYSTEMTIME {
 func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
+	return ret != 0
+}
+
+func RegisterWaitForSingleObject(phNewWaitObject *HANDLE, hObject HANDLE, Callback uintptr, Context PVOID, dwMilliseconds ULONG, dwFlags ULONG) bool {
+	ret, _, _ := procRegisterWaitForSingleObject.Call(
+		uintptr(unsafe.Pointer(phNewWaitObject)),
+		uintptr(hObject),
+		Callback,
+		uintptr(Context),
+		uintptr(dwMilliseconds),
+		uintptr(dwFlags),
+	)
+	return ret != 0
+}
+
+func UnregisterWait(WaitHandle HANDLE) bool {
+	ret, _, _ := procUnregisterWait.Call(uintptr(WaitHandle))
 	return ret != 0
 }
