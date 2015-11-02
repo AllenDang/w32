@@ -5,6 +5,21 @@ w32 is a wrapper of windows apis for the Go Programming Language.
 
 It wraps win32 apis to "Go style" to make them easier to use.
 
+Example
+=====
+`
+package main
+
+import (
+	"github.com/xackery/w32"
+)
+
+func main() {
+	w32.MessageBox(0, "Hello World!", "Hello, World!", 0)
+}
+
+`
+
 Setup
 =====
 
