@@ -22,21 +22,10 @@ func main() {
 Setup
 =====
 
-1. Make sure you have a working Go installation and build environment, 
-   see this go-nuts post for details:
-   http://groups.google.com/group/golang-nuts/msg/5c87630a84f4fd0c
-   
-   Updated versions of the Windows Go build are available here:
-   http://code.google.com/p/gomingw/downloads/list
-   
-2. Create a "gopath" directory if you do not have one yet and set the
-   GOPATH variable accordingly. For example:
-   mkdir -p go-externals/src
-   export GOPATH=${PWD}/go-externals
-
-3. go get github.com/AllenDang/w32
-
-4. go install github.com/AllenDang/w32...
+1. Install Go. https://golang.org/dl/ (I recommend 32bit aka i386 due to GCC 64bit issues on windows.)
+2. Get a GCC compiler. I recommend this one. http://win-builds.org/doku.php/download_and_installation_from_windows
+3. In command line, type go get github.com/xackery/w32
+4. Create a new file, and try the example above.
 
 Contribute
 ==========
