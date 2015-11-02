@@ -5,6 +5,7 @@
 package w32
 
 import (
+	"encoding/binary"
 	"syscall"
 	"unsafe"
 )
@@ -197,17 +198,21 @@ func GetLastError() uint32 {
 	return uint32(ret)
 }
 
-func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) HANDLE {
+func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) (handle HANDLE, err error) {
 	inherit := 0
 	if inheritHandle {
 		inherit = 1
 	}
 
-	ret, _, _ := procOpenProcess.Call(
+	ret, _, err := procOpenProcess.Call(
 		uintptr(desiredAccess),
 		uintptr(inherit),
 		uintptr(processId))
-	return HANDLE(ret)
+	if err != nil && err.Error() == "The operation completed successfully." {
+		err = nil
+	}
+	handle = HANDLE(ret)
+	return
 }
 
 func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
@@ -315,19 +320,28 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 
 //Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553(v=vs.85).aspx
-func ReadProcessMemory(hProcess HANDLE, lpBaseAddress uint, size uint) (buffer interface{}, err error) {
-	//lpBuffer 3
-	//lpNumberOfBytesRead 6
-
+func ReadProcessMemory(hProcess HANDLE, lpBaseAddress uint32, size uint) (data []byte, err error) {
 	var numBytesRead uintptr
-	ret, _, _ := procReadProcessMemory.Call(uintptr(hProcess),
+	data = make([]byte, size)
+
+	_, _, err = procReadProcessMemory.Call(uintptr(hProcess),
 		uintptr(lpBaseAddress),
-		uintptr(unsafe.Pointer(&buffer)),
+		uintptr(unsafe.Pointer(&data[0])),
 		uintptr(size),
 		uintptr(unsafe.Pointer(&numBytesRead)))
-	if ret == 0 {
+	if err.Error() != ErrSuccess {
 		return
 	}
-	err = syscall.GetLastError()
+	err = nil
+	return
+}
+
+//Read process memory and convert the returned data to uint32
+func ReadProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32, size uint) (buffer uint32, err error) {
+	data, err := ReadProcessMemory(hProcess, lpBaseAddress, size)
+	if err != nil {
+		return
+	}
+	buffer = binary.LittleEndian.Uint32(data)
 	return
 }

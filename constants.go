@@ -1316,7 +1316,7 @@ const (
 //Process Access Rights
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
 const (
-	PROCESS_CREATE_PROCESS            = 0x0080 //	Required to create a process.
+	PROCESS_CREATE_PROCESS            = 0x0080 //Required to create a process.
 	PROCESS_CREATE_THREAD             = 0x0002 //Required to create a thread.
 	PROCESS_DUP_HANDLE                = 0x0040 //Required to duplicate a handle using DuplicateHandle.
 	PROCESS_QUERY_INFORMATION         = 0x0400 //Required to retrieve certain information about a process, such as its token, exit code, and priority class (see OpenProcessToken).
