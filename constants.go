@@ -1719,6 +1719,15 @@ const (
 	KF_UP       = 0x8000
 )
 
+// Modifier Codes (Register Hotkey)
+const (
+	MOD_ALT      = 0x0001
+	MOD_CONTROL  = 0x0002
+	MOD_NOREPEAT = 0x4000
+	MOD_SHIFT    = 0x0004
+	MOD_WIN      = 0x0008
+)
+
 // Virtual-Key Codes
 const (
 	VK_LBUTTON             = 0x01

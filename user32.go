@@ -983,12 +983,17 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 
 //Defines a system-wide hotkey.
 //See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
-func RegisterHotKey(hwnd HWND, id int, fsModifiers uint, vkey uint) int {
+func RegisterHotKey(hwnd HWND, id int, fsModifiers uint, vkey uint) (err error) {
 	ret, _, _ := procRegisterHotKey.Call(
-		hwnd,
-		intptr(id),
+		uintptr(hwnd),
+		uintptr(id),
 		uintptr(fsModifiers),
 		uintptr(vkey),
 	)
-	return ret
+	if ret == 0 {
+		return
+	}
+	err = syscall.GetLastError()
+
+	return
 }
