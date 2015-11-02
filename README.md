@@ -7,7 +7,7 @@ It wraps win32 apis to "Go style" to make them easier to use.
 
 Example
 =====
-`
+```
 package main
 
 import (
@@ -17,8 +17,7 @@ import (
 func main() {
 	w32.MessageBox(0, "Hello World!", "Hello, World!", 0)
 }
-
-`
+```
 
 Setup
 =====
