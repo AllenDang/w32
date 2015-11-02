@@ -45,6 +45,7 @@ var (
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
 	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
+	procWriteProcessMemory         = modkernel32.NewProc("WriteProcessMemory")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -316,6 +317,35 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
 	return ret != 0
+}
+
+//Writes data to an area of memory in a specified process. The entire area to be written to must be accessible or the operation fails.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674(v=vs.85).aspx
+func WriteProcessMemory(hProcess HANDLE, lpBaseAddress uint32, data []byte, size uint) (err error) {
+	var numBytesRead uintptr
+
+	_, _, err = procWriteProcessMemory.Call(uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(&data[0])),
+		uintptr(size),
+		uintptr(unsafe.Pointer(&numBytesRead)))
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Write process memory with a source of uint32
+func WriteProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32, data uint32) (err error) {
+
+	bData := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bData, data)
+	err = WriteProcessMemory(hProcess, lpBaseAddress, bData, 4)
+	if err != nil {
+		return
+	}
+	return
 }
 
 //Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
