@@ -19,6 +19,8 @@ func main() {
 }
 ```
 
+For more examples, look at the example folder.
+
 Setup
 =====
 
