@@ -5,6 +5,8 @@
 package w32
 
 import (
+	"encoding/binary"
+	"encoding/hex"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
@@ -197,5 +199,24 @@ func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interfac
 		}
 	}
 	result = &ret
+	return
+}
+
+//Convert a hex string to uint32
+func HexToUint32(hexString string) (result uint32, err error) {
+	var data []byte
+	data, err = hex.DecodeString(hexString)
+	if err == nil {
+		result = binary.BigEndian.Uint32(data)
+		return
+	}
+	if err != hex.ErrLength {
+		return
+	}
+	hexString = "0" + hexString
+	data, err = hex.DecodeString(hexString)
+	if err == nil {
+		result = binary.BigEndian.Uint32(data)
+	}
 	return
 }
