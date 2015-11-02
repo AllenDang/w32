@@ -115,6 +115,7 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procRegisterHotKey                = moduser32.NewProc("RegisterHotKey")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -923,6 +924,8 @@ func ChangeDisplaySettingsEx(szDeviceName *uint16, devMode *DEVMODE, hwnd HWND, 
 	return int32(ret)
 }
 
+//Synthesizes keystrokes, mouse motions, and button clicks.
+//see https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
 func SendInput(inputs []INPUT) uint32 {
 	var validInputs []C.INPUT
 
@@ -976,4 +979,16 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+//Defines a system-wide hotkey.
+//See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
+func RegisterHotKey(hwnd HWND, id int, fsModifiers uint, vkey uint) int {
+	ret, _, _ := procRegisterHotKey.Call(
+		hwnd,
+		intptr(id),
+		uintptr(fsModifiers),
+		uintptr(vkey),
+	)
+	return ret
 }
