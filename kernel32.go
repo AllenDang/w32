@@ -337,8 +337,8 @@ func ReadProcessMemory(hProcess HANDLE, lpBaseAddress uint32, size uint) (data [
 }
 
 //Read process memory and convert the returned data to uint32
-func ReadProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32, size uint) (buffer uint32, err error) {
-	data, err := ReadProcessMemory(hProcess, lpBaseAddress, size)
+func ReadProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32) (buffer uint32, err error) {
+	data, err := ReadProcessMemory(hProcess, lpBaseAddress, 4)
 	if err != nil {
 		return
 	}
