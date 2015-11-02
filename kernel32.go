@@ -43,6 +43,7 @@ var (
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -310,4 +311,23 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
 	return ret != 0
+}
+
+//Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553(v=vs.85).aspx
+func ReadProcessMemory(hProcess HANDLE, lpBaseAddress LPCVOID, uint size) (buffer interface{}, err error) {
+	//lpBuffer 3
+	//lpNumberOfBytesRead 6
+
+	var numBytesRead uintptr
+	ret, _, _ := procReadProcessMemory.Call(hProcess,
+		uintptr(pvAttribute),
+		&buffer,
+		uintptr(size),
+		&numBytesRead)
+	if ret == 0 {
+		return
+	}
+	err = syscall.GetLastError()
+	return
 }
