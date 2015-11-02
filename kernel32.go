@@ -315,16 +315,16 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 
 //Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
 //https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553(v=vs.85).aspx
-func ReadProcessMemory(hProcess HANDLE, lpBaseAddress LPCVOID, uint size) (buffer interface{}, err error) {
+func ReadProcessMemory(hProcess HANDLE, lpBaseAddress uint, size uint) (buffer interface{}, err error) {
 	//lpBuffer 3
 	//lpNumberOfBytesRead 6
 
 	var numBytesRead uintptr
-	ret, _, _ := procReadProcessMemory.Call(hProcess,
-		uintptr(pvAttribute),
-		&buffer,
+	ret, _, _ := procReadProcessMemory.Call(uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(&buffer)),
 		uintptr(size),
-		&numBytesRead)
+		uintptr(unsafe.Pointer(&numBytesRead)))
 	if ret == 0 {
 		return
 	}
