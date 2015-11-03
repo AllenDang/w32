@@ -116,6 +116,7 @@ var (
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
 	procRegisterHotKey                = moduser32.NewProc("RegisterHotKey")
+	procUnregisterHotKey              = moduser32.NewProc("UnregisterHotKey")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -227,14 +228,19 @@ func PostQuitMessage(exitCode int) {
 		uintptr(exitCode))
 }
 
-func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
-	ret, _, _ := procGetMessage.Call(
-		uintptr(unsafe.Pointer(msg)),
+func GetMessage(hwnd HWND, msgFilterMin, msgFilterMax uint32) (msg MSG, err error) {
+
+	_, _, err = procGetMessage.Call(
+		uintptr(unsafe.Pointer(&msg)),
 		uintptr(hwnd),
 		uintptr(msgFilterMin),
 		uintptr(msgFilterMax))
 
-	return int(ret)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
 func TranslateMessage(msg *MSG) bool {
@@ -651,15 +657,19 @@ func EndDialog(hwnd HWND, nResult uintptr) bool {
 	return ret != 0
 }
 
-func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) bool {
-	ret, _, _ := procPeekMessage.Call(
-		uintptr(unsafe.Pointer(lpMsg)),
+func PeekMessage(hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) (msg MSG, err error) {
+	_, _, err = procPeekMessage.Call(
+		uintptr(unsafe.Pointer(&msg)),
 		uintptr(hwnd),
 		uintptr(wMsgFilterMin),
 		uintptr(wMsgFilterMax),
 		uintptr(wRemoveMsg))
 
-	return ret != 0
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
@@ -984,16 +994,29 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 //Defines a system-wide hotkey.
 //See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
 func RegisterHotKey(hwnd HWND, id int, fsModifiers uint, vkey uint) (err error) {
-	ret, _, _ := procRegisterHotKey.Call(
+	_, _, err = procRegisterHotKey.Call(
 		uintptr(hwnd),
 		uintptr(id),
 		uintptr(fsModifiers),
 		uintptr(vkey),
 	)
-	if ret == 0 {
+	if err.Error() != ErrSuccess {
 		return
 	}
-	err = syscall.GetLastError()
+	err = nil
+	return
+}
 
+//Defines a system-wide hotkey.
+//See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
+func UnregisterHotKey(hwnd HWND, id int) (err error) {
+	_, _, err = procUnregisterHotKey.Call(
+		uintptr(hwnd),
+		uintptr(id),
+	)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
 	return
 }
