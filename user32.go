@@ -8,8 +8,12 @@ import (
 	// #include <wtypes.h>
 	// #include <winable.h>
 	"C"
+	"encoding/binary"
+	"errors"
 	"fmt"
+	//"regexp"
 	"syscall"
+	"unicode/utf8"
 	"unsafe"
 )
 
@@ -936,7 +940,7 @@ func ChangeDisplaySettingsEx(szDeviceName *uint16, devMode *DEVMODE, hwnd HWND, 
 
 //Synthesizes keystrokes, mouse motions, and button clicks.
 //see https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
-func SendInput(inputs []INPUT) uint32 {
+func SendInput(inputs []INPUT) (err error) {
 	var validInputs []C.INPUT
 
 	for _, oneInput := range inputs {
@@ -950,18 +954,54 @@ func SendInput(inputs []INPUT) uint32 {
 		case INPUT_HARDWARE:
 			(*HardwareInput)(unsafe.Pointer(&input)).hi = oneInput.Hi
 		default:
-			panic("unkown type")
+			err = errors.New("Unknown input type passed: " + fmt.Sprintf("%d", oneInput.Type))
+			return
 		}
 
 		validInputs = append(validInputs, input)
 	}
 
-	ret, _, _ := procSendInput.Call(
+	_, _, err = procSendInput.Call(
 		uintptr(len(validInputs)),
 		uintptr(unsafe.Pointer(&validInputs[0])),
 		uintptr(unsafe.Sizeof(C.INPUT{})),
 	)
-	return uint32(ret)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Simplifies SendInput for Keyboard related keys. Supports alphanumeric
+func SendInputString(input string) (err error) {
+	var inputs []INPUT
+	b := make([]byte, 3)
+
+	/*reg, err := regexp.Compile("^[a-zA-Z0-9]+")
+	if err != nil {
+		return
+	}
+	input = reg.ReplaceAllString(input, "")*/
+
+	for _, rune := range input {
+
+		utf8.EncodeRune(b, rune)
+		vk := binary.LittleEndian.Uint16(b)
+		fmt.Println(vk)
+
+		input := INPUT{
+			Type: INPUT_KEYBOARD,
+			Ki: KEYBDINPUT{
+				WVk:     vk,
+				DwFlags: 0x0002 | 0x0008,
+				Time:    200,
+			},
+		}
+		inputs = append(inputs, input)
+	}
+	err = SendInput(inputs)
+	return
 }
 
 func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
