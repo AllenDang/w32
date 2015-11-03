@@ -2706,3 +2706,12 @@ const (
 	WH_SHELL           = 10
 	WH_SYSMSGFILTER    = 6
 )
+
+// ConsoleCtrlHandle Events
+const (
+	CTRL_C_EVENT        = 0x0000
+	CTRL_BREAK_EVENT    = 0x0001
+	CTRL_CLOSE_EVENT    = 0x0002
+	CTRL_LOGOFF_EVENT   = 0x0005
+	CTRL_SHUTDOWN_EVENT = 0x0006
+)

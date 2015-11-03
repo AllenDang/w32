@@ -46,6 +46,7 @@ var (
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
 	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
 	procWriteProcessMemory         = modkernel32.NewProc("WriteProcessMemory")
+	procSetConsoleCtrlHandler      = modkernel32.NewProc("SetConsoleCtrlHandler")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -373,5 +374,17 @@ func ReadProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32) (buffer ui
 		return
 	}
 	buffer = binary.LittleEndian.Uint32(data)
+	return
+}
+
+//Adds or removes an application-defined HandlerRoutine function from the list of handler functions for the calling process.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms686016(v=vs.85).aspx
+func SetConsoleCtrlHandler(handlerRoutine func(DWORD) int32, add uint) (err error) {
+	_, _, err = procSetConsoleCtrlHandler.Call(uintptr(unsafe.Pointer(&handlerRoutine)),
+		uintptr(add))
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
 	return
 }
