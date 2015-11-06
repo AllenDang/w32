@@ -1,0 +1,1 @@
+To use the example directory, simply copy/paste the code (or checkout the repository) and `go run <examplefile.go>`
