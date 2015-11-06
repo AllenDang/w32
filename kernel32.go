@@ -5,6 +5,7 @@
 package w32
 
 import (
+	"encoding/binary"
 	"syscall"
 	"unsafe"
 )
@@ -43,6 +44,9 @@ var (
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
+	procWriteProcessMemory         = modkernel32.NewProc("WriteProcessMemory")
+	procSetConsoleCtrlHandler      = modkernel32.NewProc("SetConsoleCtrlHandler")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -196,17 +200,21 @@ func GetLastError() uint32 {
 	return uint32(ret)
 }
 
-func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) HANDLE {
+func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) (handle HANDLE, err error) {
 	inherit := 0
 	if inheritHandle {
 		inherit = 1
 	}
 
-	ret, _, _ := procOpenProcess.Call(
+	ret, _, err := procOpenProcess.Call(
 		uintptr(desiredAccess),
 		uintptr(inherit),
 		uintptr(processId))
-	return HANDLE(ret)
+	if err != nil && err.Error() == "The operation completed successfully." {
+		err = nil
+	}
+	handle = HANDLE(ret)
+	return
 }
 
 func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
@@ -299,15 +307,91 @@ func GetDiskFreeSpaceEx(dirName string) (r bool,
 		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
 }
 
-func GetSystemTime() *SYSTEMTIME {
-	var time SYSTEMTIME
-	procGetSystemTime.Call(
+func GetSystemTime() (time SYSTEMTIME, err error) {
+	_, _, err = procGetSystemTime.Call(
 		uintptr(unsafe.Pointer(&time)))
-	return &time
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
-func SetSystemTime(time *SYSTEMTIME) bool {
-	ret, _, _ := procSetSystemTime.Call(
+func SetSystemTime(time *SYSTEMTIME) (err error) {
+	_, _, err = procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
-	return ret != 0
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Writes data to an area of memory in a specified process. The entire area to be written to must be accessible or the operation fails.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms681674(v=vs.85).aspx
+func WriteProcessMemory(hProcess HANDLE, lpBaseAddress uint32, data []byte, size uint) (err error) {
+	var numBytesRead uintptr
+
+	_, _, err = procWriteProcessMemory.Call(uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(&data[0])),
+		uintptr(size),
+		uintptr(unsafe.Pointer(&numBytesRead)))
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Write process memory with a source of uint32
+func WriteProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32, data uint32) (err error) {
+
+	bData := make([]byte, 4)
+	binary.LittleEndian.PutUint32(bData, data)
+	err = WriteProcessMemory(hProcess, lpBaseAddress, bData, 4)
+	if err != nil {
+		return
+	}
+	return
+}
+
+//Reads data from an area of memory in a specified process. The entire area to be read must be accessible or the operation fails.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms680553(v=vs.85).aspx
+func ReadProcessMemory(hProcess HANDLE, lpBaseAddress uint32, size uint) (data []byte, err error) {
+	var numBytesRead uintptr
+	data = make([]byte, size)
+
+	_, _, err = procReadProcessMemory.Call(uintptr(hProcess),
+		uintptr(lpBaseAddress),
+		uintptr(unsafe.Pointer(&data[0])),
+		uintptr(size),
+		uintptr(unsafe.Pointer(&numBytesRead)))
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Read process memory and convert the returned data to uint32
+func ReadProcessMemoryAsUint32(hProcess HANDLE, lpBaseAddress uint32) (buffer uint32, err error) {
+	data, err := ReadProcessMemory(hProcess, lpBaseAddress, 4)
+	if err != nil {
+		return
+	}
+	buffer = binary.LittleEndian.Uint32(data)
+	return
+}
+
+//Adds or removes an application-defined HandlerRoutine function from the list of handler functions for the calling process.
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms686016(v=vs.85).aspx
+func SetConsoleCtrlHandler(handlerRoutine func(DWORD) int32, add uint) (err error) {
+	_, _, err = procSetConsoleCtrlHandler.Call(uintptr(unsafe.Pointer(&handlerRoutine)),
+		uintptr(add))
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }

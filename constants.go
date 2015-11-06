@@ -1313,6 +1313,24 @@ const (
 	NM_LAST            = NM_FIRST - 99
 )
 
+//Process Access Rights
+//https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
+const (
+	PROCESS_CREATE_PROCESS            = 0x0080  //Required to create a process.
+	PROCESS_CREATE_THREAD             = 0x0002  //Required to create a thread.
+	PROCESS_DUP_HANDLE                = 0x0040  //Required to duplicate a handle using DuplicateHandle.
+	PROCESS_QUERY_INFORMATION         = 0x0400  //Required to retrieve certain information about a process, such as its token, exit code, and priority class (see OpenProcessToken).
+	PROCESS_QUERY_LIMITED_INFORMATION = 0x1000  //Required to retrieve certain information about a process (see GetExitCodeProcess, GetPriorityClass, IsProcessInJob, QueryFullProcessImageName). A handle that has the PROCESS_QUERY_INFORMATION access right is automatically granted
+	PROCESS_SET_INFORMATION           = 0x0200  //Required to set certain information about a process, such as its priority class (see SetPriorityClass).
+	PROCESS_SET_QUOTA                 = 0x0100  //Required to set memory limits using SetProcessWorkingSetSize.
+	PROCESS_SUSPEND_RESUME            = 0x0800  //Required to suspend or resume a process.
+	PROCESS_TERMINATE                 = 0x0001  //Required to terminate a process using TerminateProcess.
+	PROCESS_VM_OPERATION              = 0x0008  //Required to perform an operation on the address space of a process (see VirtualProtectEx and WriteProcessMemory).
+	PROCESS_VM_READ                   = 0x0010  //Required to read memory in a process using ReadProcessMemory.
+	PROCESS_VM_WRITE                  = 0x0020  //Required to write to memory in a process using WriteProcessMemory.
+	PROCESS_ALL_ACCESS                = 2035711 //This is not recommended.
+)
+
 // ListView messages
 const (
 	LVM_FIRST                    = 0x1000
@@ -1717,6 +1735,15 @@ const (
 	KF_ALTDOWN  = 0x2000
 	KF_REPEAT   = 0x4000
 	KF_UP       = 0x8000
+)
+
+// Modifier Codes (Register Hotkey)
+const (
+	MOD_ALT      = 0x0001
+	MOD_CONTROL  = 0x0002
+	MOD_NOREPEAT = 0x4000
+	MOD_SHIFT    = 0x0004
+	MOD_WIN      = 0x0008
 )
 
 // Virtual-Key Codes
@@ -2678,4 +2705,13 @@ const (
 	WH_MSGFILTER       = -1
 	WH_SHELL           = 10
 	WH_SYSMSGFILTER    = 6
+)
+
+// ConsoleCtrlHandle Events
+const (
+	CTRL_C_EVENT        = 0x0000
+	CTRL_BREAK_EVENT    = 0x0001
+	CTRL_CLOSE_EVENT    = 0x0002
+	CTRL_LOGOFF_EVENT   = 0x0005
+	CTRL_SHUTDOWN_EVENT = 0x0006
 )

@@ -8,8 +8,12 @@ import (
 	// #include <wtypes.h>
 	// #include <winable.h>
 	"C"
+	"encoding/binary"
+	"errors"
 	"fmt"
+	//"regexp"
 	"syscall"
+	"unicode/utf8"
 	"unsafe"
 )
 
@@ -115,6 +119,8 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procRegisterHotKey                = moduser32.NewProc("RegisterHotKey")
+	procUnregisterHotKey              = moduser32.NewProc("UnregisterHotKey")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -226,14 +232,19 @@ func PostQuitMessage(exitCode int) {
 		uintptr(exitCode))
 }
 
-func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
-	ret, _, _ := procGetMessage.Call(
-		uintptr(unsafe.Pointer(msg)),
+func GetMessage(hwnd HWND, msgFilterMin, msgFilterMax uint32) (msg MSG, err error) {
+
+	_, _, err = procGetMessage.Call(
+		uintptr(unsafe.Pointer(&msg)),
 		uintptr(hwnd),
 		uintptr(msgFilterMin),
 		uintptr(msgFilterMax))
 
-	return int(ret)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
 func TranslateMessage(msg *MSG) bool {
@@ -650,15 +661,19 @@ func EndDialog(hwnd HWND, nResult uintptr) bool {
 	return ret != 0
 }
 
-func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) bool {
-	ret, _, _ := procPeekMessage.Call(
-		uintptr(unsafe.Pointer(lpMsg)),
+func PeekMessage(hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg uint32) (msg MSG, err error) {
+	_, _, err = procPeekMessage.Call(
+		uintptr(unsafe.Pointer(&msg)),
 		uintptr(hwnd),
 		uintptr(wMsgFilterMin),
 		uintptr(wMsgFilterMax),
 		uintptr(wRemoveMsg))
 
-	return ret != 0
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
@@ -923,7 +938,9 @@ func ChangeDisplaySettingsEx(szDeviceName *uint16, devMode *DEVMODE, hwnd HWND, 
 	return int32(ret)
 }
 
-func SendInput(inputs []INPUT) uint32 {
+//Synthesizes keystrokes, mouse motions, and button clicks.
+//see https://msdn.microsoft.com/en-us/library/windows/desktop/ms646310(v=vs.85).aspx
+func SendInput(inputs []INPUT) (err error) {
 	var validInputs []C.INPUT
 
 	for _, oneInput := range inputs {
@@ -937,18 +954,54 @@ func SendInput(inputs []INPUT) uint32 {
 		case INPUT_HARDWARE:
 			(*HardwareInput)(unsafe.Pointer(&input)).hi = oneInput.Hi
 		default:
-			panic("unkown type")
+			err = errors.New("Unknown input type passed: " + fmt.Sprintf("%d", oneInput.Type))
+			return
 		}
 
 		validInputs = append(validInputs, input)
 	}
 
-	ret, _, _ := procSendInput.Call(
+	_, _, err = procSendInput.Call(
 		uintptr(len(validInputs)),
 		uintptr(unsafe.Pointer(&validInputs[0])),
 		uintptr(unsafe.Sizeof(C.INPUT{})),
 	)
-	return uint32(ret)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Simplifies SendInput for Keyboard related keys. Supports alphanumeric
+func SendInputString(input string) (err error) {
+	var inputs []INPUT
+	b := make([]byte, 3)
+
+	/*reg, err := regexp.Compile("^[a-zA-Z0-9]+")
+	if err != nil {
+		return
+	}
+	input = reg.ReplaceAllString(input, "")*/
+
+	for _, rune := range input {
+
+		utf8.EncodeRune(b, rune)
+		vk := binary.LittleEndian.Uint16(b)
+		fmt.Println(vk)
+
+		input := INPUT{
+			Type: INPUT_KEYBOARD,
+			Ki: KEYBDINPUT{
+				WVk:     vk,
+				DwFlags: 0x0002 | 0x0008,
+				Time:    200,
+			},
+		}
+		inputs = append(inputs, input)
+	}
+	err = SendInput(inputs)
+	return
 }
 
 func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWORD) HHOOK {
@@ -976,4 +1029,34 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+//Defines a system-wide hotkey.
+//See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
+func RegisterHotKey(hwnd HWND, id int, fsModifiers uint, vkey uint) (err error) {
+	_, _, err = procRegisterHotKey.Call(
+		uintptr(hwnd),
+		uintptr(id),
+		uintptr(fsModifiers),
+		uintptr(vkey),
+	)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
+}
+
+//Defines a system-wide hotkey.
+//See https://msdn.microsoft.com/en-us/library/windows/desktop/ms646309(v=vs.85).aspx
+func UnregisterHotKey(hwnd HWND, id int) (err error) {
+	_, _, err = procUnregisterHotKey.Call(
+		uintptr(hwnd),
+		uintptr(id),
+	)
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
