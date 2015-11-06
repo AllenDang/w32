@@ -307,17 +307,24 @@ func GetDiskFreeSpaceEx(dirName string) (r bool,
 		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
 }
 
-func GetSystemTime() *SYSTEMTIME {
-	var time SYSTEMTIME
-	procGetSystemTime.Call(
+func GetSystemTime() (time SYSTEMTIME, err error) {
+	_, _, err = procGetSystemTime.Call(
 		uintptr(unsafe.Pointer(&time)))
-	return &time
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
-func SetSystemTime(time *SYSTEMTIME) bool {
-	ret, _, _ := procSetSystemTime.Call(
+func SetSystemTime(time *SYSTEMTIME) (err error) {
+	_, _, err = procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
-	return ret != 0
+	if err.Error() != ErrSuccess {
+		return
+	}
+	err = nil
+	return
 }
 
 //Writes data to an area of memory in a specified process. The entire area to be written to must be accessible or the operation fails.
