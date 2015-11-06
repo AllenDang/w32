@@ -5,6 +5,24 @@ w32 is a wrapper of windows apis for the Go Programming Language.
 
 It wraps win32 apis to "Go style" to make them easier to use.
 
+This includes 
+* advapi32.dll with golang
+* comctl32.dll with golang
+* comdlg32.dll with golang
+* dwmapi.dll with golang
+* gdi32.dll with golang
+* gdiplus.dll with golang
+* idispatch.dll with golang
+* istream.dll with golang
+* iunknown.dll with golang
+* kernel32.dll with golang
+* ole32.dll with golang
+* oleaut32.dll with golang
+* opengl32.dll with golang
+* psapi.dll with golang
+* shell32.dll with golang
+* user32.dll with golang
+
 Example
 =====
 ```
