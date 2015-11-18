@@ -15,27 +15,24 @@ var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
 	//	procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
-	procRegSetValueEx                = modadvapi32.NewProc("RegSetValueExW")
-	procRegDeleteKeyValue            = modadvapi32.NewProc("RegDeleteKeyValueW")
-	procRegDeleteValue               = modadvapi32.NewProc("RegDeleteValueW")
-	procRegDeleteTree                = modadvapi32.NewProc("RegDeleteTreeW")
-	procOpenEventLog                 = modadvapi32.NewProc("OpenEventLogW")
-	procReadEventLog                 = modadvapi32.NewProc("ReadEventLogW")
 	procCloseEventLog                = modadvapi32.NewProc("CloseEventLog")
 	procCloseServiceHandle           = modadvapi32.NewProc("CloseServiceHandle")
 	procControlService               = modadvapi32.NewProc("ControlService")
 	procControlTrace                 = modadvapi32.NewProc("ControlTraceW")
+	procInitializeSecurityDescriptor = modadvapi32.NewProc("InitializeSecurityDescriptor")
+	procOpenEventLog                 = modadvapi32.NewProc("OpenEventLogW")
 	procOpenSCManager                = modadvapi32.NewProc("OpenSCManagerW")
 	procOpenService                  = modadvapi32.NewProc("OpenServiceW")
-	procInitializeSecurityDescriptor = modadvapi32.NewProc("InitializeSecurityDescriptor")
+	procReadEventLog                 = modadvapi32.NewProc("ReadEventLogW")
 	procRegCloseKey                  = modadvapi32.NewProc("RegCloseKey")
 	procRegCreateKeyEx               = modadvapi32.NewProc("RegCreateKeyExW")
 	procRegEnumKeyEx                 = modadvapi32.NewProc("RegEnumKeyExW")
 	procRegGetValue                  = modadvapi32.NewProc("RegGetValueW")
 	procRegOpenKeyEx                 = modadvapi32.NewProc("RegOpenKeyExW")
+	procRegSetValueEx                = modadvapi32.NewProc("RegSetValueExW")
+	procSetSecurityDescriptorDacl    = modadvapi32.NewProc("SetSecurityDescriptorDacl")
 	procStartService                 = modadvapi32.NewProc("StartServiceW")
 	procStartTrace                   = modadvapi32.NewProc("StartTraceW")
-	procSetSecurityDescriptorDacl    = modadvapi32.NewProc("SetSecurityDescriptorDacl")
 )
 
 var (
@@ -144,47 +141,6 @@ func RegSetBinary(hKey HKEY, subKey string, value []byte) (errno int) {
 	return int(ret)
 }
 
-func RegSetString(hKey HKEY, subKey string, value string) (errno int) {
-	var lptr, vptr unsafe.Pointer
-	if len(subKey) > 0 {
-		lptr = unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))
-	}
-	var buf []uint16
-	if len(value) > 0 {
-		buf, err := syscall.UTF16FromString(value)
-		if err != nil {
-			return ERROR_BAD_FORMAT
-		}
-		vptr = unsafe.Pointer(&buf[0])
-	}
-	ret, _, _ := procRegSetValueEx.Call(
-		uintptr(hKey),
-		uintptr(lptr),
-		uintptr(0),
-		uintptr(REG_SZ),
-		uintptr(vptr),
-		uintptr(unsafe.Sizeof(buf)+2)) // 2 is the size of the terminating null character
-
-	return int(ret)
-}
-
-func RegSetUint32(hKey HKEY, subKey string, value uint32) (errno int) {
-	var lptr unsafe.Pointer
-	if len(subKey) > 0 {
-		lptr = unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))
-	}
-	vptr := unsafe.Pointer(&value)
-	ret, _, _ := procRegSetValueEx.Call(
-		uintptr(hKey),
-		uintptr(lptr),
-		uintptr(0),
-		uintptr(REG_DWORD),
-		uintptr(vptr),
-		uintptr(unsafe.Sizeof(value)))
-
-	return int(ret)
-}
-
 func RegGetString(hKey HKEY, subKey string, value string) string {
 	var bufLen uint32
 	procRegGetValue.Call(
@@ -217,20 +173,6 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
 	return syscall.UTF16ToString(buf)
 }
 
-func RegGetUint32(hKey HKEY, subKey string, value string) (data uint32, errno int) {
-	var dataLen uint32 = uint32(unsafe.Sizeof(data))
-	ret, _, _ := procRegGetValue.Call(
-		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
-		uintptr(RRF_RT_REG_DWORD),
-		0,
-		uintptr(unsafe.Pointer(&data)),
-		uintptr(unsafe.Pointer(&dataLen)))
-	errno = int(ret)
-	return
-}
-
 /*
 func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint16) (errno int) {
 	ret, _, _ := procRegSetKeyValue.Call(
@@ -244,31 +186,6 @@ func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, d
 	return int(ret)
 }
 */
-
-func RegDeleteKeyValue(hKey HKEY, subKey string, valueName string) (errno int) {
-	ret, _, _ := procRegDeleteKeyValue.Call(
-		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
-
-	return int(ret)
-}
-
-func RegDeleteValue(hKey HKEY, valueName string) (errno int) {
-	ret, _, _ := procRegDeleteValue.Call(
-		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
-
-	return int(ret)
-}
-
-func RegDeleteTree(hKey HKEY, subKey string) (errno int) {
-	ret, _, _ := procRegDeleteTree.Call(
-		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))))
-
-	return int(ret)
-}
 
 func RegEnumKeyEx(hKey HKEY, index uint32) string {
 	var bufLen uint32 = 255
@@ -405,13 +322,12 @@ func ControlTrace(hTrace TRACEHANDLE, lpSessionName string, props *EVENT_TRACE_P
 	if ret == ERROR_SUCCESS {
 		return true, nil
 	}
-
 	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
-
 	return
 }
 
 func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRACEHANDLE, e error) {
+
 	ret, _, _ := procStartTrace.Call(
 		uintptr(unsafe.Pointer(&hTrace)),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpSessionName))),
@@ -420,7 +336,6 @@ func StartTrace(lpSessionName string, props *EVENT_TRACE_PROPERTIES) (hTrace TRA
 	if ret == ERROR_SUCCESS {
 		return
 	}
-
 	e = errors.New(fmt.Sprintf("error: 0x%x", ret))
 	return
 }

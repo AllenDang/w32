@@ -1,10 +1,6 @@
 package w32
 
 import (
-<<<<<<< HEAD
-=======
-	//"unsafe"
->>>>>>> echosrv test starting to work
 	"errors"
 )
 
@@ -96,16 +92,8 @@ func (pm PORT_MESSAGE) DoNotUseThisField() float64 {
 	panic("WE TOLD YOU NOT TO USE THIS FIELD")
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 const PORT_MESSAGE_SIZE = 0x28
 
-=======
->>>>>>> most basic test passing
-=======
-const PORT_MESSAGE_SIZE = 0x28
-
->>>>>>> echosrv test starting to work
 // http://www.nirsoft.net/kernel_struct/vista/SECURITY_QUALITY_OF_SERVICE.html
 type SECURITY_QUALITY_OF_SERVICE struct {
 	Length              uint32
@@ -141,7 +129,6 @@ type ALPC_PORT_ATTRIBUTES struct {
 	Reserved            uint32
 }
 
-<<<<<<< HEAD
 const SHORT_MESSAGE_MAX_SIZE uint16 = 65535 // MAX_USHORT
 const SHORT_MESSAGE_MAX_PAYLOAD uint16 = SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE
 
@@ -151,29 +138,16 @@ const SHORT_MESSAGE_MAX_PAYLOAD uint16 = SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_S
 type AlpcShortMessage struct {
 	PORT_MESSAGE
 	Data [SHORT_MESSAGE_MAX_PAYLOAD]byte
-=======
-const SHORT_MESSAGE_MAX_SIZE = 65535
-
-type AlpcShortMessage struct {
-	PORT_MESSAGE
-	Command uint32
-	data    [SHORT_MESSAGE_MAX_SIZE - PORT_MESSAGE_SIZE - 4]byte
->>>>>>> echosrv test starting to work
 }
 
 func NewAlpcShortMessage() AlpcShortMessage {
 	sm := AlpcShortMessage{}
-<<<<<<< HEAD
 	sm.TotalLength = SHORT_MESSAGE_MAX_SIZE
-=======
-	sm.TotalLength = uint16(SHORT_MESSAGE_MAX_SIZE)
->>>>>>> echosrv test starting to work
 	return sm
 }
 
 func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 
-<<<<<<< HEAD
 	copy(sm.Data[:], d)
 	if len(d) > int(SHORT_MESSAGE_MAX_PAYLOAD) {
 		e = errors.New("data too big - truncated")
@@ -183,22 +157,10 @@ func (sm *AlpcShortMessage) SetData(d []byte) (e error) {
 	}
 	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + len(d))
 	sm.DataLength = uint16(len(d))
-=======
-	copy(sm.data[:], d)
-	if len(d) > len(sm.data) {
-		e = errors.New("data too big - truncated")
-		sm.DataLength = uint16(4 + len(sm.data))
-		sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(sm.data))
-		return
-	}
-	sm.TotalLength = uint16(PORT_MESSAGE_SIZE + 4 + len(d))
-	sm.DataLength = uint16(4 + len(d))
->>>>>>> echosrv test starting to work
 	return
 
 }
 
-<<<<<<< HEAD
 // TODO - is this still useful?
 func (sm *AlpcShortMessage) GetData() []byte {
 	if int(sm.DataLength) > int(SHORT_MESSAGE_MAX_PAYLOAD) {
@@ -216,8 +178,4 @@ func (sm *AlpcShortMessage) Reset() {
 
 type AlpcPortContext struct {
 	Handle HANDLE
-=======
-func (sm *AlpcShortMessage) GetData() []byte {
-	return sm.data[:sm.DataLength-4]
->>>>>>> echosrv test starting to work
 }
