@@ -147,10 +147,11 @@ func WaitForSingleObject(hHandle HANDLE, msecs uint32) (ok bool, e error) {
 		return
 	}
 
+	// don't set e for timeouts, or it will be ERROR_SUCCESS which is
+	// confusing
 	if ret != WAIT_TIMEOUT {
 		e = lastErr
 	}
-
 	return
 
 }
