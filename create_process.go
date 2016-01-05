@@ -17,9 +17,9 @@ import (
 var (
 	kernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-	procCreateProcessW     = kernel32.NewProc("CreateProcessW")
-	procTerminateProcess   = kernel32.NewProc("TerminateProcess")
-	procGetExitCodeProcess = kernel32.NewProc("GetExitCodeProcess")
+	procCreateProcessW      = kernel32.NewProc("CreateProcessW")
+	procTerminateProcess    = kernel32.NewProc("TerminateProcess")
+	procGetExitCodeProcess  = kernel32.NewProc("GetExitCodeProcess")
 	procWaitForSingleObject = kernel32.NewProc("WaitForSingleObject")
 )
 
@@ -135,16 +135,22 @@ func GetExitCodeProcess(hProcess HANDLE) (code uintptr, e error) {
 //   _In_ DWORD  dwMilliseconds
 // );
 
-func WaitForSingleObject(hHandle HANDLE, msecs uint32) (e error) {
+func WaitForSingleObject(hHandle HANDLE, msecs uint32) (ok bool, e error) {
 
 	ret, _, lastErr := procWaitForSingleObject.Call(
 		uintptr(hHandle),
 		uintptr(msecs),
-		)
+	)
 
-	if ret != WAIT_OBJECT_0 {
+	if ret == WAIT_OBJECT_0 {
+		ok = true
+		return
+	}
+
+	if ret != WAIT_TIMEOUT {
 		e = lastErr
 	}
 
 	return
+
 }

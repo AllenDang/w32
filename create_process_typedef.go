@@ -8,8 +8,8 @@ package w32
 // } PROCESS_INFORMATION, *PPROCESS_INFORMATION, *LPPROCESS_INFORMATION;
 
 type PROCESS_INFORMATION struct {
-	Process  HANDLE
-	Thread   HANDLE
+	Process   HANDLE
+	Thread    HANDLE
 	ProcessId uint32
 	ThreadId  uint32
 }
@@ -51,9 +51,9 @@ type STARTUPINFOW struct {
 	ShowWindow    uint16
 	_             uint16
 	_             *uint8
-	StdInput     HANDLE
-	StdOutput    HANDLE
-	StdError     HANDLE
+	StdInput      HANDLE
+	StdOutput     HANDLE
+	StdError      HANDLE
 }
 
 // combase!_SECURITY_ATTRIBUTES
