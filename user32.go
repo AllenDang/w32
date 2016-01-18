@@ -980,7 +980,7 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 }
 
 func SystemParametersInfo(uiAction int, uiParam int, pvParam PVOID, fWinIni int) bool {
-	
+
 	ret := 0
 	return ret
 }
