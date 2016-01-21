@@ -979,7 +979,7 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 	return LRESULT(ret)
 }
 
-func SystemParametersInfo(uiAction uint32, uiParam uint32, pvParam PVOID, fWinIni uint32) bool {
+func SystemParametersInfo(uiAction uint32, uiParam uint32, pvParam unsafe.Pointer, fWinIni uint32) bool {
 	ret, _, _ := procSystemParametersInfo.Call(
 		uintptr(uiAction),
 		uintptr(uiParam),
