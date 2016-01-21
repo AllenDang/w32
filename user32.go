@@ -115,6 +115,7 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procSystemParametersInfo          = moduser32.NewProc("SystemParametersInfoW")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -976,4 +977,14 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+func SystemParametersInfo(uiAction uint32, uiParam uint32, pvParam unsafe.Pointer, fWinIni uint32) bool {
+	ret, _, _ := procSystemParametersInfo.Call(
+		uintptr(uiAction),
+		uintptr(uiParam),
+		uintptr(pvParam),
+		uintptr(fWinIni),
+	)
+	return ret != 0
 }
