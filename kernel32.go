@@ -43,6 +43,7 @@ var (
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procCopyMemory                 = modkernel32.NewProc("RtlCopyMemory")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -310,4 +311,12 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
 	return ret != 0
+}
+
+func CopyMemory(dest, source unsafe.Pointer, sizeInBytes int) {
+	procCopyMemory.Call(
+		uintptr(dest),
+		uintptr(source),
+		uintptr(sizeInBytes),
+	)
 }
