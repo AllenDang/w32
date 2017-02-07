@@ -20,6 +20,7 @@ var (
 	procLoadIcon                      = moduser32.NewProc("LoadIconW")
 	procLoadCursor                    = moduser32.NewProc("LoadCursorW")
 	procShowWindow                    = moduser32.NewProc("ShowWindow")
+	procShowWindowAsync               = moduser32.NewProc("ShowWindowAsync")
 	procUpdateWindow                  = moduser32.NewProc("UpdateWindow")
 	procCreateWindowEx                = moduser32.NewProc("CreateWindowExW")
 	procAdjustWindowRect              = moduser32.NewProc("AdjustWindowRect")
@@ -128,7 +129,6 @@ func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
 		uintptr(unsafe.Pointer(iconName)))
 
 	return HICON(ret)
-
 }
 
 func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
@@ -137,7 +137,6 @@ func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
 		uintptr(unsafe.Pointer(cursorName)))
 
 	return HCURSOR(ret)
-
 }
 
 func ShowWindow(hwnd HWND, cmdshow int) bool {
@@ -146,7 +145,14 @@ func ShowWindow(hwnd HWND, cmdshow int) bool {
 		uintptr(cmdshow))
 
 	return ret != 0
+}
 
+func ShowWindowAsync(hwnd HWND, cmdshow int) bool {
+	ret, _, _ := procShowWindowAsync.Call(
+		uintptr(hwnd),
+		uintptr(cmdshow))
+
+	return ret != 0
 }
 
 func UpdateWindow(hwnd HWND) bool {
