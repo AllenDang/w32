@@ -682,6 +682,10 @@ type FILETIME struct {
 	DwHighDateTime uint32
 }
 
+func (t FILETIME) ToUint64() uint64 {
+	return uint64(t.DwHighDateTime)<<32 | uint64(t.DwLowDateTime)
+}
+
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx
 type COORD struct {
 	X, Y int16
