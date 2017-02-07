@@ -43,6 +43,7 @@ var (
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procGetSystemTimeAsFileTime    = modkernel32.NewProc("GetSystemTimeAsFileTime")
 	procCopyMemory                 = modkernel32.NewProc("RtlCopyMemory")
 )
 
@@ -300,11 +301,14 @@ func GetDiskFreeSpaceEx(dirName string) (r bool,
 		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
 }
 
-func GetSystemTime() *SYSTEMTIME {
-	var time SYSTEMTIME
-	procGetSystemTime.Call(
-		uintptr(unsafe.Pointer(&time)))
-	return &time
+func GetSystemTime() (time SYSTEMTIME) {
+	procGetSystemTime.Call(uintptr(unsafe.Pointer(&time)))
+	return
+}
+
+func GetSystemTimeAsFileTime() (time FILETIME) {
+	procGetSystemTimeAsFileTime.Call(uintptr(unsafe.Pointer(&time)))
+	return
 }
 
 func SetSystemTime(time *SYSTEMTIME) bool {
