@@ -462,8 +462,8 @@ func ReleaseCapture() bool {
 	return ret != 0
 }
 
-func GetWindowThreadProcessId(hwnd HWND) (HANDLE, int) {
-	var processId int
+func GetWindowThreadProcessId(hwnd HWND) (HANDLE, DWORD) {
+	var processId DWORD
 	ret, _, _ := procGetWindowThreadProcessId.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&processId)))

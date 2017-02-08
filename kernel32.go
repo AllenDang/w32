@@ -45,6 +45,7 @@ var (
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
 	procGetSystemTimeAsFileTime    = modkernel32.NewProc("GetSystemTimeAsFileTime")
 	procCopyMemory                 = modkernel32.NewProc("RtlCopyMemory")
+	procGetCurrentProcessId        = modkernel32.NewProc("GetCurrentProcessId")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -323,4 +324,9 @@ func CopyMemory(dest, source unsafe.Pointer, sizeInBytes int) {
 		uintptr(source),
 		uintptr(sizeInBytes),
 	)
+}
+
+func GetCurrentProcessId() DWORD {
+	id, _, _ := procGetCurrentProcessId.Call()
+	return DWORD(id)
 }
