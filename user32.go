@@ -116,6 +116,9 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procGetWindowPlacement            = moduser32.NewProc("GetWindowPlacement")
+	procSetWindowPlacement            = moduser32.NewProc("SetWindowPlacement")
+	procShowCursor                    = moduser32.NewProc("ShowCursor")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -982,4 +985,25 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+func GetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
+	ret, _, _ := procGetWindowPlacement.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(placement)),
+	)
+	return ret != 0
+}
+
+func SetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
+	ret, _, _ := procSetWindowPlacement.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(placement)),
+	)
+	return ret != 0
+}
+
+func ShowCursor(show bool) int {
+	ret, _, _ := procShowCursor.Call(uintptr(BoolToBOOL(show)))
+	return int(ret)
 }
