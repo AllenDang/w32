@@ -119,6 +119,7 @@ var (
 	procGetWindowPlacement            = moduser32.NewProc("GetWindowPlacement")
 	procSetWindowPlacement            = moduser32.NewProc("SetWindowPlacement")
 	procShowCursor                    = moduser32.NewProc("ShowCursor")
+	procLoadImage                     = moduser32.NewProc("LoadImageW")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1006,4 +1007,22 @@ func SetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
 func ShowCursor(show bool) int {
 	ret, _, _ := procShowCursor.Call(uintptr(BoolToBOOL(show)))
 	return int(ret)
+}
+
+func LoadImage(
+	inst HINSTANCE,
+	name string,
+	typ uint,
+	desiredWidth, desiredHeight int,
+	load uint,
+) HANDLE {
+	ret, _, _ := procLoadImage.Call(
+		uintptr(inst),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+		uintptr(typ),
+		uintptr(desiredWidth),
+		uintptr(desiredHeight),
+		uintptr(load),
+	)
+	return HANDLE(ret)
 }
