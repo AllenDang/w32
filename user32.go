@@ -20,6 +20,7 @@ var (
 	procLoadIcon                      = moduser32.NewProc("LoadIconW")
 	procLoadCursor                    = moduser32.NewProc("LoadCursorW")
 	procShowWindow                    = moduser32.NewProc("ShowWindow")
+	procShowWindowAsync               = moduser32.NewProc("ShowWindowAsync")
 	procUpdateWindow                  = moduser32.NewProc("UpdateWindow")
 	procCreateWindowEx                = moduser32.NewProc("CreateWindowExW")
 	procAdjustWindowRect              = moduser32.NewProc("AdjustWindowRect")
@@ -115,6 +116,10 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procGetWindowPlacement            = moduser32.NewProc("GetWindowPlacement")
+	procSetWindowPlacement            = moduser32.NewProc("SetWindowPlacement")
+	procShowCursor                    = moduser32.NewProc("ShowCursor")
+	procLoadImage                     = moduser32.NewProc("LoadImageW")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -128,7 +133,6 @@ func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
 		uintptr(unsafe.Pointer(iconName)))
 
 	return HICON(ret)
-
 }
 
 func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
@@ -137,7 +141,6 @@ func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
 		uintptr(unsafe.Pointer(cursorName)))
 
 	return HCURSOR(ret)
-
 }
 
 func ShowWindow(hwnd HWND, cmdshow int) bool {
@@ -146,7 +149,14 @@ func ShowWindow(hwnd HWND, cmdshow int) bool {
 		uintptr(cmdshow))
 
 	return ret != 0
+}
 
+func ShowWindowAsync(hwnd HWND, cmdshow int) bool {
+	ret, _, _ := procShowWindowAsync.Call(
+		uintptr(hwnd),
+		uintptr(cmdshow))
+
+	return ret != 0
 }
 
 func UpdateWindow(hwnd HWND) bool {
@@ -456,8 +466,8 @@ func ReleaseCapture() bool {
 	return ret != 0
 }
 
-func GetWindowThreadProcessId(hwnd HWND) (HANDLE, int) {
-	var processId int
+func GetWindowThreadProcessId(hwnd HWND) (HANDLE, DWORD) {
+	var processId DWORD
 	ret, _, _ := procGetWindowThreadProcessId.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&processId)))
@@ -976,4 +986,43 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+func GetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
+	ret, _, _ := procGetWindowPlacement.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(placement)),
+	)
+	return ret != 0
+}
+
+func SetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
+	ret, _, _ := procSetWindowPlacement.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(placement)),
+	)
+	return ret != 0
+}
+
+func ShowCursor(show bool) int {
+	ret, _, _ := procShowCursor.Call(uintptr(BoolToBOOL(show)))
+	return int(ret)
+}
+
+func LoadImage(
+	inst HINSTANCE,
+	name string,
+	typ uint,
+	desiredWidth, desiredHeight int,
+	load uint,
+) HANDLE {
+	ret, _, _ := procLoadImage.Call(
+		uintptr(inst),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+		uintptr(typ),
+		uintptr(desiredWidth),
+		uintptr(desiredHeight),
+		uintptr(load),
+	)
+	return HANDLE(ret)
 }

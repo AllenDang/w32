@@ -2679,3 +2679,44 @@ const (
 	WH_SHELL           = 10
 	WH_SYSMSGFILTER    = 6
 )
+
+// Process Security and Access Rights
+// https://msdn.microsoft.com/en-us/library/windows/desktop/ms684880(v=vs.85).aspx
+const (
+	PROCESS_TERMINATE                 = 0x0001
+	PROCESS_CREATE_THREAD             = 0x0002
+	PROCESS_SET_SESSIONID             = 0x0004
+	PROCESS_VM_OPERATION              = 0x0008
+	PROCESS_VM_READ                   = 0x0010
+	PROCESS_VM_WRITE                  = 0x0020
+	PROCESS_DUP_HANDLE                = 0x0040
+	PROCESS_CREATE_PROCESS            = 0x0080
+	PROCESS_SET_QUOTA                 = 0x0100
+	PROCESS_SET_INFORMATION           = 0x0200
+	PROCESS_QUERY_INFORMATION         = 0x0400
+	PROCESS_SUSPEND_RESUME            = 0x0800
+	PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
+	PROCESS_SET_LIMITED_INFORMATION   = 0x2000
+)
+
+const (
+	IMAGE_BITMAP = 0
+	IMAGE_ICON   = 1
+	IMAGE_CURSOR = 2
+)
+
+const (
+	LR_DEFAULTCOLOR     = 0x0000
+	LR_MONOCHROME       = 0x0001
+	LR_COLOR            = 0x0002
+	LR_COPYRETURNORG    = 0x0004
+	LR_COPYDELETEORG    = 0x0008
+	LR_LOADFROMFILE     = 0x0010
+	LR_LOADTRANSPARENT  = 0x0020
+	LR_DEFAULTSIZE      = 0x0040
+	LR_VGACOLOR         = 0x0080
+	LR_LOADMAP3DCOLORS  = 0x1000
+	LR_CREATEDIBSECTION = 0x2000
+	LR_COPYFROMRESOURCE = 0x4000
+	LR_SHARED           = 0x8000
+)
