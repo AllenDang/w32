@@ -501,11 +501,12 @@ const (
 	WM_MBUTTONUP              = 520
 	WM_MBUTTONDBLCLK          = 521
 	WM_MOUSEWHEEL             = 522
-	WM_MOUSEFIRST             = 512
 	WM_XBUTTONDOWN            = 523
 	WM_XBUTTONUP              = 524
 	WM_XBUTTONDBLCLK          = 525
-	WM_MOUSELAST              = 525
+	WM_MOUSEHWHEEL            = 526
+	WM_MOUSEFIRST             = 512
+	WM_MOUSELAST              = 526
 	WM_MOUSEHOVER             = 0X2A1
 	WM_MOUSELEAVE             = 0X2A3
 	WM_CLIPBOARDUPDATE        = 0x031D
