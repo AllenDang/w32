@@ -2679,3 +2679,13 @@ const (
 	WH_SHELL           = 10
 	WH_SYSMSGFILTER    = 6
 )
+
+// SendMessageTimeout Flags
+// https://msdn.microsoft.com/en-us/library/windows/desktop/ms644952(v=vs.85).aspx
+const (
+	SMTO_ABORTIFHUNG        = 0x0002
+	SMTO_BLOCK              = 0x0001
+	SMTO_NORMAL             = 0x0000
+	SMTO_NOTIMEOUTIFNOTHUNG = 0x0008
+	SMTO_ERRORONEXIT        = 0x0020
+)
