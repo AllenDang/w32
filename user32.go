@@ -116,6 +116,11 @@ var (
 	procSetWindowsHookEx              = moduser32.NewProc("SetWindowsHookExW")
 	procUnhookWindowsHookEx           = moduser32.NewProc("UnhookWindowsHookEx")
 	procCallNextHookEx                = moduser32.NewProc("CallNextHookEx")
+	procSetForegroundWindow           = moduser32.NewProc("SetForegroundWindow")
+	procFindWindowW                   = moduser32.NewProc("FindWindowW")
+	procFindWindowExW                 = moduser32.NewProc("FindWindowExW")
+	procGetClassName                  = moduser32.NewProc("GetClassNameW")
+	procEnumChildWindows              = moduser32.NewProc("EnumChildWindows")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -139,6 +144,23 @@ func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
 
 	return HCURSOR(ret)
 
+}
+
+func GetClassNameW(hwnd HWND) string {
+	buf := make([]uint16, 255)
+	procGetClassName.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(255))
+
+	return syscall.UTF16ToString(buf)
+}
+
+func SetForegroundWindow(hwnd HWND) bool {
+	ret, _, _ := procSetForegroundWindow.Call(
+		uintptr(hwnd))
+
+	return ret != 0
 }
 
 func ShowWindow(hwnd HWND, cmdshow int) bool {
@@ -174,6 +196,34 @@ func CreateWindowEx(exStyle uint, className, windowName *uint16,
 		uintptr(param))
 
 	return HWND(ret)
+}
+
+func FindWindowExW(hwndParent, hwndChildAfter HWND, className, windowName *uint16) HWND {
+	ret, _, _ := procFindWindowExW.Call(
+		uintptr(hwndParent),
+		uintptr(hwndChildAfter),
+		uintptr(unsafe.Pointer(className)),
+		uintptr(unsafe.Pointer(windowName)))
+
+	return HWND(ret)
+}
+
+func FindWindowW(className, windowName *uint16) HWND {
+	ret, _, _ := procFindWindowW.Call(
+		uintptr(unsafe.Pointer(className)),
+		uintptr(unsafe.Pointer(windowName)))
+
+	return HWND(ret)
+}
+
+func EnumChildWindows(hWndParent HWND, lpEnumFunc WNDENUMPROC, lParam LPARAM) bool {
+	ret, _, _ := procEnumChildWindows.Call(
+		uintptr(hWndParent),
+		uintptr(syscall.NewCallback(lpEnumFunc)),
+		uintptr(lParam),
+	)
+
+	return ret != 0
 }
 
 func AdjustWindowRectEx(rect *RECT, style uint, menu bool, exStyle uint) bool {

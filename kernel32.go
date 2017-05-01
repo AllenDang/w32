@@ -43,6 +43,10 @@ var (
 	procGetProcessTimes            = modkernel32.NewProc("GetProcessTimes")
 	procSetSystemTime              = modkernel32.NewProc("SetSystemTime")
 	procGetSystemTime              = modkernel32.NewProc("GetSystemTime")
+	procVirtualAllocEx             = modkernel32.NewProc("VirtualAllocEx")
+	procVirtualFreeEx              = modkernel32.NewProc("VirtualFreeEx")
+	procWriteProcessMemory         = modkernel32.NewProc("WriteProcessMemory")
+	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -310,4 +314,55 @@ func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := procSetSystemTime.Call(
 		uintptr(unsafe.Pointer(time)))
 	return ret != 0
+}
+
+func VirtualAllocEx(hProcess HANDLE, lpAddress, dwSize uintptr, flAllocationType, flProtect uint32) uintptr {
+	ret, _, _ := procVirtualAllocEx.Call(
+		uintptr(hProcess),
+		lpAddress,
+		dwSize,
+		uintptr(flAllocationType),
+		uintptr(flProtect),
+	)
+
+	return ret
+}
+
+func VirtualFreeEx(hProcess HANDLE, lpAddress, dwSize uintptr, dwFreeType uint32) bool {
+	ret, _, _ := procVirtualFreeEx.Call(
+		uintptr(hProcess),
+		lpAddress,
+		dwSize,
+		uintptr(dwFreeType),
+	)
+
+	return ret != 0
+}
+
+func WriteProcessMemory(hProcess HANDLE, lpBaseAddress, lpBuffer, nSize uintptr) (int, bool) {
+	var nBytesWritten int
+	ret, _, _ := procWriteProcessMemory.Call(
+		uintptr(hProcess),
+		lpBaseAddress,
+		lpBuffer,
+		nSize,
+		uintptr(unsafe.Pointer(&nBytesWritten)),
+	)
+
+	return nBytesWritten, ret != 0
+}
+
+func ReadProcessMemory(hProcess HANDLE, lpBaseAddress, nSize uintptr) (lpBuffer []uint16, lpNumberOfBytesRead int, ok bool) {
+
+	var nBytesRead int
+	buf := make([]uint16, nSize)
+	ret, _, _ := procReadProcessMemory.Call(
+		uintptr(hProcess),
+		lpBaseAddress,
+		uintptr(unsafe.Pointer(&buf[0])),
+		nSize,
+		uintptr(unsafe.Pointer(&nBytesRead)),
+	)
+
+	return buf, nBytesRead, ret != 0
 }
