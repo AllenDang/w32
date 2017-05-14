@@ -13,6 +13,7 @@ var (
 	modgdi32 = syscall.NewLazyDLL("gdi32.dll")
 
 	procGetDeviceCaps             = modgdi32.NewProc("GetDeviceCaps")
+	procGetCurrentObject          = modgdi32.NewProc("GetCurrentObject")
 	procDeleteObject              = modgdi32.NewProc("DeleteObject")
 	procCreateFontIndirect        = modgdi32.NewProc("CreateFontIndirectW")
 	procAbortDoc                  = modgdi32.NewProc("AbortDoc")
@@ -23,6 +24,7 @@ var (
 	procCreateBrushIndirect       = modgdi32.NewProc("CreateBrushIndirect")
 	procCreateCompatibleDC        = modgdi32.NewProc("CreateCompatibleDC")
 	procCreateDC                  = modgdi32.NewProc("CreateDCW")
+	procCreateCompatibleBitmap    = modgdi32.NewProc("CreateCompatibleBitmap")
 	procCreateDIBSection          = modgdi32.NewProc("CreateDIBSection")
 	procCreateEnhMetaFile         = modgdi32.NewProc("CreateEnhMetaFileW")
 	procCreateIC                  = modgdi32.NewProc("CreateICW")
@@ -68,6 +70,14 @@ func GetDeviceCaps(hdc HDC, index int) int {
 		uintptr(index))
 
 	return int(ret)
+}
+
+func GetCurrentObject(hdc HDC, uObjectType uint32) HGDIOBJ {
+    ret, _, _ := procGetCurrentObject.Call(
+        uintptr(hdc),
+        uintptr(uObjectType))
+
+    return HGDIOBJ(ret)
 }
 
 func DeleteObject(hObject HGDIOBJ) bool {
@@ -163,6 +173,15 @@ func CreateDC(lpszDriver, lpszDevice, lpszOutput *uint16, lpInitData *DEVMODE) H
 		uintptr(unsafe.Pointer(lpInitData)))
 
 	return HDC(ret)
+}
+
+func CreateCompatibleBitmap(hdc HDC, width, height uint) HBITMAP {
+    ret, _, _ := procCreateCompatibleBitmap.Call(
+        uintptr(hdc),
+        uintptr(width),
+        uintptr(height))
+
+    return HBITMAP(ret)
 }
 
 func CreateDIBSection(hdc HDC, pbmi *BITMAPINFO, iUsage uint, ppvBits *unsafe.Pointer, hSection HANDLE, dwOffset uint) HBITMAP {
