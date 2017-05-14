@@ -1054,7 +1054,7 @@ func SetTimer(hwnd HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintptr) u
 func KillTimer(hwnd HWND, nIDEvent uint32) bool {
     ret, _, _ := procKillTimer.Call(
         uintptr(hwnd),
-        uintptr(nIDEvent)
+        uintptr(nIDEvent),
     )
     return ret != 0
 }
