@@ -1041,7 +1041,7 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 	return LRESULT(ret)
 }
 
-func SetTimer(hwnd w32.HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintptr) uintptr {
+func SetTimer(hwnd HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintptr) uintptr {
     ret, _, _ := procSetTimer.Call(
         uintptr(hwnd),
         uintptr(nIDEvent),
@@ -1051,7 +1051,7 @@ func SetTimer(hwnd w32.HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintpt
     return ret
 }
 
-func KillTimer(hwnd w32.HWND, nIDEvent uint32) bool {
+func KillTimer(hwnd HWND, nIDEvent uint32) bool {
     ret, _, _ := procKillTimer.Call(
         uintptr(hwnd),
         uintptr(nIDEvent)
