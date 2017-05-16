@@ -120,6 +120,7 @@ var (
 	procSetWindowPlacement            = moduser32.NewProc("SetWindowPlacement")
 	procShowCursor                    = moduser32.NewProc("ShowCursor")
 	procLoadImage                     = moduser32.NewProc("LoadImageW")
+	procGetForegroundWindow           = moduser32.NewProc("GetForegroundWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1025,4 +1026,9 @@ func LoadImage(
 		uintptr(load),
 	)
 	return HANDLE(ret)
+}
+
+func GetForegroundWindow() HWND {
+	ret, _, _ := procGetForegroundWindow.Call()
+	return HWND(ret)
 }
