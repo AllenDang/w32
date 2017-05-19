@@ -121,6 +121,11 @@ var (
 	procShowCursor                    = moduser32.NewProc("ShowCursor")
 	procLoadImage                     = moduser32.NewProc("LoadImageW")
 	procGetForegroundWindow           = moduser32.NewProc("GetForegroundWindow")
+	procFindWindow                    = moduser32.NewProc("FindWindowW")
+	procGetClassName                  = moduser32.NewProc("GetClassNameW")
+	procGetMenu                       = moduser32.NewProc("GetMenu")
+	procGetSubMenu                    = moduser32.NewProc("GetSubMenu")
+	procCheckMenuItem                 = moduser32.NewProc("CheckMenuItem")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -476,10 +481,10 @@ func GetWindowThreadProcessId(hwnd HWND) (HANDLE, DWORD) {
 	return HANDLE(ret), processId
 }
 
-func MessageBox(hwnd HWND, title, caption string, flags uint) int {
+func MessageBox(hwnd HWND, text, caption string, flags uint) int {
 	ret, _, _ := procMessageBox.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(title))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
 		uintptr(flags))
 
@@ -1031,4 +1036,45 @@ func LoadImage(
 func GetForegroundWindow() HWND {
 	ret, _, _ := procGetForegroundWindow.Call()
 	return HWND(ret)
+}
+
+func FindWindow(className, windowName string) HWND {
+	var class, window uintptr
+	if className != "" {
+		class = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(className)))
+	}
+	if windowName != "" {
+		window = uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(windowName)))
+	}
+	ret, _, _ := procFindWindow.Call(class, window)
+	return HWND(ret)
+}
+
+func GetClassName(window HWND) (string, bool) {
+	var output [256]uint16
+	ret, _, _ := procGetClassName.Call(
+		uintptr(window),
+		uintptr(unsafe.Pointer(&output[0])),
+		uintptr(len(output)),
+	)
+	return syscall.UTF16ToString(output[:]), ret != 0
+}
+
+func GetMenu(window HWND) HMENU {
+	ret, _, _ := procGetMenu.Call(uintptr(window))
+	return HMENU(ret)
+}
+
+func GetSubMenu(menu HMENU, pos int) HMENU {
+	ret, _, _ := procGetSubMenu.Call(uintptr(menu), uintptr(pos))
+	return HMENU(ret)
+}
+
+func CheckMenuItem(menu HMENU, idCheckItem, check uint) int32 {
+	ret, _, _ := procCheckMenuItem.Call(
+		uintptr(menu),
+		uintptr(idCheckItem),
+		uintptr(check),
+	)
+	return int32(ret)
 }
