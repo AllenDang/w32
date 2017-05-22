@@ -14,12 +14,11 @@ import (
 var (
 	modadvapi32 = syscall.NewLazyDLL("advapi32.dll")
 
-	procRegCreateKeyEx = modadvapi32.NewProc("RegCreateKeyExW")
-	procRegOpenKeyEx   = modadvapi32.NewProc("RegOpenKeyExW")
-	procRegCloseKey    = modadvapi32.NewProc("RegCloseKey")
-	procRegGetValue    = modadvapi32.NewProc("RegGetValueW")
-	procRegEnumKeyEx   = modadvapi32.NewProc("RegEnumKeyExW")
-	//	procRegSetKeyValue     = modadvapi32.NewProc("RegSetKeyValueW")
+	procRegCreateKeyEx     = modadvapi32.NewProc("RegCreateKeyExW")
+	procRegOpenKeyEx       = modadvapi32.NewProc("RegOpenKeyExW")
+	procRegCloseKey        = modadvapi32.NewProc("RegCloseKey")
+	procRegGetValue        = modadvapi32.NewProc("RegGetValueW")
+	procRegEnumKeyEx       = modadvapi32.NewProc("RegEnumKeyExW")
 	procRegSetValueEx      = modadvapi32.NewProc("RegSetValueExW")
 	procRegDeleteKeyValue  = modadvapi32.NewProc("RegDeleteKeyValueW")
 	procRegDeleteValue     = modadvapi32.NewProc("RegDeleteValueW")
@@ -133,16 +132,17 @@ func RegSetBinary(hKey HKEY, subKey string, value []byte) (errno int) {
 
 func RegSetString(hKey HKEY, subKey string, value string) (errno int) {
 	var lptr, vptr unsafe.Pointer
-	if len(subKey) > 0 {
+	if subKey != "" {
 		lptr = unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))
 	}
-	var buf []uint16
-	if len(value) > 0 {
+	var dataLength int
+	if value != "" {
 		buf, err := syscall.UTF16FromString(value)
 		if err != nil {
 			return ERROR_BAD_FORMAT
 		}
 		vptr = unsafe.Pointer(&buf[0])
+		dataLength = len(buf) * 2
 	}
 	ret, _, _ := procRegSetValueEx.Call(
 		uintptr(hKey),
@@ -150,8 +150,8 @@ func RegSetString(hKey HKEY, subKey string, value string) (errno int) {
 		uintptr(0),
 		uintptr(REG_SZ),
 		uintptr(vptr),
-		uintptr(unsafe.Sizeof(buf) + 2)) // 2 is the size of the terminating null character
-
+		uintptr(dataLength),
+	)
 	return int(ret)
 }
 
@@ -217,20 +217,6 @@ func RegGetUint32(hKey HKEY, subKey string, value string) (data uint32, errno in
 	errno = int(ret)
 	return
 }
-
-/*
-func RegSetKeyValue(hKey HKEY, subKey string, valueName string, dwType uint32, data uintptr, cbData uint16) (errno int) {
-	ret, _, _ := procRegSetKeyValue.Call(
-		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))),
-		uintptr(dwType),
-		data,
-		uintptr(cbData))
-
-	return int(ret)
-}
-*/
 
 func RegDeleteKeyValue(hKey HKEY, subKey string, valueName string) (errno int) {
 	ret, _, _ := procRegDeleteKeyValue.Call(
