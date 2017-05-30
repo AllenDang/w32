@@ -5,9 +5,6 @@
 package w32
 
 import (
-	// #include <wtypes.h>
-	// #include <winable.h>
-	"C"
 	"fmt"
 	"syscall"
 	"unsafe"
@@ -96,7 +93,8 @@ var (
 	procBeginPaint                    = moduser32.NewProc("BeginPaint")
 	procEndPaint                      = moduser32.NewProc("EndPaint")
 	procGetKeyboardState              = moduser32.NewProc("GetKeyboardState")
-	procMapVirtualKey                 = moduser32.NewProc("MapVirtualKeyExW")
+	procMapVirtualKey                 = moduser32.NewProc("MapVirtualKeyW")
+	procMapVirtualKeyEx               = moduser32.NewProc("MapVirtualKeyExW")
 	procGetAsyncKeyState              = moduser32.NewProc("GetAsyncKeyState")
 	procToAscii                       = moduser32.NewProc("ToAscii")
 	procSwapMouseButton               = moduser32.NewProc("SwapMouseButton")
@@ -126,9 +124,16 @@ var (
 	procGetMenu                       = moduser32.NewProc("GetMenu")
 	procGetSubMenu                    = moduser32.NewProc("GetSubMenu")
 	procCheckMenuItem                 = moduser32.NewProc("CheckMenuItem")
+	procGetDesktopWindow              = moduser32.NewProc("GetDesktopWindow")
+	procGetRawInputData               = moduser32.NewProc("GetRawInputData")
+	procRegisterRawInputDevices       = moduser32.NewProc("RegisterRawInputDevices")
 )
 
+// RegisterClassEx sets the Size of the WNDCLASSEX automatically.
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
+	if wndClassEx != nil {
+		wndClassEx.Size = uint32(unsafe.Sizeof(*wndClassEx))
+	}
 	ret, _, _ := procRegisterClassEx.Call(uintptr(unsafe.Pointer(wndClassEx)))
 	return ATOM(ret)
 }
@@ -805,11 +810,20 @@ func GetKeyboardState(lpKeyState *[]byte) bool {
 	return ret != 0
 }
 
-func MapVirtualKeyEx(uCode, uMapType uint, dwhkl HKL) uint {
+func MapVirtualKey(uCode, uMapType uint) uint {
 	ret, _, _ := procMapVirtualKey.Call(
 		uintptr(uCode),
 		uintptr(uMapType),
-		uintptr(dwhkl))
+	)
+	return uint(ret)
+}
+
+func MapVirtualKeyEx(uCode, uMapType uint, dwhkl HKL) uint {
+	ret, _, _ := procMapVirtualKeyEx.Call(
+		uintptr(uCode),
+		uintptr(uMapType),
+		uintptr(dwhkl),
+	)
 	return uint(ret)
 }
 
@@ -939,30 +953,14 @@ func ChangeDisplaySettingsEx(szDeviceName *uint16, devMode *DEVMODE, hwnd HWND, 
 	return int32(ret)
 }
 
-func SendInput(inputs []INPUT) uint32 {
-	var validInputs []C.INPUT
-
-	for _, oneInput := range inputs {
-		input := C.INPUT{_type: C.DWORD(oneInput.Type)}
-
-		switch oneInput.Type {
-		case INPUT_MOUSE:
-			(*MouseInput)(unsafe.Pointer(&input)).mi = oneInput.Mi
-		case INPUT_KEYBOARD:
-			(*KbdInput)(unsafe.Pointer(&input)).ki = oneInput.Ki
-		case INPUT_HARDWARE:
-			(*HardwareInput)(unsafe.Pointer(&input)).hi = oneInput.Hi
-		default:
-			panic("unkown type")
-		}
-
-		validInputs = append(validInputs, input)
+func SendInput(inputs ...INPUT) uint32 {
+	if len(inputs) == 0 {
+		return 0
 	}
-
 	ret, _, _ := procSendInput.Call(
-		uintptr(len(validInputs)),
-		uintptr(unsafe.Pointer(&validInputs[0])),
-		uintptr(unsafe.Sizeof(C.INPUT{})),
+		uintptr(len(inputs)),
+		uintptr(unsafe.Pointer(&inputs[0])),
+		unsafe.Sizeof(inputs[0]),
 	)
 	return uint32(ret)
 }
@@ -1077,4 +1075,36 @@ func CheckMenuItem(menu HMENU, idCheckItem, check uint) int32 {
 		uintptr(check),
 	)
 	return int32(ret)
+}
+
+func GetDesktopWindow() HWND {
+	ret, _, _ := procGetDesktopWindow.Call()
+	return HWND(ret)
+}
+
+func GetRawInputData(input HRAWINPUT, command uint) (raw RAWINPUT, ok bool) {
+	size := uint(unsafe.Sizeof(raw))
+	ret, _, _ := procGetRawInputData.Call(
+		uintptr(input),
+		uintptr(command),
+		uintptr(unsafe.Pointer(&raw)),
+		uintptr(unsafe.Pointer(&size)),
+		unsafe.Sizeof(raw.Header),
+	)
+	var fail uint32
+	fail--
+	ok = uint32(ret) != fail
+	return
+}
+
+func RegisterRawInputDevices(devices ...RAWINPUTDEVICE) bool {
+	if len(devices) == 0 {
+		return true
+	}
+	ret, _, _ := procRegisterRawInputDevices.Call(
+		uintptr(unsafe.Pointer(&devices[0])),
+		uintptr(len(devices)),
+		unsafe.Sizeof(devices[0]),
+	)
+	return ret != 0
 }

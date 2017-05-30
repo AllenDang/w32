@@ -216,6 +216,7 @@ type (
 	QPC_TIME        uint64
 	ULONG_PTR       uintptr
 	WPARAM          uintptr
+	HRAWINPUT       HANDLE
 )
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd162805.aspx
@@ -849,55 +850,6 @@ type PIXELFORMATDESCRIPTOR struct {
 	DwDamageMask           uint32
 }
 
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646270(v=vs.85).aspx
-type INPUT struct {
-	Type uint32
-	Mi   MOUSEINPUT
-	Ki   KEYBDINPUT
-	Hi   HARDWAREINPUT
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646273(v=vs.85).aspx
-type MOUSEINPUT struct {
-	Dx          int32
-	Dy          int32
-	MouseData   uint32
-	DwFlags     uint32
-	Time        uint32
-	DwExtraInfo uintptr
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646271(v=vs.85).aspx
-type KEYBDINPUT struct {
-	WVk         uint16
-	WScan       uint16
-	DwFlags     uint32
-	Time        uint32
-	DwExtraInfo uintptr
-}
-
-// http://msdn.microsoft.com/en-us/library/windows/desktop/ms646269(v=vs.85).aspx
-type HARDWAREINPUT struct {
-	UMsg    uint32
-	WParamL uint16
-	WParamH uint16
-}
-
-type KbdInput struct {
-	typ uint32
-	ki  KEYBDINPUT
-}
-
-type MouseInput struct {
-	typ uint32
-	mi  MOUSEINPUT
-}
-
-type HardwareInput struct {
-	typ uint32
-	hi  HARDWAREINPUT
-}
-
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms724950(v=vs.85).aspx
 type SYSTEMTIME struct {
 	Year         uint16
@@ -928,4 +880,126 @@ type WINDOWPLACEMENT struct {
 	PtMinPosition    POINT
 	PtMaxPosition    POINT
 	RcNormalPosition RECT
+}
+
+type RAWINPUTHEADER struct {
+	Type   uint32
+	Size   uint32
+	Device HANDLE
+	WParam WPARAM
+}
+
+type RAWINPUT struct {
+	Header RAWINPUTHEADER
+	// NOTE that there is no support for C unions in Go, this would actually be
+	// a union of RAWMOUSE, RAWKEYBOARD and RAWHID. Since RAWMOUSE is the
+	// largest of those three, use it here and cast unsafely to get the other
+	// types.
+	mouse RAWMOUSE
+}
+
+// GetMouse returns the raw input as a RAWMOUSE. Make sure to check the Header's
+// Type flag so this is valid.
+func (i *RAWINPUT) GetMouse() RAWMOUSE {
+	return i.mouse
+}
+
+// GetKeyboard returns the raw input as a RAWKEYBOARD. Make sure to check the
+// Header's Type flag so this is valid.
+func (i *RAWINPUT) GetKeyboard() RAWKEYBOARD {
+	return *((*RAWKEYBOARD)(unsafe.Pointer(&i.mouse)))
+}
+
+// GetHid returns the raw input as a RAWHID. Make sure to check the Header's
+// Type flag so this is valid.
+func (i *RAWINPUT) GetHid() RAWHID {
+	return *((*RAWHID)(unsafe.Pointer(&i.mouse)))
+}
+
+type RAWKEYBOARD struct {
+	MakeCode         uint16
+	Flags            uint16
+	Reserved         uint16
+	VKey             uint16
+	Message          uint32
+	ExtraInformation uint32
+}
+
+type RAWHID struct {
+	SizeHid uint32
+	Count   uint32
+	RawData [1]byte
+}
+
+type RAWMOUSE struct {
+	Flags            uint16
+	Buttons          uint32
+	RawButtons       uint32
+	LastX            int32
+	LastY            int32
+	ExtraInformation uint32
+}
+
+func (m *RAWMOUSE) ButtonFlags() uint16 {
+	return uint16(m.Buttons & 0xFFFF)
+}
+
+func (m *RAWMOUSE) ButtonData() uint16 {
+	return uint16((m.Buttons & 0xFFFF0000) >> 16)
+}
+
+type RAWINPUTDEVICE struct {
+	UsagePage uint16
+	Usage     uint16
+	Flags     uint32
+	Target    HWND
+}
+
+type INPUT struct {
+	Type  uint32
+	mouse MOUSEINPUT
+}
+
+type MOUSEINPUT struct {
+	Dx        int32
+	Dy        int32
+	MouseData uint32
+	Flags     uint32
+	Time      uint32
+	ExtraInfo uintptr
+}
+
+type KEYBDINPUT struct {
+	Vk        uint16
+	Scan      uint16
+	Flags     uint32
+	Time      uint32
+	ExtraInfo uintptr
+}
+
+type HARDWAREINPUT struct {
+	Msg    uint32
+	ParamL uint16
+	ParamH uint16
+}
+
+func MouseInput(input MOUSEINPUT) INPUT {
+	return INPUT{
+		Type:  INPUT_MOUSE,
+		mouse: input,
+	}
+}
+
+func KeyboardInput(input KEYBDINPUT) INPUT {
+	return INPUT{
+		Type:  INPUT_KEYBOARD,
+		mouse: *((*MOUSEINPUT)(unsafe.Pointer(&input))),
+	}
+}
+
+func HardwareInput(input HARDWAREINPUT) INPUT {
+	return INPUT{
+		Type:  INPUT_HARDWARE,
+		mouse: *((*MOUSEINPUT)(unsafe.Pointer(&input))),
+	}
 }
