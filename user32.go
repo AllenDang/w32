@@ -914,7 +914,11 @@ func MonitorFromWindow(hwnd HWND, dwFlags uint32) HMONITOR {
 	return HMONITOR(ret)
 }
 
+// GetMonitorInfo automatically sets the MONITORINFO's CbSize field.
 func GetMonitorInfo(hMonitor HMONITOR, lmpi *MONITORINFO) bool {
+	if lmpi != nil {
+		lmpi.CbSize = uint32(unsafe.Sizeof(*lmpi))
+	}
 	ret, _, _ := procGetMonitorInfo.Call(
 		uintptr(hMonitor),
 		uintptr(unsafe.Pointer(lmpi)),
@@ -992,7 +996,11 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 	return LRESULT(ret)
 }
 
+// GetWindowPlacement automatically sets the WINDOWPLACEMENT's Length field.
 func GetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
+	if placement != nil {
+		placement.Length = uint32(unsafe.Sizeof(*placement))
+	}
 	ret, _, _ := procGetWindowPlacement.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(placement)),
