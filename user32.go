@@ -121,6 +121,8 @@ var (
 	procFindWindowExW                 = moduser32.NewProc("FindWindowExW")
 	procGetClassName                  = moduser32.NewProc("GetClassNameW")
 	procEnumChildWindows              = moduser32.NewProc("EnumChildWindows")
+	procSetTimer                      = moduser32.NewProc("SetTimer")
+	procKillTimer                     = moduser32.NewProc("KillTimer")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1039,4 +1041,22 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 		uintptr(lParam),
 	)
 	return LRESULT(ret)
+}
+
+func SetTimer(hwnd HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintptr) uintptr {
+    ret, _, _ := procSetTimer.Call(
+        uintptr(hwnd),
+        uintptr(nIDEvent),
+        uintptr(uElapse),
+        lpTimerProc,
+    )
+    return ret
+}
+
+func KillTimer(hwnd HWND, nIDEvent uint32) bool {
+    ret, _, _ := procKillTimer.Call(
+        uintptr(hwnd),
+        uintptr(nIDEvent),
+    )
+    return ret != 0
 }

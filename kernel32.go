@@ -47,6 +47,8 @@ var (
 	procVirtualFreeEx              = modkernel32.NewProc("VirtualFreeEx")
 	procWriteProcessMemory         = modkernel32.NewProc("WriteProcessMemory")
 	procReadProcessMemory          = modkernel32.NewProc("ReadProcessMemory")
+	procQueryPerformanceCounter    = modkernel32.NewProc("QueryPerformanceCounter")
+	procQueryPerformanceFrequency  = modkernel32.NewProc("QueryPerformanceFrequency")
 )
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -365,4 +367,22 @@ func ReadProcessMemory(hProcess HANDLE, lpBaseAddress, nSize uintptr) (lpBuffer 
 	)
 
 	return buf, nBytesRead, ret != 0
+}
+
+func QueryPerformanceCounter() uint64 {
+    result := uint64(0)
+    procQueryPerformanceCounter.Call(
+        uintptr(unsafe.Pointer(&result)),
+    )
+
+    return result
+}
+
+func QueryPerformanceFrequency() uint64 {
+    result := uint64(0)
+    procQueryPerformanceFrequency.Call(
+        uintptr(unsafe.Pointer(&result)),
+    )
+
+    return result
 }
