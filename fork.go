@@ -34,7 +34,7 @@ import (
 )
 
 var (
-	ntdll    = syscall.NewLazyDLL("ntdll.dll")
+	ntdll = syscall.NewLazyDLL("ntdll.dll")
 
 	procRtlCloneUserProcess = ntdll.NewProc("RtlCloneUserProcess")
 	procAllocConsole        = modkernel32.NewProc("AllocConsole")
