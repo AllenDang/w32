@@ -315,8 +315,8 @@ func SendMessage(hwnd HWND, msg uint32, wParam, lParam uintptr) uintptr {
 	return ret
 }
 
-func SendMessage(hwnd HWND, msg uint32, wParam, lParam uintptr, fuFlags, uTimeout uint32) uintptr {
-	ret, _, _ := procSendMessage.Call(
+func SendMessageTimeout(hwnd HWND, msg uint32, wParam, lParam uintptr, fuFlags, uTimeout uint32) uintptr {
+	ret, _, _ := procSendMessageTimeout.Call(
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
@@ -1044,19 +1044,19 @@ func CallNextHookEx(hhk HHOOK, nCode int, wParam WPARAM, lParam LPARAM) LRESULT 
 }
 
 func SetTimer(hwnd HWND, nIDEvent uint32, uElapse uint32, lpTimerProc uintptr) uintptr {
-    ret, _, _ := procSetTimer.Call(
-        uintptr(hwnd),
-        uintptr(nIDEvent),
-        uintptr(uElapse),
-        lpTimerProc,
-    )
-    return ret
+	ret, _, _ := procSetTimer.Call(
+		uintptr(hwnd),
+		uintptr(nIDEvent),
+		uintptr(uElapse),
+		lpTimerProc,
+	)
+	return ret
 }
 
 func KillTimer(hwnd HWND, nIDEvent uint32) bool {
-    ret, _, _ := procKillTimer.Call(
-        uintptr(hwnd),
-        uintptr(nIDEvent),
-    )
-    return ret != 0
+	ret, _, _ := procKillTimer.Call(
+		uintptr(hwnd),
+		uintptr(nIDEvent),
+	)
+	return ret != 0
 }

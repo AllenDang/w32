@@ -73,11 +73,11 @@ func GetDeviceCaps(hdc HDC, index int) int {
 }
 
 func GetCurrentObject(hdc HDC, uObjectType uint32) HGDIOBJ {
-    ret, _, _ := procGetCurrentObject.Call(
-        uintptr(hdc),
-        uintptr(uObjectType))
+	ret, _, _ := procGetCurrentObject.Call(
+		uintptr(hdc),
+		uintptr(uObjectType))
 
-    return HGDIOBJ(ret)
+	return HGDIOBJ(ret)
 }
 
 func DeleteObject(hObject HGDIOBJ) bool {
@@ -176,12 +176,12 @@ func CreateDC(lpszDriver, lpszDevice, lpszOutput *uint16, lpInitData *DEVMODE) H
 }
 
 func CreateCompatibleBitmap(hdc HDC, width, height uint) HBITMAP {
-    ret, _, _ := procCreateCompatibleBitmap.Call(
-        uintptr(hdc),
-        uintptr(width),
-        uintptr(height))
+	ret, _, _ := procCreateCompatibleBitmap.Call(
+		uintptr(hdc),
+		uintptr(width),
+		uintptr(height))
 
-    return HBITMAP(ret)
+	return HBITMAP(ret)
 }
 
 func CreateDIBSection(hdc HDC, pbmi *BITMAPINFO, iUsage uint, ppvBits *unsafe.Pointer, hSection HANDLE, dwOffset uint) HBITMAP {

@@ -12,24 +12,24 @@ import (
 var (
 	modkernel32 = syscall.NewLazyDLL("kernel32.dll")
 
-	procGetModuleHandle            = modkernel32.NewProc("GetModuleHandleW")
-	procMulDiv                     = modkernel32.NewProc("MulDiv")
-	procGetConsoleWindow           = modkernel32.NewProc("GetConsoleWindow")
-	procGetCurrentThread           = modkernel32.NewProc("GetCurrentThread")
-	procGetLogicalDrives           = modkernel32.NewProc("GetLogicalDrives")
-	procGetUserDefaultLCID         = modkernel32.NewProc("GetUserDefaultLCID")
-	procLstrlen                    = modkernel32.NewProc("lstrlenW")
-	procLstrcpy                    = modkernel32.NewProc("lstrcpyW")
-	procGlobalAlloc                = modkernel32.NewProc("GlobalAlloc")
-	procGlobalFree                 = modkernel32.NewProc("GlobalFree")
-	procGlobalLock                 = modkernel32.NewProc("GlobalLock")
-	procGlobalUnlock               = modkernel32.NewProc("GlobalUnlock")
-	procMoveMemory                 = modkernel32.NewProc("RtlMoveMemory")
-	procFindResource               = modkernel32.NewProc("FindResourceW")
-	procSizeofResource             = modkernel32.NewProc("SizeofResource")
-	procLockResource               = modkernel32.NewProc("LockResource")
-	procLoadResource               = modkernel32.NewProc("LoadResource")
-	procGetLastError               = modkernel32.NewProc("GetLastError")
+	procGetModuleHandle    = modkernel32.NewProc("GetModuleHandleW")
+	procMulDiv             = modkernel32.NewProc("MulDiv")
+	procGetConsoleWindow   = modkernel32.NewProc("GetConsoleWindow")
+	procGetCurrentThread   = modkernel32.NewProc("GetCurrentThread")
+	procGetLogicalDrives   = modkernel32.NewProc("GetLogicalDrives")
+	procGetUserDefaultLCID = modkernel32.NewProc("GetUserDefaultLCID")
+	procLstrlen            = modkernel32.NewProc("lstrlenW")
+	procLstrcpy            = modkernel32.NewProc("lstrcpyW")
+	procGlobalAlloc        = modkernel32.NewProc("GlobalAlloc")
+	procGlobalFree         = modkernel32.NewProc("GlobalFree")
+	procGlobalLock         = modkernel32.NewProc("GlobalLock")
+	procGlobalUnlock       = modkernel32.NewProc("GlobalUnlock")
+	procMoveMemory         = modkernel32.NewProc("RtlMoveMemory")
+	procFindResource       = modkernel32.NewProc("FindResourceW")
+	procSizeofResource     = modkernel32.NewProc("SizeofResource")
+	procLockResource       = modkernel32.NewProc("LockResource")
+	procLoadResource       = modkernel32.NewProc("LoadResource")
+	procGetLastError       = modkernel32.NewProc("GetLastError")
 	// procOpenProcess                = modkernel32.NewProc("OpenProcess")
 	// procTerminateProcess           = modkernel32.NewProc("TerminateProcess")
 	procCloseHandle                = modkernel32.NewProc("CloseHandle")
@@ -370,19 +370,19 @@ func ReadProcessMemory(hProcess HANDLE, lpBaseAddress, nSize uintptr) (lpBuffer 
 }
 
 func QueryPerformanceCounter() uint64 {
-    result := uint64(0)
-    procQueryPerformanceCounter.Call(
-        uintptr(unsafe.Pointer(&result)),
-    )
+	result := uint64(0)
+	procQueryPerformanceCounter.Call(
+		uintptr(unsafe.Pointer(&result)),
+	)
 
-    return result
+	return result
 }
 
 func QueryPerformanceFrequency() uint64 {
-    result := uint64(0)
-    procQueryPerformanceFrequency.Call(
-        uintptr(unsafe.Pointer(&result)),
-    )
+	result := uint64(0)
+	procQueryPerformanceFrequency.Call(
+		uintptr(unsafe.Pointer(&result)),
+	)
 
-    return result
+	return result
 }
