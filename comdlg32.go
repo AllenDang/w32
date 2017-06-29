@@ -17,7 +17,11 @@ var (
 	procCommDlgExtendedError = modcomdlg32.NewProc("CommDlgExtendedError")
 )
 
+// GetOpenFileName automatically sets the StructSize member of the OPENFILENAME.
 func GetOpenFileName(ofn *OPENFILENAME) bool {
+	if ofn != nil {
+		ofn.StructSize = uint32(unsafe.Sizeof(*ofn))
+	}
 	ret, _, _ := procGetOpenFileName.Call(
 		uintptr(unsafe.Pointer(ofn)))
 
