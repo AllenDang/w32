@@ -128,6 +128,7 @@ var (
 	procGetDesktopWindow              = moduser32.NewProc("GetDesktopWindow")
 	procGetRawInputData               = moduser32.NewProc("GetRawInputData")
 	procRegisterRawInputDevices       = moduser32.NewProc("RegisterRawInputDevices")
+	procSetTimer                      = moduser32.NewProc("SetTimer")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -1135,4 +1136,14 @@ func RegisterRawInputDevices(devices ...RAWINPUTDEVICE) bool {
 		unsafe.Sizeof(devices[0]),
 	)
 	return ret != 0
+}
+
+func SetTimer(window HWND, idEvent uintptr, elapse uint, timerFunc uintptr) uintptr {
+	ret, _, _ := procSetTimer.Call(
+		uintptr(window),
+		idEvent,
+		uintptr(elapse),
+		timerFunc,
+	)
+	return ret
 }
