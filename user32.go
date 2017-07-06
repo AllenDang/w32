@@ -1044,14 +1044,14 @@ func ShowCursor(show bool) int {
 
 func LoadImage(
 	inst HINSTANCE,
-	name string,
+	name *uint16,
 	typ uint,
 	desiredWidth, desiredHeight int,
 	load uint,
 ) HANDLE {
 	ret, _, _ := procLoadImage.Call(
 		uintptr(inst),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+		uintptr(unsafe.Pointer(name)),
 		uintptr(typ),
 		uintptr(desiredWidth),
 		uintptr(desiredHeight),
