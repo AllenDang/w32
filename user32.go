@@ -129,6 +129,7 @@ var (
 	procGetRawInputData               = moduser32.NewProc("GetRawInputData")
 	procRegisterRawInputDevices       = moduser32.NewProc("RegisterRawInputDevices")
 	procSetTimer                      = moduser32.NewProc("SetTimer")
+	procGetActiveWindow               = moduser32.NewProc("GetActiveWindow")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -1146,4 +1147,9 @@ func SetTimer(window HWND, idEvent uintptr, elapse uint, timerFunc uintptr) uint
 		timerFunc,
 	)
 	return ret
+}
+
+func GetActiveWindow() HWND {
+	ret, _, _ := procGetActiveWindow.Call()
+	return HWND(ret)
 }
