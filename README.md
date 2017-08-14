@@ -10,4 +10,4 @@ Installation
 
 Get the latest version with
 
-	go get github.com/gonutz/w32
+	go get -u github.com/gonutz/w32
