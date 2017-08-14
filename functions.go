@@ -335,38 +335,37 @@ func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
 func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
 	ret, _, _ := loadIcon.Call(
 		uintptr(instance),
-		uintptr(unsafe.Pointer(iconName)))
-
+		uintptr(unsafe.Pointer(iconName)),
+	)
 	return HICON(ret)
 }
 
 func LoadCursor(instance HINSTANCE, cursorName *uint16) HCURSOR {
 	ret, _, _ := loadCursor.Call(
 		uintptr(instance),
-		uintptr(unsafe.Pointer(cursorName)))
-
+		uintptr(unsafe.Pointer(cursorName)),
+	)
 	return HCURSOR(ret)
 }
 
 func ShowWindow(hwnd HWND, cmdshow int) bool {
 	ret, _, _ := showWindow.Call(
 		uintptr(hwnd),
-		uintptr(cmdshow))
-
+		uintptr(cmdshow),
+	)
 	return ret != 0
 }
 
 func ShowWindowAsync(hwnd HWND, cmdshow int) bool {
 	ret, _, _ := showWindowAsync.Call(
 		uintptr(hwnd),
-		uintptr(cmdshow))
-
+		uintptr(cmdshow),
+	)
 	return ret != 0
 }
 
 func UpdateWindow(hwnd HWND) bool {
-	ret, _, _ := updateWindow.Call(
-		uintptr(hwnd))
+	ret, _, _ := updateWindow.Call(uintptr(hwnd))
 	return ret != 0
 }
 
@@ -384,8 +383,8 @@ func CreateWindow(className, windowName *uint16,
 		uintptr(parent),
 		uintptr(menu),
 		uintptr(instance),
-		uintptr(param))
-
+		uintptr(param),
+	)
 	return HWND(ret)
 }
 
@@ -404,8 +403,8 @@ func CreateWindowEx(exStyle uint, className, windowName *uint16,
 		uintptr(parent),
 		uintptr(menu),
 		uintptr(instance),
-		uintptr(param))
-
+		uintptr(param),
+	)
 	return HWND(ret)
 }
 
@@ -414,8 +413,8 @@ func AdjustWindowRectEx(rect *RECT, style uint, menu bool, exStyle uint) bool {
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(style),
 		uintptr(BoolToBOOL(menu)),
-		uintptr(exStyle))
-
+		uintptr(exStyle),
+	)
 	return ret != 0
 }
 
@@ -423,15 +422,13 @@ func AdjustWindowRect(rect *RECT, style uint, menu bool) bool {
 	ret, _, _ := adjustWindowRect.Call(
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(style),
-		uintptr(BoolToBOOL(menu)))
-
+		uintptr(BoolToBOOL(menu)),
+	)
 	return ret != 0
 }
 
 func DestroyWindow(hwnd HWND) bool {
-	ret, _, _ := destroyWindow.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := destroyWindow.Call(uintptr(hwnd))
 	return ret != 0
 }
 
@@ -440,8 +437,8 @@ func DefWindowProc(hwnd HWND, msg uint32, wParam, lParam uintptr) uintptr {
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
-		lParam)
-
+		lParam,
+	)
 	return ret
 }
 
@@ -450,14 +447,13 @@ func DefDlgProc(hwnd HWND, msg uint32, wParam, lParam uintptr) uintptr {
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
-		lParam)
-
+		lParam,
+	)
 	return ret
 }
 
 func PostQuitMessage(exitCode int) {
-	postQuitMessage.Call(
-		uintptr(exitCode))
+	postQuitMessage.Call(uintptr(exitCode))
 }
 
 func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
@@ -465,23 +461,19 @@ func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
 		uintptr(unsafe.Pointer(msg)),
 		uintptr(hwnd),
 		uintptr(msgFilterMin),
-		uintptr(msgFilterMax))
-
+		uintptr(msgFilterMax),
+	)
 	return int(ret)
 }
 
 func TranslateMessage(msg *MSG) bool {
-	ret, _, _ := translateMessage.Call(
-		uintptr(unsafe.Pointer(msg)))
-
+	ret, _, _ := translateMessage.Call(uintptr(unsafe.Pointer(msg)))
 	return ret != 0
 
 }
 
 func DispatchMessage(msg *MSG) uintptr {
-	ret, _, _ := dispatchMessage.Call(
-		uintptr(unsafe.Pointer(msg)))
-
+	ret, _, _ := dispatchMessage.Call(uintptr(unsafe.Pointer(msg)))
 	return ret
 
 }
@@ -491,8 +483,8 @@ func SendMessage(hwnd HWND, msg uint32, wParam, lParam uintptr) uintptr {
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
-		lParam)
-
+		lParam,
+	)
 	return ret
 }
 
@@ -501,8 +493,8 @@ func PostMessage(hwnd HWND, msg uint32, wParam, lParam uintptr) bool {
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
-		lParam)
-
+		lParam,
+	)
 	return ret != 0
 }
 
@@ -514,25 +506,23 @@ func WaitMessage() bool {
 func SetWindowText(hwnd HWND, text string) {
 	setWindowText.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))))
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
+	)
 }
 
 func GetWindowTextLength(hwnd HWND) int {
-	ret, _, _ := getWindowTextLength.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := getWindowTextLength.Call(uintptr(hwnd))
 	return int(ret)
 }
 
 func GetWindowText(hwnd HWND) string {
 	textLen := GetWindowTextLength(hwnd) + 1
-
 	buf := make([]uint16, textLen)
 	getWindowText.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&buf[0])),
-		uintptr(textLen))
-
+		uintptr(textLen),
+	)
 	return syscall.UTF16ToString(buf)
 }
 
@@ -540,8 +530,8 @@ func GetWindowRect(hwnd HWND) *RECT {
 	var rect RECT
 	getWindowRect.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(&rect)))
-
+		uintptr(unsafe.Pointer(&rect)),
+	)
 	return &rect
 }
 
@@ -552,8 +542,8 @@ func MoveWindow(hwnd HWND, x, y, width, height int, repaint bool) bool {
 		uintptr(y),
 		uintptr(width),
 		uintptr(height),
-		uintptr(BoolToBOOL(repaint)))
-
+		uintptr(BoolToBOOL(repaint)),
+	)
 	return ret != 0
 
 }
@@ -562,8 +552,8 @@ func ScreenToClient(hwnd HWND, x, y int) (X, Y int, ok bool) {
 	pt := POINT{X: int32(x), Y: int32(y)}
 	ret, _, _ := screenToClient.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(&pt)))
-
+		uintptr(unsafe.Pointer(&pt)),
+	)
 	return int(pt.X), int(pt.Y), ret != 0
 }
 
@@ -573,8 +563,8 @@ func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint32, wParam, lParam ui
 		uintptr(hwnd),
 		uintptr(msg),
 		wParam,
-		lParam)
-
+		lParam,
+	)
 	return ret
 }
 
@@ -582,8 +572,8 @@ func SetWindowLong(hwnd HWND, index int, value uint32) uint32 {
 	ret, _, _ := setWindowLong.Call(
 		uintptr(hwnd),
 		uintptr(index),
-		uintptr(value))
-
+		uintptr(value),
+	)
 	return uint32(ret)
 }
 
@@ -591,52 +581,47 @@ func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
 	ret, _, _ := setWindowLongPtr.Call(
 		uintptr(hwnd),
 		uintptr(index),
-		value)
-
+		value,
+	)
 	return ret
 }
 
 func GetWindowLong(hwnd HWND, index int) int32 {
 	ret, _, _ := getWindowLong.Call(
 		uintptr(hwnd),
-		uintptr(index))
-
+		uintptr(index),
+	)
 	return int32(ret)
 }
 
 func GetWindowLongPtr(hwnd HWND, index int) uintptr {
 	ret, _, _ := getWindowLongPtr.Call(
 		uintptr(hwnd),
-		uintptr(index))
-
+		uintptr(index),
+	)
 	return ret
 }
 
 func EnableWindow(hwnd HWND, b bool) bool {
 	ret, _, _ := enableWindow.Call(
 		uintptr(hwnd),
-		uintptr(BoolToBOOL(b)))
+		uintptr(BoolToBOOL(b)),
+	)
 	return ret != 0
 }
 
 func IsWindowEnabled(hwnd HWND) bool {
-	ret, _, _ := isWindowEnabled.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := isWindowEnabled.Call(uintptr(hwnd))
 	return ret != 0
 }
 
 func IsWindowVisible(hwnd HWND) bool {
-	ret, _, _ := isWindowVisible.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := isWindowVisible.Call(uintptr(hwnd))
 	return ret != 0
 }
 
 func SetFocus(hwnd HWND) HWND {
-	ret, _, _ := setFocus.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := setFocus.Call(uintptr(hwnd))
 	return HWND(ret)
 }
 
@@ -644,8 +629,8 @@ func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
 	ret, _, _ := invalidateRect.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(rect)),
-		uintptr(BoolToBOOL(erase)))
-
+		uintptr(BoolToBOOL(erase)),
+	)
 	return ret != 0
 }
 
@@ -663,30 +648,25 @@ func GetClientRect(hwnd HWND) *RECT {
 }
 
 func GetDC(hwnd HWND) HDC {
-	ret, _, _ := getDC.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := getDC.Call(uintptr(hwnd))
 	return HDC(ret)
 }
 
 func ReleaseDC(hwnd HWND, hDC HDC) bool {
 	ret, _, _ := releaseDC.Call(
 		uintptr(hwnd),
-		uintptr(hDC))
-
+		uintptr(hDC),
+	)
 	return ret != 0
 }
 
 func SetCapture(hwnd HWND) HWND {
-	ret, _, _ := setCapture.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := setCapture.Call(uintptr(hwnd))
 	return HWND(ret)
 }
 
 func ReleaseCapture() bool {
 	ret, _, _ := releaseCapture.Call()
-
 	return ret != 0
 }
 
@@ -694,8 +674,8 @@ func GetWindowThreadProcessId(hwnd HWND) (HANDLE, DWORD) {
 	var processId DWORD
 	ret, _, _ := getWindowThreadProcessId.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(&processId)))
-
+		uintptr(unsafe.Pointer(&processId)),
+	)
 	return HANDLE(ret), processId
 }
 
@@ -704,31 +684,29 @@ func MessageBox(hwnd HWND, text, caption string, flags uint) int {
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
-		uintptr(flags))
-
+		uintptr(flags),
+	)
 	return int(ret)
 }
 
 func GetSystemMetrics(index int) int {
-	ret, _, _ := getSystemMetrics.Call(
-		uintptr(index))
-
+	ret, _, _ := getSystemMetrics.Call(uintptr(index))
 	return int(ret)
 }
 
 func CopyRect(dst, src *RECT) bool {
 	ret, _, _ := copyRect.Call(
 		uintptr(unsafe.Pointer(dst)),
-		uintptr(unsafe.Pointer(src)))
-
+		uintptr(unsafe.Pointer(src)),
+	)
 	return ret != 0
 }
 
 func EqualRect(rect1, rect2 *RECT) bool {
 	ret, _, _ := equalRect.Call(
 		uintptr(unsafe.Pointer(rect1)),
-		uintptr(unsafe.Pointer(rect2)))
-
+		uintptr(unsafe.Pointer(rect2)),
+	)
 	return ret != 0
 }
 
@@ -736,8 +714,8 @@ func InflateRect(rect *RECT, dx, dy int) bool {
 	ret, _, _ := inflateRect.Call(
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(dx),
-		uintptr(dy))
-
+		uintptr(dy),
+	)
 	return ret != 0
 }
 
@@ -745,15 +723,13 @@ func IntersectRect(dst, src1, src2 *RECT) bool {
 	ret, _, _ := intersectRect.Call(
 		uintptr(unsafe.Pointer(dst)),
 		uintptr(unsafe.Pointer(src1)),
-		uintptr(unsafe.Pointer(src2)))
-
+		uintptr(unsafe.Pointer(src2)),
+	)
 	return ret != 0
 }
 
 func IsRectEmpty(rect *RECT) bool {
-	ret, _, _ := isRectEmpty.Call(
-		uintptr(unsafe.Pointer(rect)))
-
+	ret, _, _ := isRectEmpty.Call(uintptr(unsafe.Pointer(rect)))
 	return ret != 0
 }
 
@@ -761,8 +737,8 @@ func OffsetRect(rect *RECT, dx, dy int) bool {
 	ret, _, _ := offsetRect.Call(
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(dx),
-		uintptr(dy))
-
+		uintptr(dy),
+	)
 	return ret != 0
 }
 
@@ -770,8 +746,8 @@ func PtInRect(rect *RECT, x, y int) bool {
 	pt := POINT{X: int32(x), Y: int32(y)}
 	ret, _, _ := ptInRect.Call(
 		uintptr(unsafe.Pointer(rect)),
-		uintptr(unsafe.Pointer(&pt)))
-
+		uintptr(unsafe.Pointer(&pt)),
+	)
 	return ret != 0
 }
 
@@ -781,15 +757,13 @@ func SetRect(rect *RECT, left, top, right, bottom int) bool {
 		uintptr(left),
 		uintptr(top),
 		uintptr(right),
-		uintptr(bottom))
-
+		uintptr(bottom),
+	)
 	return ret != 0
 }
 
 func SetRectEmpty(rect *RECT) bool {
-	ret, _, _ := setRectEmpty.Call(
-		uintptr(unsafe.Pointer(rect)))
-
+	ret, _, _ := setRectEmpty.Call(uintptr(unsafe.Pointer(rect)))
 	return ret != 0
 }
 
@@ -797,8 +771,8 @@ func SubtractRect(dst, src1, src2 *RECT) bool {
 	ret, _, _ := subtractRect.Call(
 		uintptr(unsafe.Pointer(dst)),
 		uintptr(unsafe.Pointer(src1)),
-		uintptr(unsafe.Pointer(src2)))
-
+		uintptr(unsafe.Pointer(src2)),
+	)
 	return ret != 0
 }
 
@@ -806,8 +780,8 @@ func UnionRect(dst, src1, src2 *RECT) bool {
 	ret, _, _ := unionRect.Call(
 		uintptr(unsafe.Pointer(dst)),
 		uintptr(unsafe.Pointer(src1)),
-		uintptr(unsafe.Pointer(src2)))
-
+		uintptr(unsafe.Pointer(src2)),
+	)
 	return ret != 0
 }
 
@@ -817,8 +791,8 @@ func CreateDialog(hInstance HINSTANCE, lpTemplate *uint16, hWndParent HWND, lpDi
 		uintptr(unsafe.Pointer(lpTemplate)),
 		uintptr(hWndParent),
 		lpDialogProc,
-		0)
-
+		0,
+	)
 	return HWND(ret)
 }
 
@@ -828,16 +802,16 @@ func DialogBox(hInstance HINSTANCE, lpTemplateName *uint16, hWndParent HWND, lpD
 		uintptr(unsafe.Pointer(lpTemplateName)),
 		uintptr(hWndParent),
 		lpDialogProc,
-		0)
-
+		0,
+	)
 	return int(ret)
 }
 
 func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
 	ret, _, _ := getDlgItem.Call(
 		uintptr(unsafe.Pointer(hDlg)),
-		uintptr(nIDDlgItem))
-
+		uintptr(nIDDlgItem),
+	)
 	return HWND(ret)
 }
 
@@ -846,41 +820,38 @@ func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
 		uintptr(unsafe.Pointer(hDC)),
 		uintptr(x),
 		uintptr(y),
-		uintptr(unsafe.Pointer(hIcon)))
-
+		uintptr(unsafe.Pointer(hIcon)),
+	)
 	return ret != 0
 }
 
 func ClientToScreen(hwnd HWND, x, y int) (int, int) {
 	pt := POINT{X: int32(x), Y: int32(y)}
-
 	clientToScreen.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(&pt)))
-
+		uintptr(unsafe.Pointer(&pt)),
+	)
 	return int(pt.X), int(pt.Y)
 }
 
 func IsDialogMessage(hwnd HWND, msg *MSG) bool {
 	ret, _, _ := isDialogMessage.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(msg)))
-
+		uintptr(unsafe.Pointer(msg)),
+	)
 	return ret != 0
 }
 
 func IsWindow(hwnd HWND) bool {
-	ret, _, _ := isWindow.Call(
-		uintptr(hwnd))
-
+	ret, _, _ := isWindow.Call(uintptr(hwnd))
 	return ret != 0
 }
 
 func EndDialog(hwnd HWND, nResult uintptr) bool {
 	ret, _, _ := endDialog.Call(
 		uintptr(hwnd),
-		nResult)
-
+		nResult,
+	)
 	return ret != 0
 }
 
@@ -890,8 +861,8 @@ func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg
 		uintptr(hwnd),
 		uintptr(wMsgFilterMin),
 		uintptr(wMsgFilterMax),
-		uintptr(wRemoveMsg))
-
+		uintptr(wRemoveMsg),
+	)
 	return ret != 0
 }
 
@@ -899,8 +870,8 @@ func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
 	ret, _, _ := translateMessage.Call(
 		uintptr(hwnd),
 		uintptr(hAccTable),
-		uintptr(unsafe.Pointer(lpMsg)))
-
+		uintptr(unsafe.Pointer(lpMsg)),
+	)
 	return ret != 0
 }
 
@@ -912,8 +883,8 @@ func SetWindowPos(hwnd, hWndInsertAfter HWND, x, y, cx, cy int, uFlags uint) boo
 		uintptr(y),
 		uintptr(cx),
 		uintptr(cy),
-		uintptr(uFlags))
-
+		uintptr(uFlags),
+	)
 	return ret != 0
 }
 
@@ -921,8 +892,8 @@ func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
 	ret, _, _ := fillRect.Call(
 		uintptr(hDC),
 		uintptr(unsafe.Pointer(lprc)),
-		uintptr(hbr))
-
+		uintptr(hbr),
+	)
 	return ret != 0
 }
 
@@ -932,26 +903,23 @@ func DrawText(hDC HDC, text string, uCount int, lpRect *RECT, uFormat uint) int 
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
 		uintptr(uCount),
 		uintptr(unsafe.Pointer(lpRect)),
-		uintptr(uFormat))
-
+		uintptr(uFormat),
+	)
 	return int(ret)
 }
 
 func AddClipboardFormatListener(hwnd HWND) bool {
-	ret, _, _ := addClipboardFormatListener.Call(
-		uintptr(hwnd))
+	ret, _, _ := addClipboardFormatListener.Call(uintptr(hwnd))
 	return ret != 0
 }
 
 func RemoveClipboardFormatListener(hwnd HWND) bool {
-	ret, _, _ := removeClipboardFormatListener.Call(
-		uintptr(hwnd))
+	ret, _, _ := removeClipboardFormatListener.Call(uintptr(hwnd))
 	return ret != 0
 }
 
 func OpenClipboard(hWndNewOwner HWND) bool {
-	ret, _, _ := openClipboard.Call(
-		uintptr(hWndNewOwner))
+	ret, _, _ := openClipboard.Call(uintptr(hWndNewOwner))
 	return ret != 0
 }
 
@@ -961,21 +929,20 @@ func CloseClipboard() bool {
 }
 
 func EnumClipboardFormats(format uint) uint {
-	ret, _, _ := enumClipboardFormats.Call(
-		uintptr(format))
+	ret, _, _ := enumClipboardFormats.Call(uintptr(format))
 	return uint(ret)
 }
 
 func GetClipboardData(uFormat uint) HANDLE {
-	ret, _, _ := getClipboardData.Call(
-		uintptr(uFormat))
+	ret, _, _ := getClipboardData.Call(uintptr(uFormat))
 	return HANDLE(ret)
 }
 
 func SetClipboardData(uFormat uint, hMem HANDLE) HANDLE {
 	ret, _, _ := setClipboardData.Call(
 		uintptr(uFormat),
-		uintptr(hMem))
+		uintptr(hMem),
+	)
 	return HANDLE(ret)
 }
 
@@ -1007,19 +974,20 @@ func IsClipboardFormatAvailable(format uint) bool {
 func BeginPaint(hwnd HWND, paint *PAINTSTRUCT) HDC {
 	ret, _, _ := beginPaint.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(paint)))
+		uintptr(unsafe.Pointer(paint)),
+	)
 	return HDC(ret)
 }
 
 func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
 	beginPaint.Call(
 		uintptr(hwnd),
-		uintptr(unsafe.Pointer(paint)))
+		uintptr(unsafe.Pointer(paint)),
+	)
 }
 
 func GetKeyboardState(lpKeyState *[]byte) bool {
-	ret, _, _ := getKeyboardState.Call(
-		uintptr(unsafe.Pointer(&(*lpKeyState)[0])))
+	ret, _, _ := getKeyboardState.Call(uintptr(unsafe.Pointer(&(*lpKeyState)[0])))
 	return ret != 0
 }
 
@@ -1051,18 +1019,18 @@ func ToAscii(uVirtKey, uScanCode uint, lpKeyState *byte, lpChar *uint16, uFlags 
 		uintptr(uScanCode),
 		uintptr(unsafe.Pointer(lpKeyState)),
 		uintptr(unsafe.Pointer(lpChar)),
-		uintptr(uFlags))
+		uintptr(uFlags),
+	)
 	return int(ret)
 }
 
 func SwapMouseButton(fSwap bool) bool {
-	ret, _, _ := swapMouseButton.Call(
-		uintptr(BoolToBOOL(fSwap)))
+	ret, _, _ := swapMouseButton.Call(uintptr(BoolToBOOL(fSwap)))
 	return ret != 0
 }
 
 func GetCursorPos() (x, y int, ok bool) {
-	pt := POINT{}
+	var pt POINT
 	ret, _, _ := getCursorPos.Call(uintptr(unsafe.Pointer(&pt)))
 	return int(pt.X), int(pt.Y), ret != 0
 }
@@ -1076,9 +1044,7 @@ func SetCursorPos(x, y int) bool {
 }
 
 func SetCursor(cursor HCURSOR) HCURSOR {
-	ret, _, _ := setCursor.Call(
-		uintptr(cursor),
-	)
+	ret, _, _ := setCursor.Call(uintptr(cursor))
 	return HCURSOR(ret)
 }
 
@@ -1096,9 +1062,7 @@ func CreateIcon(instance HINSTANCE, nWidth, nHeight int, cPlanes, cBitsPerPixel 
 }
 
 func DestroyIcon(icon HICON) bool {
-	ret, _, _ := destroyIcon.Call(
-		uintptr(icon),
-	)
+	ret, _, _ := destroyIcon.Call(uintptr(icon))
 	return ret != 0
 }
 
@@ -1193,9 +1157,7 @@ func SetWindowsHookEx(idHook int, lpfn HOOKPROC, hMod HINSTANCE, dwThreadId DWOR
 }
 
 func UnhookWindowsHookEx(hhk HHOOK) bool {
-	ret, _, _ := unhookWindowsHookEx.Call(
-		uintptr(hhk),
-	)
+	ret, _, _ := unhookWindowsHookEx.Call(uintptr(hhk))
 	return ret != 0
 }
 
@@ -1405,7 +1367,8 @@ func RegGetRaw(hKey HKEY, subKey string, value string) []byte {
 		uintptr(RRF_RT_ANY),
 		0,
 		0,
-		uintptr(unsafe.Pointer(&bufLen)))
+		uintptr(unsafe.Pointer(&bufLen)),
+	)
 
 	if bufLen == 0 {
 		return nil
@@ -1419,7 +1382,8 @@ func RegGetRaw(hKey HKEY, subKey string, value string) []byte {
 		uintptr(RRF_RT_ANY),
 		0,
 		uintptr(unsafe.Pointer(&buf[0])),
-		uintptr(unsafe.Pointer(&bufLen)))
+		uintptr(unsafe.Pointer(&bufLen)),
+	)
 
 	if ret != ERROR_SUCCESS {
 		return nil
@@ -1442,8 +1406,8 @@ func RegSetBinary(hKey HKEY, subKey string, value []byte) (errno int) {
 		uintptr(0),
 		uintptr(REG_BINARY),
 		uintptr(vptr),
-		uintptr(len(value)))
-
+		uintptr(len(value)),
+	)
 	return int(ret)
 }
 
@@ -1484,8 +1448,8 @@ func RegSetUint32(hKey HKEY, subKey string, value uint32) (errno int) {
 		uintptr(0),
 		uintptr(REG_DWORD),
 		uintptr(vptr),
-		uintptr(unsafe.Sizeof(value)))
-
+		uintptr(unsafe.Sizeof(value)),
+	)
 	return int(ret)
 }
 
@@ -1498,7 +1462,8 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
 		uintptr(RRF_RT_REG_SZ),
 		0,
 		0,
-		uintptr(unsafe.Pointer(&bufLen)))
+		uintptr(unsafe.Pointer(&bufLen)),
+	)
 
 	if bufLen == 0 {
 		return ""
@@ -1512,7 +1477,8 @@ func RegGetString(hKey HKEY, subKey string, value string) string {
 		uintptr(RRF_RT_REG_SZ),
 		0,
 		uintptr(unsafe.Pointer(&buf[0])),
-		uintptr(unsafe.Pointer(&bufLen)))
+		uintptr(unsafe.Pointer(&bufLen)),
+	)
 
 	if ret != ERROR_SUCCESS {
 		return ""
@@ -1530,7 +1496,8 @@ func RegGetUint32(hKey HKEY, subKey string, value string) (data uint32, errno in
 		uintptr(RRF_RT_REG_DWORD),
 		0,
 		uintptr(unsafe.Pointer(&data)),
-		uintptr(unsafe.Pointer(&dataLen)))
+		uintptr(unsafe.Pointer(&dataLen)),
+	)
 	errno = int(ret)
 	return
 }
@@ -1539,24 +1506,24 @@ func RegDeleteKeyValue(hKey HKEY, subKey string, valueName string) (errno int) {
 	ret, _, _ := regDeleteKeyValue.Call(
 		uintptr(hKey),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
-
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))),
+	)
 	return int(ret)
 }
 
 func RegDeleteValue(hKey HKEY, valueName string) (errno int) {
 	ret, _, _ := regDeleteValue.Call(
 		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))))
-
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(valueName))),
+	)
 	return int(ret)
 }
 
 func RegDeleteTree(hKey HKEY, subKey string) (errno int) {
 	ret, _, _ := regDeleteTree.Call(
 		uintptr(hKey),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))))
-
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(subKey))),
+	)
 	return int(ret)
 }
 
@@ -1571,15 +1538,16 @@ func RegEnumKeyEx(hKey HKEY, index uint32) string {
 		0,
 		0,
 		0,
-		0)
+		0,
+	)
 	return syscall.UTF16ToString(buf)
 }
 
 func OpenEventLog(servername string, sourcename string) HANDLE {
 	ret, _, _ := openEventLog.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(servername))),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sourcename))))
-
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sourcename))),
+	)
 	return HANDLE(ret)
 }
 
@@ -1591,15 +1559,13 @@ func ReadEventLog(eventlog HANDLE, readflags, recordoffset uint32, buffer []byte
 		uintptr(unsafe.Pointer(&buffer[0])),
 		uintptr(numberofbytestoread),
 		uintptr(unsafe.Pointer(bytesread)),
-		uintptr(unsafe.Pointer(minnumberofbytesneeded)))
-
+		uintptr(unsafe.Pointer(minnumberofbytesneeded)),
+	)
 	return ret != 0
 }
 
 func CloseEventLog(eventlog HANDLE) bool {
-	ret, _, _ := closeEventLog.Call(
-		uintptr(eventlog))
-
+	ret, _, _ := closeEventLog.Call(uintptr(eventlog))
 	return ret != 0
 }
 
@@ -1619,7 +1585,6 @@ func OpenSCManager(lpMachineName, lpDatabaseName string, dwDesiredAccess uint32)
 	if ret == 0 {
 		return 0, syscall.GetLastError()
 	}
-
 	return HANDLE(ret), nil
 }
 
@@ -1635,7 +1600,8 @@ func OpenService(hSCManager HANDLE, lpServiceName string, dwDesiredAccess uint32
 	ret, _, _ := openService.Call(
 		uintptr(hSCManager),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpServiceName))),
-		uintptr(dwDesiredAccess))
+		uintptr(dwDesiredAccess),
+	)
 
 	if ret == 0 {
 		return 0, syscall.GetLastError()
@@ -1651,7 +1617,8 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 		ret, _, _ = startService.Call(
 			uintptr(hService),
 			0,
-			0)
+			0,
+		)
 	} else {
 		lpArgs := make([]uintptr, l)
 		for i := 0; i < l; i++ {
@@ -1661,7 +1628,8 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 		ret, _, _ = startService.Call(
 			uintptr(hService),
 			uintptr(l),
-			uintptr(unsafe.Pointer(&lpArgs[0])))
+			uintptr(unsafe.Pointer(&lpArgs[0])),
+		)
 	}
 
 	if ret == 0 {
@@ -1675,19 +1643,16 @@ func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_
 	if lpServiceStatus == nil {
 		panic("ControlService:lpServiceStatus cannot be nil")
 	}
-
 	ret, _, _ := controlService.Call(
 		uintptr(hService),
 		uintptr(dwControl),
-		uintptr(unsafe.Pointer(lpServiceStatus)))
-
+		uintptr(unsafe.Pointer(lpServiceStatus)),
+	)
 	return ret != 0
 }
 
 func InitCommonControlsEx(lpInitCtrls *INITCOMMONCONTROLSEX) bool {
-	ret, _, _ := initCommonControlsEx.Call(
-		uintptr(unsafe.Pointer(lpInitCtrls)))
-
+	ret, _, _ := initCommonControlsEx.Call(uintptr(unsafe.Pointer(lpInitCtrls)))
 	return ret != 0
 }
 
@@ -1697,34 +1662,29 @@ func ImageList_Create(cx, cy int, flags uint, cInitial, cGrow int) HIMAGELIST {
 		uintptr(cy),
 		uintptr(flags),
 		uintptr(cInitial),
-		uintptr(cGrow))
-
+		uintptr(cGrow),
+	)
 	if ret == 0 {
 		panic("Create image list failed")
 	}
-
 	return HIMAGELIST(ret)
 }
 
 func ImageList_Destroy(himl HIMAGELIST) bool {
-	ret, _, _ := imageList_Destroy.Call(
-		uintptr(himl))
-
+	ret, _, _ := imageList_Destroy.Call(uintptr(himl))
 	return ret != 0
 }
 
 func ImageList_GetImageCount(himl HIMAGELIST) int {
-	ret, _, _ := imageList_GetImageCount.Call(
-		uintptr(himl))
-
+	ret, _, _ := imageList_GetImageCount.Call(uintptr(himl))
 	return int(ret)
 }
 
 func ImageList_SetImageCount(himl HIMAGELIST, uNewCount uint) bool {
 	ret, _, _ := imageList_SetImageCount.Call(
 		uintptr(himl),
-		uintptr(uNewCount))
-
+		uintptr(uNewCount),
+	)
 	return ret != 0
 }
 
@@ -1732,8 +1692,8 @@ func ImageList_Add(himl HIMAGELIST, hbmImage, hbmMask HBITMAP) int {
 	ret, _, _ := imageList_Add.Call(
 		uintptr(himl),
 		uintptr(hbmImage),
-		uintptr(hbmMask))
-
+		uintptr(hbmMask),
+	)
 	return int(ret)
 }
 
@@ -1741,8 +1701,8 @@ func ImageList_ReplaceIcon(himl HIMAGELIST, i int, hicon HICON) int {
 	ret, _, _ := imageList_ReplaceIcon.Call(
 		uintptr(himl),
 		uintptr(i),
-		uintptr(hicon))
-
+		uintptr(hicon),
+	)
 	return int(ret)
 }
 
@@ -1753,8 +1713,8 @@ func ImageList_AddIcon(himl HIMAGELIST, hicon HICON) int {
 func ImageList_Remove(himl HIMAGELIST, i int) bool {
 	ret, _, _ := imageList_Remove.Call(
 		uintptr(himl),
-		uintptr(i))
-
+		uintptr(i),
+	)
 	return ret != 0
 }
 
@@ -1763,9 +1723,7 @@ func ImageList_RemoveAll(himl HIMAGELIST) bool {
 }
 
 func TrackMouseEvent(tme *TRACKMOUSEEVENT) bool {
-	ret, _, _ := trackMouseEvent.Call(
-		uintptr(unsafe.Pointer(tme)))
-
+	ret, _, _ := trackMouseEvent.Call(uintptr(unsafe.Pointer(tme)))
 	return ret != 0
 }
 
@@ -1774,22 +1732,17 @@ func GetOpenFileName(ofn *OPENFILENAME) bool {
 	if ofn != nil {
 		ofn.StructSize = uint32(unsafe.Sizeof(*ofn))
 	}
-	ret, _, _ := getOpenFileName.Call(
-		uintptr(unsafe.Pointer(ofn)))
-
+	ret, _, _ := getOpenFileName.Call(uintptr(unsafe.Pointer(ofn)))
 	return ret != 0
 }
 
 func GetSaveFileName(ofn *OPENFILENAME) bool {
-	ret, _, _ := getSaveFileName.Call(
-		uintptr(unsafe.Pointer(ofn)))
-
+	ret, _, _ := getSaveFileName.Call(uintptr(unsafe.Pointer(ofn)))
 	return ret != 0
 }
 
 func CommDlgExtendedError() uint {
 	ret, _, _ := commDlgExtendedError.Call()
-
 	return uint(ret)
 }
 
@@ -1800,27 +1753,29 @@ func DwmDefWindowProc(hWnd HWND, msg uint, wParam, lParam uintptr) (bool, uint) 
 		uintptr(msg),
 		wParam,
 		lParam,
-		uintptr(unsafe.Pointer(&result)))
+		uintptr(unsafe.Pointer(&result)),
+	)
 	return ret != 0, result
 }
 
 func DwmEnableBlurBehindWindow(hWnd HWND, pBlurBehind *DWM_BLURBEHIND) HRESULT {
 	ret, _, _ := dwmEnableBlurBehindWindow.Call(
 		uintptr(hWnd),
-		uintptr(unsafe.Pointer(pBlurBehind)))
+		uintptr(unsafe.Pointer(pBlurBehind)),
+	)
 	return HRESULT(ret)
 }
 
 func DwmEnableMMCSS(fEnableMMCSS bool) HRESULT {
-	ret, _, _ := dwmEnableMMCSS.Call(
-		uintptr(BoolToBOOL(fEnableMMCSS)))
+	ret, _, _ := dwmEnableMMCSS.Call(uintptr(BoolToBOOL(fEnableMMCSS)))
 	return HRESULT(ret)
 }
 
 func DwmExtendFrameIntoClientArea(hWnd HWND, pMarInset *MARGINS) HRESULT {
 	ret, _, _ := dwmExtendFrameIntoClientArea.Call(
 		uintptr(hWnd),
-		uintptr(unsafe.Pointer(pMarInset)))
+		uintptr(unsafe.Pointer(pMarInset)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1832,14 +1787,16 @@ func DwmFlush() HRESULT {
 func DwmGetColorizationColor(pcrColorization *uint32, pfOpaqueBlend *BOOL) HRESULT {
 	ret, _, _ := dwmGetColorizationColor.Call(
 		uintptr(unsafe.Pointer(pcrColorization)),
-		uintptr(unsafe.Pointer(pfOpaqueBlend)))
+		uintptr(unsafe.Pointer(pfOpaqueBlend)),
+	)
 	return HRESULT(ret)
 }
 
 func DwmGetCompositionTimingInfo(hWnd HWND, pTimingInfo *DWM_TIMING_INFO) HRESULT {
 	ret, _, _ := dwmGetCompositionTimingInfo.Call(
 		uintptr(hWnd),
-		uintptr(unsafe.Pointer(pTimingInfo)))
+		uintptr(unsafe.Pointer(pTimingInfo)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1847,7 +1804,8 @@ func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGener
 	ret, _, _ := dwmGetTransportAttributes.Call(
 		uintptr(unsafe.Pointer(pfIsRemoting)),
 		uintptr(unsafe.Pointer(pfIsConnected)),
-		uintptr(unsafe.Pointer(pDwGeneration)))
+		uintptr(unsafe.Pointer(pDwGeneration)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1875,20 +1833,19 @@ func DwmGetWindowAttribute(hWnd HWND, dwAttribute uint32) (pAttribute interface{
 		uintptr(hWnd),
 		uintptr(dwAttribute),
 		pvAttribute,
-		pvAttrSize)
+		pvAttrSize,
+	)
 	result = HRESULT(ret)
 	return
 }
 
 func DwmInvalidateIconicBitmaps(hWnd HWND) HRESULT {
-	ret, _, _ := dwmInvalidateIconicBitmaps.Call(
-		uintptr(hWnd))
+	ret, _, _ := dwmInvalidateIconicBitmaps.Call(uintptr(hWnd))
 	return HRESULT(ret)
 }
 
 func DwmIsCompositionEnabled(pfEnabled *BOOL) HRESULT {
-	ret, _, _ := dwmIsCompositionEnabled.Call(
-		uintptr(unsafe.Pointer(pfEnabled)))
+	ret, _, _ := dwmIsCompositionEnabled.Call(uintptr(unsafe.Pointer(pfEnabled)))
 	return HRESULT(ret)
 }
 
@@ -1896,14 +1853,16 @@ func DwmModifyPreviousDxFrameDuration(hWnd HWND, cRefreshes int, fRelative bool)
 	ret, _, _ := dwmModifyPreviousDxFrameDuration.Call(
 		uintptr(hWnd),
 		uintptr(cRefreshes),
-		uintptr(BoolToBOOL(fRelative)))
+		uintptr(BoolToBOOL(fRelative)),
+	)
 	return HRESULT(ret)
 }
 
 func DwmQueryThumbnailSourceSize(hThumbnail HTHUMBNAIL, pSize *SIZE) HRESULT {
 	ret, _, _ := dwmQueryThumbnailSourceSize.Call(
 		uintptr(hThumbnail),
-		uintptr(unsafe.Pointer(pSize)))
+		uintptr(unsafe.Pointer(pSize)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1911,7 +1870,8 @@ func DwmRegisterThumbnail(hWndDestination HWND, hWndSource HWND, phThumbnailId *
 	ret, _, _ := dwmRegisterThumbnail.Call(
 		uintptr(hWndDestination),
 		uintptr(hWndSource),
-		uintptr(unsafe.Pointer(phThumbnailId)))
+		uintptr(unsafe.Pointer(phThumbnailId)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1920,14 +1880,16 @@ func DwmRenderGesture(gt GESTURE_TYPE, cContacts uint, pdwPointerID *uint32, pPo
 		uintptr(gt),
 		uintptr(cContacts),
 		uintptr(unsafe.Pointer(pdwPointerID)),
-		uintptr(unsafe.Pointer(pPoints)))
+		uintptr(unsafe.Pointer(pPoints)),
+	)
 	return
 }
 
 func DwmSetDxFrameDuration(hWnd HWND, cRefreshes int) HRESULT {
 	ret, _, _ := dwmSetDxFrameDuration.Call(
 		uintptr(hWnd),
-		uintptr(cRefreshes))
+		uintptr(cRefreshes),
+	)
 	return HRESULT(ret)
 }
 
@@ -1936,7 +1898,8 @@ func DwmSetIconicLivePreviewBitmap(hWnd HWND, hbmp HBITMAP, pptClient *POINT, dw
 		uintptr(hWnd),
 		uintptr(hbmp),
 		uintptr(unsafe.Pointer(pptClient)),
-		uintptr(dwSITFlags))
+		uintptr(dwSITFlags),
+	)
 	return HRESULT(ret)
 }
 
@@ -1944,14 +1907,16 @@ func DwmSetIconicThumbnail(hWnd HWND, hbmp HBITMAP, dwSITFlags uint32) HRESULT {
 	ret, _, _ := dwmSetIconicThumbnail.Call(
 		uintptr(hWnd),
 		uintptr(hbmp),
-		uintptr(dwSITFlags))
+		uintptr(dwSITFlags),
+	)
 	return HRESULT(ret)
 }
 
 func DwmSetPresentParameters(hWnd HWND, pPresentParams *DWM_PRESENT_PARAMETERS) HRESULT {
 	ret, _, _ := dwmSetPresentParameters.Call(
 		uintptr(hWnd),
-		uintptr(unsafe.Pointer(pPresentParams)))
+		uintptr(unsafe.Pointer(pPresentParams)),
+	)
 	return HRESULT(ret)
 }
 
@@ -1960,14 +1925,16 @@ func DwmSetWindowAttribute(hWnd HWND, dwAttribute uint32, pvAttribute LPCVOID, c
 		uintptr(hWnd),
 		uintptr(dwAttribute),
 		uintptr(pvAttribute),
-		uintptr(cbAttribute))
+		uintptr(cbAttribute),
+	)
 	return HRESULT(ret)
 }
 
 func DwmShowContact(dwPointerID uint32, eShowContact DWM_SHOWCONTACT) {
 	dwmShowContact.Call(
 		uintptr(dwPointerID),
-		uintptr(eShowContact))
+		uintptr(eShowContact),
+	)
 	return
 }
 
@@ -1975,56 +1942,52 @@ func DwmTetherContact(dwPointerID uint32, fEnable bool, ptTether POINT) {
 	dwmTetherContact.Call(
 		uintptr(dwPointerID),
 		uintptr(BoolToBOOL(fEnable)),
-		uintptr(unsafe.Pointer(&ptTether)))
+		uintptr(unsafe.Pointer(&ptTether)),
+	)
 	return
 }
 
 func DwmTransitionOwnedWindow(hWnd HWND, target DWMTRANSITION_OWNEDWINDOW_TARGET) {
 	dwmTransitionOwnedWindow.Call(
 		uintptr(hWnd),
-		uintptr(target))
+		uintptr(target),
+	)
 	return
 }
 
 func DwmUnregisterThumbnail(hThumbnailId HTHUMBNAIL) HRESULT {
-	ret, _, _ := dwmUnregisterThumbnail.Call(
-		uintptr(hThumbnailId))
+	ret, _, _ := dwmUnregisterThumbnail.Call(uintptr(hThumbnailId))
 	return HRESULT(ret)
 }
 
 func DwmUpdateThumbnailProperties(hThumbnailId HTHUMBNAIL, ptnProperties *DWM_THUMBNAIL_PROPERTIES) HRESULT {
 	ret, _, _ := dwmUpdateThumbnailProperties.Call(
 		uintptr(hThumbnailId),
-		uintptr(unsafe.Pointer(ptnProperties)))
+		uintptr(unsafe.Pointer(ptnProperties)),
+	)
 	return HRESULT(ret)
 }
 
 func GetDeviceCaps(hdc HDC, index int) int {
 	ret, _, _ := getDeviceCaps.Call(
 		uintptr(hdc),
-		uintptr(index))
-
+		uintptr(index),
+	)
 	return int(ret)
 }
 
 func DeleteObject(hObject HGDIOBJ) bool {
-	ret, _, _ := deleteObject.Call(
-		uintptr(hObject))
-
+	ret, _, _ := deleteObject.Call(uintptr(hObject))
 	return ret != 0
 }
 
 func CreateFontIndirect(logFont *LOGFONT) HFONT {
-	ret, _, _ := createFontIndirect.Call(
-		uintptr(unsafe.Pointer(logFont)))
-
+	ret, _, _ := createFontIndirect.Call(uintptr(unsafe.Pointer(logFont)))
 	return HFONT(ret)
 }
 
 func AbortDoc(hdc HDC) int {
-	ret, _, _ := abortDoc.Call(
-		uintptr(hdc))
-
+	ret, _, _ := abortDoc.Call(uintptr(hdc))
 	return int(ret)
 }
 
@@ -2038,8 +2001,8 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
 		uintptr(hdcSrc),
 		uintptr(nXSrc),
 		uintptr(nYSrc),
-		uintptr(dwRop))
-
+		uintptr(dwRop),
+	)
 	if ret == 0 {
 		panic("BitBlt failed")
 	}
@@ -2052,43 +2015,36 @@ func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) {
 		uintptr(nYLeft),
 		uintptr(nWidth),
 		uintptr(nHeight),
-		uintptr(dwRop))
-
+		uintptr(dwRop),
+	)
 	if ret == 0 {
 		panic("PatBlt failed")
 	}
 }
 
 func CloseEnhMetaFile(hdc HDC) HENHMETAFILE {
-	ret, _, _ := closeEnhMetaFile.Call(
-		uintptr(hdc))
-
+	ret, _, _ := closeEnhMetaFile.Call(uintptr(hdc))
 	return HENHMETAFILE(ret)
 }
 
 func CopyEnhMetaFile(hemfSrc HENHMETAFILE, lpszFile *uint16) HENHMETAFILE {
 	ret, _, _ := copyEnhMetaFile.Call(
 		uintptr(hemfSrc),
-		uintptr(unsafe.Pointer(lpszFile)))
-
+		uintptr(unsafe.Pointer(lpszFile)),
+	)
 	return HENHMETAFILE(ret)
 }
 
 func CreateBrushIndirect(lplb *LOGBRUSH) HBRUSH {
-	ret, _, _ := createBrushIndirect.Call(
-		uintptr(unsafe.Pointer(lplb)))
-
+	ret, _, _ := createBrushIndirect.Call(uintptr(unsafe.Pointer(lplb)))
 	return HBRUSH(ret)
 }
 
 func CreateCompatibleDC(hdc HDC) HDC {
-	ret, _, _ := createCompatibleDC.Call(
-		uintptr(hdc))
-
+	ret, _, _ := createCompatibleDC.Call(uintptr(hdc))
 	if ret == 0 {
 		panic("Create compatible DC failed")
 	}
-
 	return HDC(ret)
 }
 
@@ -2097,8 +2053,8 @@ func CreateDC(lpszDriver, lpszDevice, lpszOutput *uint16, lpInitData *DEVMODE) H
 		uintptr(unsafe.Pointer(lpszDriver)),
 		uintptr(unsafe.Pointer(lpszDevice)),
 		uintptr(unsafe.Pointer(lpszOutput)),
-		uintptr(unsafe.Pointer(lpInitData)))
-
+		uintptr(unsafe.Pointer(lpInitData)),
+	)
 	return HDC(ret)
 }
 
@@ -2109,8 +2065,8 @@ func CreateDIBSection(hdc HDC, pbmi *BITMAPINFO, iUsage uint, ppvBits *unsafe.Po
 		uintptr(iUsage),
 		uintptr(unsafe.Pointer(ppvBits)),
 		uintptr(hSection),
-		uintptr(dwOffset))
-
+		uintptr(dwOffset),
+	)
 	return HBITMAP(ret)
 }
 
@@ -2119,8 +2075,8 @@ func CreateEnhMetaFile(hdcRef HDC, lpFilename *uint16, lpRect *RECT, lpDescripti
 		uintptr(hdcRef),
 		uintptr(unsafe.Pointer(lpFilename)),
 		uintptr(unsafe.Pointer(lpRect)),
-		uintptr(unsafe.Pointer(lpDescription)))
-
+		uintptr(unsafe.Pointer(lpDescription)),
+	)
 	return HDC(ret)
 }
 
@@ -2129,22 +2085,18 @@ func CreateIC(lpszDriver, lpszDevice, lpszOutput *uint16, lpdvmInit *DEVMODE) HD
 		uintptr(unsafe.Pointer(lpszDriver)),
 		uintptr(unsafe.Pointer(lpszDevice)),
 		uintptr(unsafe.Pointer(lpszOutput)),
-		uintptr(unsafe.Pointer(lpdvmInit)))
-
+		uintptr(unsafe.Pointer(lpdvmInit)),
+	)
 	return HDC(ret)
 }
 
 func DeleteDC(hdc HDC) bool {
-	ret, _, _ := deleteDC.Call(
-		uintptr(hdc))
-
+	ret, _, _ := deleteDC.Call(uintptr(hdc))
 	return ret != 0
 }
 
 func DeleteEnhMetaFile(hemf HENHMETAFILE) bool {
-	ret, _, _ := deleteEnhMetaFile.Call(
-		uintptr(hemf))
-
+	ret, _, _ := deleteEnhMetaFile.Call(uintptr(hemf))
 	return ret != 0
 }
 
@@ -2154,22 +2106,18 @@ func Ellipse(hdc HDC, nLeftRect, nTopRect, nRightRect, nBottomRect int) bool {
 		uintptr(nLeftRect),
 		uintptr(nTopRect),
 		uintptr(nRightRect),
-		uintptr(nBottomRect))
-
+		uintptr(nBottomRect),
+	)
 	return ret != 0
 }
 
 func EndDoc(hdc HDC) int {
-	ret, _, _ := endDoc.Call(
-		uintptr(hdc))
-
+	ret, _, _ := endDoc.Call(uintptr(hdc))
 	return int(ret)
 }
 
 func EndPage(hdc HDC) int {
-	ret, _, _ := endPage.Call(
-		uintptr(hdc))
-
+	ret, _, _ := endPage.Call(uintptr(hdc))
 	return int(ret)
 }
 
@@ -2179,15 +2127,13 @@ func ExtCreatePen(dwPenStyle, dwWidth uint, lplb *LOGBRUSH, dwStyleCount uint, l
 		uintptr(dwWidth),
 		uintptr(unsafe.Pointer(lplb)),
 		uintptr(dwStyleCount),
-		uintptr(unsafe.Pointer(lpStyle)))
-
+		uintptr(unsafe.Pointer(lpStyle)),
+	)
 	return HPEN(ret)
 }
 
 func GetEnhMetaFile(lpszMetaFile *uint16) HENHMETAFILE {
-	ret, _, _ := getEnhMetaFile.Call(
-		uintptr(unsafe.Pointer(lpszMetaFile)))
-
+	ret, _, _ := getEnhMetaFile.Call(uintptr(unsafe.Pointer(lpszMetaFile)))
 	return HENHMETAFILE(ret)
 }
 
@@ -2195,8 +2141,8 @@ func GetEnhMetaFileHeader(hemf HENHMETAFILE, cbBuffer uint, lpemh *ENHMETAHEADER
 	ret, _, _ := getEnhMetaFileHeader.Call(
 		uintptr(hemf),
 		uintptr(cbBuffer),
-		uintptr(unsafe.Pointer(lpemh)))
-
+		uintptr(unsafe.Pointer(lpemh)),
+	)
 	return uint(ret)
 }
 
@@ -2204,15 +2150,13 @@ func GetObject(hgdiobj HGDIOBJ, cbBuffer uintptr, lpvObject unsafe.Pointer) int 
 	ret, _, _ := getObject.Call(
 		uintptr(hgdiobj),
 		uintptr(cbBuffer),
-		uintptr(lpvObject))
-
+		uintptr(lpvObject),
+	)
 	return int(ret)
 }
 
 func GetStockObject(fnObject int) HGDIOBJ {
-	ret, _, _ := getDeviceCaps.Call(
-		uintptr(fnObject))
-
+	ret, _, _ := getDeviceCaps.Call(uintptr(fnObject))
 	return HGDIOBJ(ret)
 }
 
@@ -2224,8 +2168,8 @@ func GetTextExtentExPoint(hdc HDC, lpszStr *uint16, cchString, nMaxExtent int, l
 		uintptr(nMaxExtent),
 		uintptr(unsafe.Pointer(lpnFit)),
 		uintptr(unsafe.Pointer(alpDx)),
-		uintptr(unsafe.Pointer(lpSize)))
-
+		uintptr(unsafe.Pointer(lpSize)),
+	)
 	return ret != 0
 }
 
@@ -2234,16 +2178,16 @@ func GetTextExtentPoint32(hdc HDC, lpString *uint16, c int, lpSize *SIZE) bool {
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(lpString)),
 		uintptr(c),
-		uintptr(unsafe.Pointer(lpSize)))
-
+		uintptr(unsafe.Pointer(lpSize)),
+	)
 	return ret != 0
 }
 
 func GetTextMetrics(hdc HDC, lptm *TEXTMETRIC) bool {
 	ret, _, _ := getTextMetrics.Call(
 		uintptr(hdc),
-		uintptr(unsafe.Pointer(lptm)))
-
+		uintptr(unsafe.Pointer(lptm)),
+	)
 	return ret != 0
 }
 
@@ -2251,8 +2195,8 @@ func LineTo(hdc HDC, nXEnd, nYEnd int) bool {
 	ret, _, _ := lineTo.Call(
 		uintptr(hdc),
 		uintptr(nXEnd),
-		uintptr(nYEnd))
-
+		uintptr(nYEnd),
+	)
 	return ret != 0
 }
 
@@ -2261,8 +2205,8 @@ func MoveToEx(hdc HDC, x, y int, lpPoint *POINT) bool {
 		uintptr(hdc),
 		uintptr(x),
 		uintptr(y),
-		uintptr(unsafe.Pointer(lpPoint)))
-
+		uintptr(unsafe.Pointer(lpPoint)),
+	)
 	return ret != 0
 }
 
@@ -2270,8 +2214,8 @@ func PlayEnhMetaFile(hdc HDC, hemf HENHMETAFILE, lpRect *RECT) bool {
 	ret, _, _ := playEnhMetaFile.Call(
 		uintptr(hdc),
 		uintptr(hemf),
-		uintptr(unsafe.Pointer(lpRect)))
-
+		uintptr(unsafe.Pointer(lpRect)),
+	)
 	return ret != 0
 }
 
@@ -2281,40 +2225,38 @@ func Rectangle(hdc HDC, nLeftRect, nTopRect, nRightRect, nBottomRect int) bool {
 		uintptr(nLeftRect),
 		uintptr(nTopRect),
 		uintptr(nRightRect),
-		uintptr(nBottomRect))
-
+		uintptr(nBottomRect),
+	)
 	return ret != 0
 }
 
 func ResetDC(hdc HDC, lpInitData *DEVMODE) HDC {
 	ret, _, _ := resetDC.Call(
 		uintptr(hdc),
-		uintptr(unsafe.Pointer(lpInitData)))
-
+		uintptr(unsafe.Pointer(lpInitData)),
+	)
 	return HDC(ret)
 }
 
 func SelectObject(hdc HDC, hgdiobj HGDIOBJ) HGDIOBJ {
 	ret, _, _ := selectObject.Call(
 		uintptr(hdc),
-		uintptr(hgdiobj))
-
+		uintptr(hgdiobj),
+	)
 	if ret == 0 {
 		panic("SelectObject failed")
 	}
-
 	return HGDIOBJ(ret)
 }
 
 func SetBkMode(hdc HDC, iBkMode int) int {
 	ret, _, _ := setBkMode.Call(
 		uintptr(hdc),
-		uintptr(iBkMode))
-
+		uintptr(iBkMode),
+	)
 	if ret == 0 {
 		panic("SetBkMode failed")
 	}
-
 	return int(ret)
 }
 
@@ -2323,55 +2265,51 @@ func SetBrushOrgEx(hdc HDC, nXOrg, nYOrg int, lppt *POINT) bool {
 		uintptr(hdc),
 		uintptr(nXOrg),
 		uintptr(nYOrg),
-		uintptr(unsafe.Pointer(lppt)))
-
+		uintptr(unsafe.Pointer(lppt)),
+	)
 	return ret != 0
 }
 
 func SetStretchBltMode(hdc HDC, iStretchMode int) int {
 	ret, _, _ := setStretchBltMode.Call(
 		uintptr(hdc),
-		uintptr(iStretchMode))
-
+		uintptr(iStretchMode),
+	)
 	return int(ret)
 }
 
 func SetTextColor(hdc HDC, crColor COLORREF) COLORREF {
 	ret, _, _ := setTextColor.Call(
 		uintptr(hdc),
-		uintptr(crColor))
-
+		uintptr(crColor),
+	)
 	if ret == CLR_INVALID {
 		panic("SetTextColor failed")
 	}
-
 	return COLORREF(ret)
 }
 
 func SetBkColor(hdc HDC, crColor COLORREF) COLORREF {
 	ret, _, _ := setBkColor.Call(
 		uintptr(hdc),
-		uintptr(crColor))
-
+		uintptr(crColor),
+	)
 	if ret == CLR_INVALID {
 		panic("SetBkColor failed")
 	}
-
 	return COLORREF(ret)
 }
 
 func StartDoc(hdc HDC, lpdi *DOCINFO) int {
 	ret, _, _ := startDoc.Call(
 		uintptr(hdc),
-		uintptr(unsafe.Pointer(lpdi)))
-
+		uintptr(unsafe.Pointer(lpdi)),
+	)
 	return int(ret)
 }
 
 func StartPage(hdc HDC) int {
-	ret, _, _ := startPage.Call(
-		uintptr(hdc))
-
+	ret, _, _ := startPage.Call(uintptr(hdc))
 	return int(ret)
 }
 
@@ -2387,8 +2325,8 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
 		uintptr(nYOriginSrc),
 		uintptr(nWidthSrc),
 		uintptr(nHeightSrc),
-		uintptr(dwRop))
-
+		uintptr(dwRop),
+	)
 	if ret == 0 {
 		panic("StretchBlt failed")
 	}
@@ -2407,8 +2345,8 @@ func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int,
 		uintptr(cScanLines),
 		uintptr(unsafe.Pointer(&lpvBits[0])),
 		uintptr(unsafe.Pointer(lpbmi)),
-		uintptr(fuColorUse))
-
+		uintptr(fuColorUse),
+	)
 	return int(ret)
 }
 
@@ -2440,9 +2378,7 @@ func GetEnhMetaFilePixelFormat(hemf HENHMETAFILE, cbBuffer uint32, pfd *PIXELFOR
 }
 
 func GetPixelFormat(hdc HDC) int {
-	ret, _, _ := getPixelFormat.Call(
-		uintptr(hdc),
-	)
+	ret, _, _ := getPixelFormat.Call(uintptr(hdc))
 	return int(ret)
 }
 
@@ -2475,45 +2411,41 @@ func MulDiv(number, numerator, denominator int) int {
 	ret, _, _ := mulDiv.Call(
 		uintptr(number),
 		uintptr(numerator),
-		uintptr(denominator))
-
+		uintptr(denominator),
+	)
 	return int(ret)
 }
 
 func GetConsoleWindow() HWND {
 	ret, _, _ := getConsoleWindow.Call()
-
 	return HWND(ret)
 }
 
 func GetCurrentThread() HANDLE {
 	ret, _, _ := getCurrentThread.Call()
-
 	return HANDLE(ret)
 }
 
 func GetLogicalDrives() uint32 {
 	ret, _, _ := getLogicalDrives.Call()
-
 	return uint32(ret)
 }
 
 func GetUserDefaultLCID() uint32 {
 	ret, _, _ := getUserDefaultLCID.Call()
-
 	return uint32(ret)
 }
 
 func Lstrlen(lpString *uint16) int {
 	ret, _, _ := lstrlen.Call(uintptr(unsafe.Pointer(lpString)))
-
 	return int(ret)
 }
 
 func Lstrcpy(buf []uint16, lpString *uint16) {
 	lstrcpy.Call(
 		uintptr(unsafe.Pointer(&buf[0])),
-		uintptr(unsafe.Pointer(lpString)))
+		uintptr(unsafe.Pointer(lpString)),
+	)
 }
 
 func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
@@ -2530,7 +2462,6 @@ func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
 
 func GlobalFree(hMem HGLOBAL) {
 	ret, _, _ := globalFree.Call(uintptr(hMem))
-
 	if ret != 0 {
 		panic("GlobalFree failed")
 	}
@@ -2538,17 +2469,14 @@ func GlobalFree(hMem HGLOBAL) {
 
 func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
 	ret, _, _ := globalLock.Call(uintptr(hMem))
-
 	if ret == 0 {
 		panic("GlobalLock failed")
 	}
-
 	return unsafe.Pointer(ret)
 }
 
 func GlobalUnlock(hMem HGLOBAL) bool {
 	ret, _, _ := globalUnlock.Call(uintptr(hMem))
-
 	return ret != 0
 }
 
@@ -2556,19 +2484,19 @@ func MoveMemory(destination, source unsafe.Pointer, length uint32) {
 	moveMemory.Call(
 		uintptr(unsafe.Pointer(destination)),
 		uintptr(source),
-		uintptr(length))
+		uintptr(length),
+	)
 }
 
 func FindResource(hModule HMODULE, lpName, lpType *uint16) (HRSRC, error) {
 	ret, _, _ := findResource.Call(
 		uintptr(hModule),
 		uintptr(unsafe.Pointer(lpName)),
-		uintptr(unsafe.Pointer(lpType)))
-
+		uintptr(unsafe.Pointer(lpType)),
+	)
 	if ret == 0 {
 		return 0, syscall.GetLastError()
 	}
-
 	return HRSRC(ret), nil
 }
 
@@ -2576,33 +2504,28 @@ func SizeofResource(hModule HMODULE, hResInfo HRSRC) uint32 {
 	ret, _, _ := sizeofResource.Call(
 		uintptr(hModule),
 		uintptr(hResInfo))
-
 	if ret == 0 {
 		panic("SizeofResource failed")
 	}
-
 	return uint32(ret)
 }
 
 func LockResource(hResData HGLOBAL) unsafe.Pointer {
 	ret, _, _ := lockResource.Call(uintptr(hResData))
-
 	if ret == 0 {
 		panic("LockResource failed")
 	}
-
 	return unsafe.Pointer(ret)
 }
 
 func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
 	ret, _, _ := loadResource.Call(
 		uintptr(hModule),
-		uintptr(hResInfo))
-
+		uintptr(hResInfo),
+	)
 	if ret == 0 {
 		panic("LoadResource failed")
 	}
-
 	return HGLOBAL(ret)
 }
 
@@ -2616,18 +2539,19 @@ func OpenProcess(desiredAccess uint32, inheritHandle bool, processId uint32) HAN
 	if inheritHandle {
 		inherit = 1
 	}
-
 	ret, _, _ := openProcess.Call(
 		uintptr(desiredAccess),
 		uintptr(inherit),
-		uintptr(processId))
+		uintptr(processId),
+	)
 	return HANDLE(ret)
 }
 
 func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
 	ret, _, _ := terminateProcess.Call(
 		uintptr(hProcess),
-		uintptr(uExitCode))
+		uintptr(uExitCode),
+	)
 	return ret != 0
 }
 
@@ -2640,28 +2564,27 @@ func CloseHandle(object HANDLE) bool {
 func CreateToolhelp32Snapshot(flags, processId uint32) HANDLE {
 	ret, _, _ := createToolhelp32Snapshot.Call(
 		uintptr(flags),
-		uintptr(processId))
-
+		uintptr(processId),
+	)
 	if ret <= 0 {
 		return HANDLE(0)
 	}
-
 	return HANDLE(ret)
 }
 
 func Module32First(snapshot HANDLE, me *MODULEENTRY32) bool {
 	ret, _, _ := module32First.Call(
 		uintptr(snapshot),
-		uintptr(unsafe.Pointer(me)))
-
+		uintptr(unsafe.Pointer(me)),
+	)
 	return ret != 0
 }
 
 func Module32Next(snapshot HANDLE, me *MODULEENTRY32) bool {
 	ret, _, _ := module32Next.Call(
 		uintptr(snapshot),
-		uintptr(unsafe.Pointer(me)))
-
+		uintptr(unsafe.Pointer(me)),
+	)
 	return ret != 0
 }
 
@@ -2669,8 +2592,8 @@ func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
 	ret, _, _ := getSystemTimes.Call(
 		uintptr(unsafe.Pointer(lpIdleTime)),
 		uintptr(unsafe.Pointer(lpKernelTime)),
-		uintptr(unsafe.Pointer(lpUserTime)))
-
+		uintptr(unsafe.Pointer(lpUserTime)),
+	)
 	return ret != 0
 }
 
@@ -2680,8 +2603,8 @@ func GetProcessTimes(hProcess HANDLE, lpCreationTime, lpExitTime, lpKernelTime, 
 		uintptr(unsafe.Pointer(lpCreationTime)),
 		uintptr(unsafe.Pointer(lpExitTime)),
 		uintptr(unsafe.Pointer(lpKernelTime)),
-		uintptr(unsafe.Pointer(lpUserTime)))
-
+		uintptr(unsafe.Pointer(lpUserTime)),
+	)
 	return ret != 0
 }
 
@@ -2689,7 +2612,8 @@ func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_IN
 	var csbi CONSOLE_SCREEN_BUFFER_INFO
 	ret, _, _ := getConsoleScreenBufferInfo.Call(
 		uintptr(hConsoleOutput),
-		uintptr(unsafe.Pointer(&csbi)))
+		uintptr(unsafe.Pointer(&csbi)),
+	)
 	if ret == 0 {
 		return nil
 	}
@@ -2699,7 +2623,8 @@ func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_IN
 func SetConsoleTextAttribute(hConsoleOutput HANDLE, wAttributes uint16) bool {
 	ret, _, _ := setConsoleTextAttribute.Call(
 		uintptr(hConsoleOutput),
-		uintptr(wAttributes))
+		uintptr(wAttributes),
+	)
 	return ret != 0
 }
 
@@ -2709,7 +2634,8 @@ func GetDiskFreeSpaceEx(dirName string) (r bool,
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(dirName))),
 		uintptr(unsafe.Pointer(&freeBytesAvailable)),
 		uintptr(unsafe.Pointer(&totalNumberOfBytes)),
-		uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)))
+		uintptr(unsafe.Pointer(&totalNumberOfFreeBytes)),
+	)
 	return ret != 0,
 		freeBytesAvailable, totalNumberOfBytes, totalNumberOfFreeBytes
 }
@@ -2773,7 +2699,8 @@ func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
 	ret, _, _ := createStreamOnHGlobal.Call(
 		uintptr(hGlobal),
 		uintptr(BoolToBOOL(fDeleteOnRelease)),
-		uintptr(unsafe.Pointer(&stream)))
+		uintptr(unsafe.Pointer(&stream)),
+	)
 
 	switch uint32(ret) {
 	case E_INVALIDARG:
@@ -2796,7 +2723,9 @@ func VariantInit(v *VARIANT) {
 }
 
 func SysAllocString(v string) (ss *int16) {
-	pss, _, _ := sysAllocString.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v))))
+	pss, _, _ := sysAllocString.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v))),
+	)
 	ss = (*int16)(unsafe.Pointer(pss))
 	return
 }
@@ -2818,7 +2747,6 @@ func WglCreateContext(hdc HDC) HGLRC {
 	ret, _, _ := wglCreateContext.Call(
 		uintptr(hdc),
 	)
-
 	return HGLRC(ret)
 }
 
@@ -2827,7 +2755,6 @@ func WglCreateLayerContext(hdc HDC, iLayerPlane int) HGLRC {
 		uintptr(hdc),
 		uintptr(iLayerPlane),
 	)
-
 	return HGLRC(ret)
 }
 
@@ -2835,7 +2762,6 @@ func WglDeleteContext(hglrc HGLRC) bool {
 	ret, _, _ := wglDeleteContext.Call(
 		uintptr(hglrc),
 	)
-
 	return ret == TRUE
 }
 
@@ -2843,7 +2769,6 @@ func WglGetProcAddress(szProc string) uintptr {
 	ret, _, _ := wglGetProcAddress.Call(
 		uintptr(unsafe.Pointer(syscall.StringBytePtr(szProc))),
 	)
-
 	return ret
 }
 
@@ -2852,7 +2777,6 @@ func WglMakeCurrent(hdc HDC, hglrc HGLRC) bool {
 		uintptr(hdc),
 		uintptr(hglrc),
 	)
-
 	return ret == TRUE
 }
 
@@ -2861,7 +2785,6 @@ func WglShareLists(hglrc1, hglrc2 HGLRC) bool {
 		uintptr(hglrc1),
 		uintptr(hglrc2),
 	)
-
 	return ret == TRUE
 }
 
@@ -2870,13 +2793,11 @@ func EnumProcesses(processIds []uint32, cb uint32, bytesReturned *uint32) bool {
 		uintptr(unsafe.Pointer(&processIds[0])),
 		uintptr(cb),
 		uintptr(unsafe.Pointer(bytesReturned)))
-
 	return ret != 0
 }
 
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
 	ret, _, _ := sHBrowseForFolder.Call(uintptr(unsafe.Pointer(bi)))
-
 	return ret
 }
 
@@ -2884,15 +2805,16 @@ func SHGetPathFromIDList(idl uintptr) string {
 	buf := make([]uint16, 1024)
 	sHGetPathFromIDList.Call(
 		idl,
-		uintptr(unsafe.Pointer(&buf[0])))
-
+		uintptr(unsafe.Pointer(&buf[0])),
+	)
 	return syscall.UTF16ToString(buf)
 }
 
 func DragAcceptFiles(hwnd HWND, accept bool) {
 	dragAcceptFiles.Call(
 		uintptr(hwnd),
-		uintptr(BoolToBOOL(accept)))
+		uintptr(BoolToBOOL(accept)),
+	)
 }
 
 func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
@@ -2900,7 +2822,8 @@ func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
 		uintptr(hDrop),
 		uintptr(iFile),
 		0,
-		0)
+		0,
+	)
 
 	fileCount = uint(ret)
 
@@ -2927,8 +2850,8 @@ func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
 	var pt POINT
 	ret, _, _ := dragQueryPoint.Call(
 		uintptr(hDrop),
-		uintptr(unsafe.Pointer(&pt)))
-
+		uintptr(unsafe.Pointer(&pt)),
+	)
 	return int(pt.X), int(pt.Y), (ret == 1)
 }
 
@@ -2997,8 +2920,8 @@ func ExtractIcon(lpszExeFileName string, nIconIndex int) HICON {
 	ret, _, _ := extractIcon.Call(
 		0,
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpszExeFileName))),
-		uintptr(nIconIndex))
-
+		uintptr(nIconIndex),
+	)
 	return HICON(ret)
 }
 
@@ -3056,10 +2979,15 @@ func GdipCreateBitmapFromFile(filename string) (*uintptr, error) {
 	var bitmap *uintptr
 	ret, _, _ := gdipCreateBitmapFromFile.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(filename))),
-		uintptr(unsafe.Pointer(&bitmap)))
+		uintptr(unsafe.Pointer(&bitmap)),
+	)
 
 	if ret != Ok {
-		return nil, errors.New(fmt.Sprintf("GdipCreateBitmapFromFile failed with status '%s' for file '%s'", GetGpStatus(int32(ret)), filename))
+		return nil, errors.New(fmt.Sprintf(
+			"GdipCreateBitmapFromFile failed with status '%s' for file '%s'",
+			GetGpStatus(int32(ret)),
+			filename,
+		))
 	}
 
 	return bitmap, nil
@@ -3070,7 +2998,8 @@ func GdipCreateBitmapFromResource(instance HINSTANCE, resId *uint16) (*uintptr, 
 	ret, _, _ := gdipCreateBitmapFromResource.Call(
 		uintptr(instance),
 		uintptr(unsafe.Pointer(resId)),
-		uintptr(unsafe.Pointer(&bitmap)))
+		uintptr(unsafe.Pointer(&bitmap)),
+	)
 
 	if ret != Ok {
 		return nil, errors.New(fmt.Sprintf("GdiCreateBitmapFromResource failed with status '%s'", GetGpStatus(int32(ret))))
@@ -3083,7 +3012,8 @@ func GdipCreateBitmapFromStream(stream *IStream) (*uintptr, error) {
 	var bitmap *uintptr
 	ret, _, _ := gdipCreateBitmapFromStream.Call(
 		uintptr(unsafe.Pointer(stream)),
-		uintptr(unsafe.Pointer(&bitmap)))
+		uintptr(unsafe.Pointer(&bitmap)),
+	)
 
 	if ret != Ok {
 		return nil, errors.New(fmt.Sprintf("GdipCreateBitmapFromStream failed with status '%s'", GetGpStatus(int32(ret))))
@@ -3097,7 +3027,8 @@ func GdipCreateHBITMAPFromBitmap(bitmap *uintptr, background uint32) (HBITMAP, e
 	ret, _, _ := gdipCreateHBITMAPFromBitmap.Call(
 		uintptr(unsafe.Pointer(bitmap)),
 		uintptr(unsafe.Pointer(&hbitmap)),
-		uintptr(background))
+		uintptr(background),
+	)
 
 	if ret != Ok {
 		return 0, errors.New(fmt.Sprintf("GdipCreateHBITMAPFromBitmap failed with status '%s'", GetGpStatus(int32(ret))))
