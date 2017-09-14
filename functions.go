@@ -283,6 +283,7 @@ var (
 	getSystemTimeAsFileTime    = kernel32.NewProc("GetSystemTimeAsFileTime")
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
+	getVersion                 = kernel32.NewProc("GetVersion")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -2672,6 +2673,11 @@ func CopyMemory(dest, source unsafe.Pointer, sizeInBytes int) {
 func GetCurrentProcessId() DWORD {
 	id, _, _ := getCurrentProcessId.Call()
 	return DWORD(id)
+}
+
+func GetVersion() uint32 {
+	ret, _, _ := getVersion.Call()
+	return uint32(ret)
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
