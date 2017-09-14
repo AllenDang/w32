@@ -1003,3 +1003,29 @@ func HardwareInput(input HARDWAREINPUT) INPUT {
 		mouse: *((*MOUSEINPUT)(unsafe.Pointer(&input))),
 	}
 }
+
+type VS_FIXEDFILEINFO struct {
+	Signature        uint32
+	StrucVersion     uint32
+	FileVersionMS    uint32
+	FileVersionLS    uint32
+	ProductVersionMS uint32
+	ProductVersionLS uint32
+	FileFlagsMask    uint32
+	FileFlags        uint32
+	FileOS           uint32
+	FileType         uint32
+	FileSubtype      uint32
+	FileDateMS       uint32
+	FileDateLS       uint32
+}
+
+// FileVersion concatenates FileVersionMS and FileVersionLS to a uint64 value.
+func (fi VS_FIXEDFILEINFO) FileVersion() uint64 {
+	return uint64(fi.FileVersionMS)<<32 | uint64(fi.FileVersionLS)
+}
+
+// FileDate concatenates FileDateMS and FileDateLS to a uint64 value.
+func (fi VS_FIXEDFILEINFO) FileDate() uint64 {
+	return uint64(fi.FileDateMS)<<32 | uint64(fi.FileDateLS)
+}
