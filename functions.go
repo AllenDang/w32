@@ -141,6 +141,7 @@ var (
 	setTimer                      = user32.NewProc("SetTimer")
 	getActiveWindow               = user32.NewProc("GetActiveWindow")
 	messageBeep                   = user32.NewProc("MessageBeep")
+	getCaretBlinkTime             = user32.NewProc("GetCaretBlinkTime")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1316,6 +1317,14 @@ func GetActiveWindow() HWND {
 func MessageBeep(typ uint) bool {
 	ret, _, _ := messageBeep.Call(uintptr(typ))
 	return ret != 0
+}
+
+// GetCaretBlinkTime returns the time required to invert the caret's pixels, in
+// milliseconds. If the number is negative, the time is infinite and thus the
+// cursor does not blink.
+func GetCaretBlinkTime() int {
+	ret, _, _ := getCaretBlinkTime.Call()
+	return int(uint32(ret))
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
