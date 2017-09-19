@@ -1324,7 +1324,7 @@ func MessageBeep(typ uint) bool {
 // cursor does not blink.
 func GetCaretBlinkTime() int {
 	ret, _, _ := getCaretBlinkTime.Call()
-	return int(uint32(ret))
+	return int(int32(ret))
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
