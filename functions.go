@@ -249,6 +249,7 @@ var (
 	getPixelFormat            = gdi32.NewProc("GetPixelFormat")
 	setPixelFormat            = gdi32.NewProc("SetPixelFormat")
 	swapBuffers               = gdi32.NewProc("SwapBuffers")
+	textOut                   = gdi32.NewProc("TextOutW")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
@@ -2409,6 +2410,21 @@ func SetPixelFormat(hdc HDC, iPixelFormat int, pfd *PIXELFORMATDESCRIPTOR) bool 
 func SwapBuffers(hdc HDC) bool {
 	ret, _, _ := swapBuffers.Call(uintptr(hdc))
 	return ret == TRUE
+}
+
+func TextOut(hdc HDC, x, y int, s string) bool {
+	str, err := syscall.UTF16FromString(s)
+	if err != nil {
+		return false
+	}
+	ret, _, _ := textOut.Call(
+		uintptr(hdc),
+		uintptr(x),
+		uintptr(y),
+		uintptr(unsafe.Pointer(&str[0])),
+		uintptr(len(str)),
+	)
+	return ret != 0
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
