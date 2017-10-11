@@ -250,6 +250,7 @@ var (
 	setPixelFormat            = gdi32.NewProc("SetPixelFormat")
 	swapBuffers               = gdi32.NewProc("SwapBuffers")
 	textOut                   = gdi32.NewProc("TextOutW")
+	createSolidBrush          = gdi32.NewProc("CreateSolidBrush")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
@@ -2425,6 +2426,11 @@ func TextOut(hdc HDC, x, y int, s string) bool {
 		uintptr(len(str)),
 	)
 	return ret != 0
+}
+
+func CreateSolidBrush(color uint32) HBRUSH {
+	ret, _, _ := createSolidBrush.Call(uintptr(color))
+	return HBRUSH(ret)
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
