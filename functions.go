@@ -22,6 +22,7 @@ var (
 	shell32  = syscall.NewLazyDLL("shell32.dll")
 	gdiplus  = syscall.NewLazyDLL("gdiplus.dll")
 	version  = syscall.NewLazyDLL("version.dll")
+	winmm    = syscall.NewLazyDLL("winmm.dll")
 
 	registerClassEx               = user32.NewProc("RegisterClassExW")
 	loadIcon                      = user32.NewProc("LoadIconW")
@@ -330,6 +331,8 @@ var (
 	getFileVersionInfoSize = version.NewProc("GetFileVersionInfoSizeW")
 	getFileVersionInfo     = version.NewProc("GetFileVersionInfoW")
 	verQueryValue          = version.NewProc("VerQueryValueW")
+
+	playSound = winmm.NewProc("PlaySoundW")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -3244,4 +3247,13 @@ func VerQueryValueString(block []byte, translation, item string) (string, bool) 
 		u16[i] = uint16(data[i*2+1])<<8 | uint16(data[i*2+0])
 	}
 	return syscall.UTF16ToString(u16), true
+}
+
+func PlaySound(sound string, mod HMODULE, flags uint32) bool {
+	ret, _, _ := playSound.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sound))),
+		uintptr(mod),
+		uintptr(flags),
+	)
+	return ret != 0
 }
