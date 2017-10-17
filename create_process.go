@@ -4,11 +4,6 @@
 
 package w32
 
-// #include <stdlib.h>
-import (
-	"C"
-)
-
 import (
 	"syscall"
 	"unsafe"
