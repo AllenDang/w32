@@ -288,6 +288,7 @@ var (
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
 	getVersion                 = kernel32.NewProc("GetVersion")
+	setEnvironmentVariable     = kernel32.NewProc("SetEnvironmentVariableW")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -2712,6 +2713,14 @@ func GetCurrentProcessId() DWORD {
 func GetVersion() uint32 {
 	ret, _, _ := getVersion.Call()
 	return uint32(ret)
+}
+
+func SetEnvironmentVariable(name, value string) bool {
+	ret, _, _ := setEnvironmentVariable.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
+	)
+	return ret != 0
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
