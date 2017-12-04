@@ -443,6 +443,15 @@ type BITMAP struct {
 	BmBits       unsafe.Pointer
 }
 
+// https://msdn.microsoft.com/en-us/library/windows/desktop/dd183374(v=vs.85).aspx
+type BITMAPFILEHEADER struct {
+	BfType      uint16
+	BfSize      uint32
+	BfReserved1 uint16
+	BfReserved2 uint16
+	BfOffBits   uint32
+}
+
 // http://msdn.microsoft.com/en-us/library/windows/desktop/dd183567.aspx
 type DIBSECTION struct {
 	DsBm        BITMAP

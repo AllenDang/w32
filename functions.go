@@ -143,6 +143,7 @@ var (
 	getActiveWindow               = user32.NewProc("GetActiveWindow")
 	messageBeep                   = user32.NewProc("MessageBeep")
 	getCaretBlinkTime             = user32.NewProc("GetCaretBlinkTime")
+	getWindowDC                   = user32.NewProc("GetWindowDC")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -212,6 +213,7 @@ var (
 	copyEnhMetaFile           = gdi32.NewProc("CopyEnhMetaFileW")
 	createBrushIndirect       = gdi32.NewProc("CreateBrushIndirect")
 	createCompatibleDC        = gdi32.NewProc("CreateCompatibleDC")
+	createCompatibleBitmap    = gdi32.NewProc("CreateCompatibleBitmap")
 	createDC                  = gdi32.NewProc("CreateDCW")
 	createDIBSection          = gdi32.NewProc("CreateDIBSection")
 	createEnhMetaFile         = gdi32.NewProc("CreateEnhMetaFileW")
@@ -252,6 +254,7 @@ var (
 	swapBuffers               = gdi32.NewProc("SwapBuffers")
 	textOut                   = gdi32.NewProc("TextOutW")
 	createSolidBrush          = gdi32.NewProc("CreateSolidBrush")
+	getDIBits                 = gdi32.NewProc("GetDIBits")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
@@ -652,11 +655,9 @@ func GetClientRect(hwnd HWND) *RECT {
 	ret, _, _ := getClientRect.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&rect)))
-
 	if ret == 0 {
-		panic(fmt.Sprintf("GetClientRect(%d) failed", hwnd))
+		return nil
 	}
-
 	return &rect
 }
 
@@ -1333,6 +1334,11 @@ func GetCaretBlinkTime() int {
 	return int(int32(ret))
 }
 
+func GetWindowDC(window HWND) HDC {
+	ret, _, _ := getWindowDC.Call(uintptr(window))
+	return HDC(ret)
+}
+
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
 	var result HKEY
 	ret, _, _ := regCreateKeyEx.Call(
@@ -1357,9 +1363,8 @@ func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
 		uintptr(0),
 		uintptr(samDesired),
 		uintptr(unsafe.Pointer(&result)))
-
 	if ret != ERROR_SUCCESS {
-		panic(fmt.Sprintf("RegOpenKeyEx(%d, %s, %d) failed", hKey, subKey, samDesired))
+		return 0
 	}
 	return result
 }
@@ -1662,7 +1667,7 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 
 func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_STATUS) bool {
 	if lpServiceStatus == nil {
-		panic("ControlService:lpServiceStatus cannot be nil")
+		panic("ControlService: lpServiceStatus cannot be nil")
 	}
 	ret, _, _ := controlService.Call(
 		uintptr(hService),
@@ -1685,9 +1690,6 @@ func ImageList_Create(cx, cy int, flags uint, cInitial, cGrow int) HIMAGELIST {
 		uintptr(cInitial),
 		uintptr(cGrow),
 	)
-	if ret == 0 {
-		panic("Create image list failed")
-	}
 	return HIMAGELIST(ret)
 }
 
@@ -2012,7 +2014,7 @@ func AbortDoc(hdc HDC) int {
 	return int(ret)
 }
 
-func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc, nYSrc int, dwRop uint) {
+func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc, nYSrc int, dwRop uint) bool {
 	ret, _, _ := bitBlt.Call(
 		uintptr(hdcDest),
 		uintptr(nXDest),
@@ -2024,12 +2026,10 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
 		uintptr(nYSrc),
 		uintptr(dwRop),
 	)
-	if ret == 0 {
-		panic("BitBlt failed")
-	}
+	return ret != 0
 }
 
-func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) {
+func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) bool {
 	ret, _, _ := patBlt.Call(
 		uintptr(hdc),
 		uintptr(nXLeft),
@@ -2038,9 +2038,7 @@ func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) {
 		uintptr(nHeight),
 		uintptr(dwRop),
 	)
-	if ret == 0 {
-		panic("PatBlt failed")
-	}
+	return ret != 0
 }
 
 func CloseEnhMetaFile(hdc HDC) HENHMETAFILE {
@@ -2063,10 +2061,16 @@ func CreateBrushIndirect(lplb *LOGBRUSH) HBRUSH {
 
 func CreateCompatibleDC(hdc HDC) HDC {
 	ret, _, _ := createCompatibleDC.Call(uintptr(hdc))
-	if ret == 0 {
-		panic("Create compatible DC failed")
-	}
 	return HDC(ret)
+}
+
+func CreateCompatibleBitmap(hdc HDC, width, height int) HBITMAP {
+	ret, _, _ := createCompatibleBitmap.Call(
+		uintptr(hdc),
+		uintptr(width),
+		uintptr(height),
+	)
+	return HBITMAP(ret)
 }
 
 func CreateDC(lpszDriver, lpszDevice, lpszOutput *uint16, lpInitData *DEVMODE) HDC {
@@ -2264,9 +2268,6 @@ func SelectObject(hdc HDC, hgdiobj HGDIOBJ) HGDIOBJ {
 		uintptr(hdc),
 		uintptr(hgdiobj),
 	)
-	if ret == 0 {
-		panic("SelectObject failed")
-	}
 	return HGDIOBJ(ret)
 }
 
@@ -2275,9 +2276,6 @@ func SetBkMode(hdc HDC, iBkMode int) int {
 		uintptr(hdc),
 		uintptr(iBkMode),
 	)
-	if ret == 0 {
-		panic("SetBkMode failed")
-	}
 	return int(ret)
 }
 
@@ -2304,9 +2302,6 @@ func SetTextColor(hdc HDC, crColor COLORREF) COLORREF {
 		uintptr(hdc),
 		uintptr(crColor),
 	)
-	if ret == CLR_INVALID {
-		panic("SetTextColor failed")
-	}
 	return COLORREF(ret)
 }
 
@@ -2315,9 +2310,6 @@ func SetBkColor(hdc HDC, crColor COLORREF) COLORREF {
 		uintptr(hdc),
 		uintptr(crColor),
 	)
-	if ret == CLR_INVALID {
-		panic("SetBkColor failed")
-	}
 	return COLORREF(ret)
 }
 
@@ -2334,7 +2326,7 @@ func StartPage(hdc HDC) int {
 	return int(ret)
 }
 
-func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest int, hdcSrc HDC, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc int, dwRop uint) {
+func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest int, hdcSrc HDC, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc int, dwRop uint) bool {
 	ret, _, _ := stretchBlt.Call(
 		uintptr(hdcDest),
 		uintptr(nXOriginDest),
@@ -2348,9 +2340,7 @@ func StretchBlt(hdcDest HDC, nXOriginDest, nYOriginDest, nWidthDest, nHeightDest
 		uintptr(nHeightSrc),
 		uintptr(dwRop),
 	)
-	if ret == 0 {
-		panic("StretchBlt failed")
-	}
+	return ret != 0
 }
 
 func SetDIBitsToDevice(hdc HDC, xDest, yDest, dwWidth, dwHeight, xSrc, ySrc int, uStartScan, cScanLines uint, lpvBits []byte, lpbmi *BITMAPINFO, fuColorUse uint) int {
@@ -2437,6 +2427,26 @@ func CreateSolidBrush(color uint32) HBRUSH {
 	return HBRUSH(ret)
 }
 
+func GetDIBits(
+	dc HDC,
+	bmp HBITMAP,
+	startScan, scanLines uint,
+	bits unsafe.Pointer,
+	info *BITMAPINFO,
+	usage uint,
+) int {
+	ret, _, _ := getDIBits.Call(
+		uintptr(dc),
+		uintptr(bmp),
+		uintptr(startScan),
+		uintptr(scanLines),
+		uintptr(bits),
+		uintptr(unsafe.Pointer(info)),
+		uintptr(usage),
+	)
+	return int(ret)
+}
+
 func GetModuleHandle(modulename string) HINSTANCE {
 	var mn uintptr
 	if modulename == "" {
@@ -2493,26 +2503,15 @@ func GlobalAlloc(uFlags uint, dwBytes uint32) HGLOBAL {
 	ret, _, _ := globalAlloc.Call(
 		uintptr(uFlags),
 		uintptr(dwBytes))
-
-	if ret == 0 {
-		panic("GlobalAlloc failed")
-	}
-
 	return HGLOBAL(ret)
 }
 
 func GlobalFree(hMem HGLOBAL) {
-	ret, _, _ := globalFree.Call(uintptr(hMem))
-	if ret != 0 {
-		panic("GlobalFree failed")
-	}
+	globalFree.Call(uintptr(hMem))
 }
 
 func GlobalLock(hMem HGLOBAL) unsafe.Pointer {
 	ret, _, _ := globalLock.Call(uintptr(hMem))
-	if ret == 0 {
-		panic("GlobalLock failed")
-	}
 	return unsafe.Pointer(ret)
 }
 
@@ -2545,17 +2544,11 @@ func SizeofResource(hModule HMODULE, hResInfo HRSRC) uint32 {
 	ret, _, _ := sizeofResource.Call(
 		uintptr(hModule),
 		uintptr(hResInfo))
-	if ret == 0 {
-		panic("SizeofResource failed")
-	}
 	return uint32(ret)
 }
 
 func LockResource(hResData HGLOBAL) unsafe.Pointer {
 	ret, _, _ := lockResource.Call(uintptr(hResData))
-	if ret == 0 {
-		panic("LockResource failed")
-	}
 	return unsafe.Pointer(ret)
 }
 
@@ -2564,9 +2557,6 @@ func LoadResource(hModule HMODULE, hResInfo HRSRC) HGLOBAL {
 		uintptr(hModule),
 		uintptr(hResInfo),
 	)
-	if ret == 0 {
-		panic("LoadResource failed")
-	}
 	return HGLOBAL(ret)
 }
 
