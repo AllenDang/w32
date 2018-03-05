@@ -144,6 +144,7 @@ var (
 	messageBeep                   = user32.NewProc("MessageBeep")
 	getCaretBlinkTime             = user32.NewProc("GetCaretBlinkTime")
 	getWindowDC                   = user32.NewProc("GetWindowDC")
+	getKeyState                   = user32.NewProc("GetKeyState")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1337,6 +1338,11 @@ func GetCaretBlinkTime() int {
 func GetWindowDC(window HWND) HDC {
 	ret, _, _ := getWindowDC.Call(uintptr(window))
 	return HDC(ret)
+}
+
+func GetKeyState(key int) uint16 {
+	ret, _, _ := getKeyState.Call(uintptr(key))
+	return uint16(ret)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
