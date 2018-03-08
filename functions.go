@@ -88,6 +88,7 @@ var (
 	isWindow                      = user32.NewProc("IsWindow")
 	endDialog                     = user32.NewProc("EndDialog")
 	peekMessage                   = user32.NewProc("PeekMessageW")
+	createAcceleratorTable        = user32.NewProc("CreateAcceleratorTableW")
 	translateAccelerator          = user32.NewProc("TranslateAcceleratorW")
 	setWindowPos                  = user32.NewProc("SetWindowPos")
 	fillRect                      = user32.NewProc("FillRect")
@@ -147,6 +148,7 @@ var (
 	enumWindows                   = user32.NewProc("EnumWindows")
 	getTopWindow                  = user32.NewProc("GetTopWindow")
 	getWindow                     = user32.NewProc("GetWindow")
+	getKeyState                   = user32.NewProc("GetKeyState")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -883,8 +885,19 @@ func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg
 	return ret != 0
 }
 
+func CreateAcceleratorTable(acc []ACCEL) HACCEL {
+	if len(acc) == 0 {
+		return 0
+	}
+	ret, _, _ := createAcceleratorTable.Call(
+		uintptr(unsafe.Pointer(&acc[0])),
+		uintptr(len(acc)),
+	)
+	return HACCEL(ret)
+}
+
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
-	ret, _, _ := translateMessage.Call(
+	ret, _, _ := translateAccelerator.Call(
 		uintptr(hwnd),
 		uintptr(hAccTable),
 		uintptr(unsafe.Pointer(lpMsg)),
@@ -1362,6 +1375,11 @@ func GetWindow(rel HWND, cmd uint) HWND {
 
 func GetNextWindow(rel HWND, cmd uint) HWND {
 	return GetWindow(rel, cmd)
+}
+
+func GetKeyState(key int) uint16 {
+	ret, _, _ := getKeyState.Call(uintptr(key))
+	return uint16(ret)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {

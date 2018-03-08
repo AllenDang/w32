@@ -972,8 +972,13 @@ type RAWINPUTDEVICE struct {
 	Target    HWND
 }
 
+// INPUT is used in SendInput. To create a concrete INPUT type, use the helper
+// functions MouseInput, KeyboardInput and HardwareInput. These are necessary
+// because the C API uses a union here, which Go does not provide.
 type INPUT struct {
-	Type  uint32
+	Type uint32
+	// use MOUSEINPUT for the union because it is the largest of all allowed
+	// structures
 	mouse MOUSEINPUT
 }
 
@@ -1045,4 +1050,10 @@ func (fi VS_FIXEDFILEINFO) FileVersion() uint64 {
 // FileDate concatenates FileDateMS and FileDateLS to a uint64 value.
 func (fi VS_FIXEDFILEINFO) FileDate() uint64 {
 	return uint64(fi.FileDateMS)<<32 | uint64(fi.FileDateLS)
+}
+
+type ACCEL struct {
+	Virt byte
+	Key  uint16
+	Cmd  uint16
 }
