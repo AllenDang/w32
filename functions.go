@@ -144,6 +144,9 @@ var (
 	messageBeep                   = user32.NewProc("MessageBeep")
 	getCaretBlinkTime             = user32.NewProc("GetCaretBlinkTime")
 	getWindowDC                   = user32.NewProc("GetWindowDC")
+	enumWindows                   = user32.NewProc("EnumWindows")
+	getTopWindow                  = user32.NewProc("GetTopWindow")
+	getWindow                     = user32.NewProc("GetWindow")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -534,12 +537,12 @@ func GetWindowTextLength(hwnd HWND) int {
 func GetWindowText(hwnd HWND) string {
 	textLen := GetWindowTextLength(hwnd) + 1
 	buf := make([]uint16, textLen)
-	getWindowText.Call(
+	len, _, _ := getWindowText.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(&buf[0])),
 		uintptr(textLen),
 	)
-	return syscall.UTF16ToString(buf)
+	return syscall.UTF16ToString(buf[:len])
 }
 
 func GetWindowRect(hwnd HWND) *RECT {
@@ -1337,6 +1340,28 @@ func GetCaretBlinkTime() int {
 func GetWindowDC(window HWND) HDC {
 	ret, _, _ := getWindowDC.Call(uintptr(window))
 	return HDC(ret)
+}
+
+func EnumWindows(callback func(window HWND)) bool {
+	f := syscall.NewCallback(func(w, _ uintptr) {
+		callback(HWND(w))
+	})
+	ret, _, _ := enumWindows.Call(f, 0)
+	return ret != 0
+}
+
+func GetTopWindow(of HWND) HWND {
+	ret, _, _ := getTopWindow.Call(uintptr(of))
+	return HWND(ret)
+}
+
+func GetWindow(rel HWND, cmd uint) HWND {
+	ret, _, _ := getWindow.Call(uintptr(rel), uintptr(cmd))
+	return HWND(ret)
+}
+
+func GetNextWindow(rel HWND, cmd uint) HWND {
+	return GetWindow(rel, cmd)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
