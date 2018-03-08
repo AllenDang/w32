@@ -2984,3 +2984,12 @@ const (
 	STRETCH_HALFTONE    = HALFTONE
 	STRETCH_ORSCANS     = WHITEONBLACK
 )
+
+// ACCEL behavior flags
+const (
+	FVIRTKEY  = 0x01
+	FNOINVERT = 0x02
+	FSHIFT    = 0x04
+	FCONTROL  = 0x08
+	FALT      = 0x10
+)
