@@ -972,8 +972,13 @@ type RAWINPUTDEVICE struct {
 	Target    HWND
 }
 
+// INPUT is used in SendInput. To create a concrete INPUT type, use the helper
+// functions MouseInput, KeyboardInput and HardwareInput. These are necessary
+// because the C API uses a union here, which Go does not provide.
 type INPUT struct {
-	Type  uint32
+	Type uint32
+	// use MOUSEINPUT for the union because it is the largest of all allowed
+	// structures
 	mouse MOUSEINPUT
 }
 
