@@ -1046,3 +1046,9 @@ func (fi VS_FIXEDFILEINFO) FileVersion() uint64 {
 func (fi VS_FIXEDFILEINFO) FileDate() uint64 {
 	return uint64(fi.FileDateMS)<<32 | uint64(fi.FileDateLS)
 }
+
+type ACCEL struct {
+	Virt byte
+	Key  uint16
+	Cmd  uint16
+}

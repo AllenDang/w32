@@ -88,6 +88,7 @@ var (
 	isWindow                      = user32.NewProc("IsWindow")
 	endDialog                     = user32.NewProc("EndDialog")
 	peekMessage                   = user32.NewProc("PeekMessageW")
+	createAcceleratorTable        = user32.NewProc("CreateAcceleratorTableW")
 	translateAccelerator          = user32.NewProc("TranslateAcceleratorW")
 	setWindowPos                  = user32.NewProc("SetWindowPos")
 	fillRect                      = user32.NewProc("FillRect")
@@ -881,8 +882,19 @@ func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg
 	return ret != 0
 }
 
+func CreateAcceleratorTable(acc []ACCEL) uintptr {
+	if len(acc) == 0 {
+		return 0
+	}
+	ret, _, _ := createAcceleratorTable.Call(
+		uintptr(unsafe.Pointer(&acc[0])),
+		uintptr(len(acc)),
+	)
+	return ret
+}
+
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
-	ret, _, _ := translateMessage.Call(
+	ret, _, _ := translateAccelerator.Call(
 		uintptr(hwnd),
 		uintptr(hAccTable),
 		uintptr(unsafe.Pointer(lpMsg)),
