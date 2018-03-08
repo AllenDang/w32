@@ -882,7 +882,7 @@ func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg
 	return ret != 0
 }
 
-func CreateAcceleratorTable(acc []ACCEL) uintptr {
+func CreateAcceleratorTable(acc []ACCEL) HACCEL {
 	if len(acc) == 0 {
 		return 0
 	}
@@ -890,7 +890,7 @@ func CreateAcceleratorTable(acc []ACCEL) uintptr {
 		uintptr(unsafe.Pointer(&acc[0])),
 		uintptr(len(acc)),
 	)
-	return ret
+	return HACCEL(ret)
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
