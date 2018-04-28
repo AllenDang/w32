@@ -725,7 +725,7 @@ func PeekMessage(lpMsg *MSG, hwnd HWND, wMsgFilterMin, wMsgFilterMax, wRemoveMsg
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
-	ret, _, _ := procTranslateMessage.Call(
+	ret, _, _ := procTranslateAccelerator.Call(
 		uintptr(hwnd),
 		uintptr(hAccTable),
 		uintptr(unsafe.Pointer(lpMsg)))
@@ -841,7 +841,7 @@ func BeginPaint(hwnd HWND, paint *PAINTSTRUCT) HDC {
 }
 
 func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
-	procBeginPaint.Call(
+	procEndPaint.Call(
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(paint)))
 }
