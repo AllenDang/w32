@@ -123,6 +123,7 @@ var (
 	procEnumChildWindows              = moduser32.NewProc("EnumChildWindows")
 	procSetTimer                      = moduser32.NewProc("SetTimer")
 	procKillTimer                     = moduser32.NewProc("KillTimer")
+	procRedrawWindow                  = moduser32.NewProc("RedrawWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1059,4 +1060,18 @@ func KillTimer(hwnd HWND, nIDEvent uint32) bool {
 		uintptr(nIDEvent),
 	)
 	return ret != 0
+}
+
+// it will panic when the function fails
+func RedrawWindow(hWnd HWND, lpRect *RECT, hrgnUpdate HRGN, flag uint32) {
+	ret, _, _ := procRedrawWindow.Call(
+		uintptr(hWnd),
+		uintptr(unsafe.Pointer(lpRect)),
+		uintptr(hrgnUpdate),
+		flag,
+	)
+	if ret!=0{
+		panic("RedrawWindow fail")
+	}
+	return
 }
