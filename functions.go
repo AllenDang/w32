@@ -297,6 +297,7 @@ var (
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
 	getVersion                 = kernel32.NewProc("GetVersion")
 	setEnvironmentVariable     = kernel32.NewProc("SetEnvironmentVariableW")
+	getComputerName            = kernel32.NewProc("GetComputerNameW")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -2754,6 +2755,20 @@ func SetEnvironmentVariable(name, value string) bool {
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(value))),
 	)
 	return ret != 0
+}
+
+func GetComputerName() string {
+	const maxLen = 128
+	var buf [maxLen]uint16
+	var size uint32 = maxLen
+	ret, _, _ := getComputerName.Call(
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(unsafe.Pointer(&size)),
+	)
+	if ret != 0 {
+		return syscall.UTF16ToString(buf[:])
+	}
+	return ""
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
