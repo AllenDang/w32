@@ -291,6 +291,7 @@ var (
 	getDiskFreeSpaceEx         = kernel32.NewProc("GetDiskFreeSpaceExW")
 	getProcessTimes            = kernel32.NewProc("GetProcessTimes")
 	setSystemTime              = kernel32.NewProc("SetSystemTime")
+	setLocalTime               = kernel32.NewProc("SetLocalTime")
 	getSystemTime              = kernel32.NewProc("GetSystemTime")
 	getSystemTimeAsFileTime    = kernel32.NewProc("GetSystemTimeAsFileTime")
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
@@ -2727,6 +2728,12 @@ func GetSystemTimeAsFileTime() (time FILETIME) {
 
 func SetSystemTime(time *SYSTEMTIME) bool {
 	ret, _, _ := setSystemTime.Call(
+		uintptr(unsafe.Pointer(time)))
+	return ret != 0
+}
+
+func SetLocalTime(time *SYSTEMTIME) bool {
+	ret, _, _ := setLocalTime.Call(
 		uintptr(unsafe.Pointer(time)))
 	return ret != 0
 }
