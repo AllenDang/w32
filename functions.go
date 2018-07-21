@@ -23,6 +23,7 @@ var (
 	gdiplus  = syscall.NewLazyDLL("gdiplus.dll")
 	version  = syscall.NewLazyDLL("version.dll")
 	winmm    = syscall.NewLazyDLL("winmm.dll")
+	dxva2    = syscall.NewLazyDLL("dxva2.dll")
 
 	registerClassEx               = user32.NewProc("RegisterClassExW")
 	loadIcon                      = user32.NewProc("LoadIconW")
@@ -344,6 +345,11 @@ var (
 	verQueryValue          = version.NewProc("VerQueryValueW")
 
 	playSound = winmm.NewProc("PlaySoundW")
+
+	getMonitorBrightness                    = dxva2.NewProc("GetMonitorBrightness")
+	setMonitorBrightness                    = dxva2.NewProc("SetMonitorBrightness")
+	getNumberOfPhysicalMonitorsFromHMONITOR = dxva2.NewProc("GetNumberOfPhysicalMonitorsFromHMONITOR")
+	getPhysicalMonitorsFromHMONITOR         = dxva2.NewProc("GetPhysicalMonitorsFromHMONITOR")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -3318,6 +3324,44 @@ func PlaySound(sound string, mod HMODULE, flags uint32) bool {
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sound))),
 		uintptr(mod),
 		uintptr(flags),
+	)
+	return ret != 0
+}
+
+func GetMonitorBrightness(monitor HANDLE) (ok bool, min, cur, max DWORD) {
+	ret, _, _ := getMonitorBrightness.Call(
+		uintptr(monitor),
+		uintptr(unsafe.Pointer(&min)),
+		uintptr(unsafe.Pointer(&cur)),
+		uintptr(unsafe.Pointer(&max)),
+	)
+	ok = ret != 0
+	return
+}
+
+func SetMonitorBrightness(monitor HANDLE, value DWORD) bool {
+	ret, _, _ := setMonitorBrightness.Call(
+		uintptr(monitor),
+		uintptr(value),
+	)
+	return ret != 0
+}
+
+func GetNumberOfPhysicalMonitorsFromHMONITOR(monitor HMONITOR) (bool, DWORD) {
+	var n DWORD
+	ret, _, _ := getNumberOfPhysicalMonitorsFromHMONITOR.Call(
+		uintptr(monitor),
+		uintptr(unsafe.Pointer(&n)),
+	)
+	return ret != 0, n
+}
+
+// len(buf) must not be 0.
+func GetPhysicalMonitorsFromHMONITOR(monitor HMONITOR, buf []PHYSICAL_MONITOR) bool {
+	ret, _, _ := getPhysicalMonitorsFromHMONITOR.Call(
+		uintptr(monitor),
+		uintptr(len(buf)),
+		uintptr(unsafe.Pointer(&buf[0])),
 	)
 	return ret != 0
 }

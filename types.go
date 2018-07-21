@@ -1057,3 +1057,8 @@ type ACCEL struct {
 	Key  uint16
 	Cmd  uint16
 }
+
+type PHYSICAL_MONITOR struct {
+	Monitor     HANDLE
+	Description [128]uint16
+}
