@@ -156,6 +156,8 @@ var (
 	appendMenu                    = user32.NewProc("AppendMenuW")
 	insertMenu                    = user32.NewProc("InsertMenuW")
 	insertMenuItem                = user32.NewProc("InsertMenuItemW")
+	drawMenuBar                   = user32.NewProc("DrawMenuBar")
+	createPopupMenu               = user32.NewProc("CreatePopupMenu")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1459,6 +1461,16 @@ func InsertMenuItem(m HMENU, item uint, byPos bool, newItem *MENUITEMINFO) bool 
 		uintptr(unsafe.Pointer(newItem)),
 	)
 	return ret != 0
+}
+
+func DrawMenuBar(window HWND) bool {
+	ret, _, _ := drawMenuBar.Call(uintptr(window))
+	return ret != 0
+}
+
+func CreatePopupMenu() HMENU {
+	ret, _, _ := createPopupMenu.Call()
+	return HMENU(ret)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
