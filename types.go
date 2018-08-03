@@ -1062,3 +1062,18 @@ type PHYSICAL_MONITOR struct {
 	Monitor     HANDLE
 	Description [128]uint16
 }
+
+type MENUITEMINFO struct {
+	Size              uint32
+	Mask              uint32
+	Type              uint32
+	State             uint32
+	ID                uint32
+	SubMenu           HMENU
+	BmpChecked        HBITMAP
+	BmpUnChecked      HBITMAP
+	ItemData          uintptr
+	TypeData          uintptr
+	ItemTextCharCount uint32
+	BmpItem           HBITMAP
+}

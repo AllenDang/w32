@@ -150,6 +150,12 @@ var (
 	getTopWindow                  = user32.NewProc("GetTopWindow")
 	getWindow                     = user32.NewProc("GetWindow")
 	getKeyState                   = user32.NewProc("GetKeyState")
+	getSysColorBrush              = user32.NewProc("GetSysColorBrush")
+	createMenu                    = user32.NewProc("CreateMenu")
+	setMenu                       = user32.NewProc("SetMenu")
+	appendMenu                    = user32.NewProc("AppendMenuW")
+	insertMenu                    = user32.NewProc("InsertMenuW")
+	insertMenuItem                = user32.NewProc("InsertMenuItemW")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -261,6 +267,7 @@ var (
 	textOut                   = gdi32.NewProc("TextOutW")
 	createSolidBrush          = gdi32.NewProc("CreateSolidBrush")
 	getDIBits                 = gdi32.NewProc("GetDIBits")
+	pie                       = gdi32.NewProc("Pie")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
@@ -401,20 +408,25 @@ func UpdateWindow(hwnd HWND) bool {
 func CreateWindow(className, windowName *uint16,
 	style uint, x, y, width, height int, parent HWND, menu HMENU,
 	instance HINSTANCE, param unsafe.Pointer) HWND {
-	ret, _, _ := createWindowEx.Call(
-		uintptr(unsafe.Pointer(className)),
-		uintptr(unsafe.Pointer(windowName)),
-		uintptr(style),
-		uintptr(x),
-		uintptr(y),
-		uintptr(width),
-		uintptr(height),
-		uintptr(parent),
-		uintptr(menu),
-		uintptr(instance),
-		uintptr(param),
+	return CreateWindowEx(
+		0,
+		className, windowName,
+		style,
+		x, y, width, height,
+		parent, menu, instance, param,
 	)
-	return HWND(ret)
+}
+
+func CreateWindowStr(className, windowName string,
+	style uint, x, y, width, height int, parent HWND, menu HMENU,
+	instance HINSTANCE, param unsafe.Pointer) HWND {
+	return CreateWindow(
+		syscall.StringToUTF16Ptr(className),
+		syscall.StringToUTF16Ptr(windowName),
+		style,
+		x, y, width, height,
+		parent, menu, instance, param,
+	)
 }
 
 func CreateWindowEx(exStyle uint, className, windowName *uint16,
@@ -435,6 +447,19 @@ func CreateWindowEx(exStyle uint, className, windowName *uint16,
 		uintptr(param),
 	)
 	return HWND(ret)
+}
+
+func CreateWindowExStr(exStyle uint, className, windowName string,
+	style uint, x, y, width, height int, parent HWND, menu HMENU,
+	instance HINSTANCE, param unsafe.Pointer) HWND {
+	return CreateWindowEx(
+		exStyle,
+		syscall.StringToUTF16Ptr(className),
+		syscall.StringToUTF16Ptr(windowName),
+		style,
+		x, y, width, height,
+		parent, menu, instance, param,
+	)
 }
 
 func AdjustWindowRectEx(rect *RECT, style uint, menu bool, exStyle uint) bool {
@@ -1390,6 +1415,52 @@ func GetKeyState(key int) uint16 {
 	return uint16(ret)
 }
 
+func GetSysColorBrush(index int) HBRUSH {
+	ret, _, _ := getSysColorBrush.Call(uintptr(index))
+	return HBRUSH(ret)
+}
+
+func CreateMenu() HMENU {
+	ret, _, _ := createMenu.Call()
+	return HMENU(ret)
+}
+
+func SetMenu(w HWND, m HMENU) bool {
+	ret, _, _ := setMenu.Call(uintptr(w), uintptr(m))
+	return ret != 0
+}
+
+func AppendMenu(m HMENU, flags uint, id uintptr, item string) bool {
+	ret, _, _ := appendMenu.Call(
+		uintptr(m),
+		uintptr(flags),
+		id,
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(item))),
+	)
+	return ret != 0
+}
+
+func InsertMenu(m HMENU, pos, flags uint, id uintptr, item string) bool {
+	ret, _, _ := insertMenu.Call(
+		uintptr(m),
+		uintptr(pos),
+		uintptr(flags),
+		id,
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(item))),
+	)
+	return ret != 0
+}
+
+func InsertMenuItem(m HMENU, item uint, byPos bool, newItem *MENUITEMINFO) bool {
+	ret, _, _ := insertMenuItem.Call(
+		uintptr(m),
+		uintptr(item),
+		uintptr(BoolToBOOL(byPos)),
+		uintptr(unsafe.Pointer(newItem)),
+	)
+	return ret != 0
+}
+
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
 	var result HKEY
 	ret, _, _ := regCreateKeyEx.Call(
@@ -1729,6 +1800,9 @@ func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_
 }
 
 func InitCommonControlsEx(lpInitCtrls *INITCOMMONCONTROLSEX) bool {
+	if lpInitCtrls != nil {
+		lpInitCtrls.DwSize = 8
+	}
 	ret, _, _ := initCommonControlsEx.Call(uintptr(unsafe.Pointer(lpInitCtrls)))
 	return ret != 0
 }
@@ -2249,14 +2323,19 @@ func GetTextExtentExPoint(hdc HDC, lpszStr *uint16, cchString, nMaxExtent int, l
 	return ret != 0
 }
 
-func GetTextExtentPoint32(hdc HDC, lpString *uint16, c int, lpSize *SIZE) bool {
+func GetTextExtentPoint32(hdc HDC, text string) (SIZE, bool) {
+	var s SIZE
+	str, err := syscall.UTF16FromString(text)
+	if err != nil {
+		return s, false
+	}
 	ret, _, _ := getTextExtentPoint32.Call(
 		uintptr(hdc),
-		uintptr(unsafe.Pointer(lpString)),
-		uintptr(c),
-		uintptr(unsafe.Pointer(lpSize)),
+		uintptr(unsafe.Pointer(&str[0])),
+		uintptr(len(str)-1), // -1 for the trailing '\0'
+		uintptr(unsafe.Pointer(&s)),
 	)
-	return ret != 0
+	return s, ret != 0
 }
 
 func GetTextMetrics(hdc HDC, lptm *TEXTMETRIC) bool {
@@ -2496,6 +2575,21 @@ func GetDIBits(
 		uintptr(usage),
 	)
 	return int(ret)
+}
+
+func Pie(hdc HDC, left, top, right, bottom, xr1, yr1, xr2, yr2 int) bool {
+	ret, _, _ := pie.Call(
+		uintptr(hdc),
+		uintptr(left),
+		uintptr(top),
+		uintptr(right),
+		uintptr(bottom),
+		uintptr(xr1),
+		uintptr(yr1),
+		uintptr(xr2),
+		uintptr(yr2),
+	)
+	return ret != 0
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -3364,4 +3458,12 @@ func GetPhysicalMonitorsFromHMONITOR(monitor HMONITOR, buf []PHYSICAL_MONITOR) b
 		uintptr(unsafe.Pointer(&buf[0])),
 	)
 	return ret != 0
+}
+
+func MAKEWPARAM(low, high uint16) uintptr {
+	return uintptr(low) | uintptr(high)<<16
+}
+
+func MAKELPARAM(low, high uint16) uintptr {
+	return MAKEWPARAM(low, high)
 }
