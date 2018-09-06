@@ -600,8 +600,8 @@ type NMLVDISPINFO struct {
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb775507.aspx
 type INITCOMMONCONTROLSEX struct {
-	DwSize uint32
-	DwICC  uint32
+	size uint32
+	ICC  uint32
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb760256.aspx
@@ -1073,7 +1073,55 @@ type MENUITEMINFO struct {
 	BmpChecked        HBITMAP
 	BmpUnChecked      HBITMAP
 	ItemData          uintptr
-	TypeData          uintptr
+	TypeData          uintptr // UTF-16 string
 	ItemTextCharCount uint32
 	BmpItem           HBITMAP
+}
+
+type TPMPARAMS struct {
+	Size    uint32
+	Exclude RECT
+}
+
+type MENUINFO struct {
+	size          uint32
+	Mask          uint32
+	Style         uint32
+	YMax          uint32
+	Back          HBRUSH
+	ContextHelpID uint32
+	MenuData      uintptr
+}
+
+type MENUBARINFO struct {
+	size       uint32
+	Bar        RECT
+	Menu       HMENU
+	Window     HWND
+	BarFocused int32 // bool
+	Focused    int32 // bool
+}
+
+type ACTCTX struct {
+	size                  uint32
+	Flags                 uint32
+	Source                *uint16 // UTF-16 string
+	ProcessorArchitecture uint16
+	LangID                uint16
+	AssemblyDirectory     *uint16 // UTF-16 string
+	ResourceName          *uint16 // UTF-16 string
+	ApplicationName       *uint16 // UTF-16 string
+	Module                HMODULE
+}
+
+type DRAWITEMSTRUCT struct {
+	CtlType    uint32
+	CtlID      uint32
+	ItemID     uint32
+	ItemAction uint32
+	ItemState  uint32
+	HwndItem   HWND
+	HDC        HDC
+	RcItem     RECT
+	ItemData   uintptr
 }
