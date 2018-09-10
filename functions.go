@@ -219,6 +219,7 @@ var (
 	imageList_ReplaceIcon   = comctl32.NewProc("ImageList_ReplaceIcon")
 	imageList_Remove        = comctl32.NewProc("ImageList_Remove")
 	trackMouseEvent         = comctl32.NewProc("_TrackMouseEvent")
+	setWindowSubclass       = comctl32.NewProc("SetWindowSubclass")
 
 	getSaveFileName      = comdlg32.NewProc("GetSaveFileNameW")
 	getOpenFileName      = comdlg32.NewProc("GetOpenFileNameW")
@@ -2243,6 +2244,16 @@ func ImageList_RemoveAll(himl HIMAGELIST) bool {
 
 func TrackMouseEvent(tme *TRACKMOUSEEVENT) bool {
 	ret, _, _ := trackMouseEvent.Call(uintptr(unsafe.Pointer(tme)))
+	return ret != 0
+}
+
+func SetWindowSubclass(window HWND, proc uintptr, id uintptr, refData uintptr) bool {
+	ret, _, _ := setWindowSubclass.Call(
+		uintptr(window),
+		proc,
+		uintptr(id),
+		refData,
+	)
 	return ret != 0
 }
 
