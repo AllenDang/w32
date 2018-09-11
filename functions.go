@@ -193,6 +193,7 @@ var (
 	isDlgButtonChecked            = user32.NewProc("IsDlgButtonChecked")
 	sendDlgItemMessage            = user32.NewProc("SendDlgItemMessageW")
 	lookupIconIdFromDirectoryEx   = user32.NewProc("LookupIconIdFromDirectoryEx")
+	setForegroundWindow           = user32.NewProc("SetForegroundWindow")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1866,6 +1867,11 @@ func LookupIconIdFromDirectoryEx(mem unsafe.Pointer, icon bool, width, height in
 		uintptr(flags),
 	)
 	return int(ret)
+}
+
+func SetForegroundWindow(window HWND) bool {
+	ret, _, _ := setForegroundWindow.Call(uintptr(window))
+	return ret != 0
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
