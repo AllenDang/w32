@@ -118,6 +118,7 @@ var (
 	setCursorPos                  = user32.NewProc("SetCursorPos")
 	setCursor                     = user32.NewProc("SetCursor")
 	createIcon                    = user32.NewProc("CreateIcon")
+	createIconFromResourceEx      = user32.NewProc("CreateIconFromResourceEx")
 	destroyIcon                   = user32.NewProc("DestroyIcon")
 	monitorFromPoint              = user32.NewProc("MonitorFromPoint")
 	monitorFromRect               = user32.NewProc("MonitorFromRect")
@@ -191,6 +192,7 @@ var (
 	trackPopupMenuEx              = user32.NewProc("TrackPopupMenuEx")
 	isDlgButtonChecked            = user32.NewProc("IsDlgButtonChecked")
 	sendDlgItemMessage            = user32.NewProc("SendDlgItemMessageW")
+	lookupIconIdFromDirectoryEx   = user32.NewProc("LookupIconIdFromDirectoryEx")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -220,6 +222,7 @@ var (
 	imageList_Remove        = comctl32.NewProc("ImageList_Remove")
 	trackMouseEvent         = comctl32.NewProc("_TrackMouseEvent")
 	setWindowSubclass       = comctl32.NewProc("SetWindowSubclass")
+	defSubclassProc         = comctl32.NewProc("DefSubclassProc")
 
 	getSaveFileName      = comdlg32.NewProc("GetSaveFileNameW")
 	getOpenFileName      = comdlg32.NewProc("GetOpenFileNameW")
@@ -1188,6 +1191,27 @@ func CreateIcon(instance HINSTANCE, nWidth, nHeight int, cPlanes, cBitsPerPixel 
 	return HICON(ret)
 }
 
+func CreateIconFromResourceEx(
+	mem unsafe.Pointer,
+	memSize uint32,
+	icon bool,
+	version uint32,
+	width int,
+	height int,
+	flags uint,
+) HICON {
+	ret, _, _ := createIconFromResourceEx.Call(
+		uintptr(mem),
+		uintptr(memSize),
+		uintptr(BoolToBOOL(icon)),
+		uintptr(version),
+		uintptr(width),
+		uintptr(height),
+		uintptr(flags),
+	)
+	return HICON(ret)
+}
+
 func DestroyIcon(icon HICON) bool {
 	ret, _, _ := destroyIcon.Call(uintptr(icon))
 	return ret != 0
@@ -1833,6 +1857,17 @@ func SendDlgItemMessage(dlg HWND, id int, msg uint, w, l uintptr) uintptr {
 	return ret
 }
 
+func LookupIconIdFromDirectoryEx(mem unsafe.Pointer, icon bool, width, height int, flags uint) int {
+	ret, _, _ := lookupIconIdFromDirectoryEx.Call(
+		uintptr(mem),
+		uintptr(BoolToBOOL(icon)),
+		uintptr(width),
+		uintptr(height),
+		uintptr(flags),
+	)
+	return int(ret)
+}
+
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
 	var result HKEY
 	ret, _, _ := regCreateKeyEx.Call(
@@ -2255,6 +2290,16 @@ func SetWindowSubclass(window HWND, proc uintptr, id uintptr, refData uintptr) b
 		refData,
 	)
 	return ret != 0
+}
+
+func DefSubclassProc(window HWND, msg uint32, w, l uintptr) uintptr {
+	ret, _, _ := defSubclassProc.Call(
+		uintptr(window),
+		uintptr(msg),
+		w,
+		l,
+	)
+	return ret
 }
 
 // GetOpenFileName automatically sets the StructSize member of the OPENFILENAME.
