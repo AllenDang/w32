@@ -24,6 +24,7 @@ var (
 	version  = syscall.NewLazyDLL("version.dll")
 	winmm    = syscall.NewLazyDLL("winmm.dll")
 	dxva2    = syscall.NewLazyDLL("dxva2.dll")
+	msimg32  = syscall.NewLazyDLL("msimg32.dll")
 
 	registerClassEx               = user32.NewProc("RegisterClassExW")
 	loadIcon                      = user32.NewProc("LoadIconW")
@@ -411,6 +412,8 @@ var (
 	setMonitorBrightness                    = dxva2.NewProc("SetMonitorBrightness")
 	getNumberOfPhysicalMonitorsFromHMONITOR = dxva2.NewProc("GetNumberOfPhysicalMonitorsFromHMONITOR")
 	getPhysicalMonitorsFromHMONITOR         = dxva2.NewProc("GetPhysicalMonitorsFromHMONITOR")
+
+	alphaBlend = msimg32.NewProc("AlphaBlend")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -4025,4 +4028,25 @@ func MAKEWPARAM(low, high uint16) uintptr {
 
 func MAKELPARAM(low, high uint16) uintptr {
 	return MAKEWPARAM(low, high)
+}
+
+func AlphaBlend(
+	dest HDC, destX, destY, destW, destH int,
+	src HDC, srcX, srcY, srcW, srcH int,
+	f BLENDFUNC,
+) bool {
+	ret, _, _ := alphaBlend.Call(
+		uintptr(dest),
+		uintptr(destX),
+		uintptr(destY),
+		uintptr(destW),
+		uintptr(destH),
+		uintptr(src),
+		uintptr(srcX),
+		uintptr(srcY),
+		uintptr(srcW),
+		uintptr(srcH),
+		uintptr(*((*uintptr)(unsafe.Pointer(&f)))),
+	)
+	return ret != 0
 }

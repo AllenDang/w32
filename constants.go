@@ -3096,3 +3096,5 @@ const (
 	SC_TASKLIST     = 0xF130
 	SC_VSCROLL      = 0xF070
 )
+
+const AC_SRC_OVER = 0

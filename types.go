@@ -1131,3 +1131,10 @@ type DRAWITEMSTRUCT struct {
 	RcItem     RECT
 	ItemData   uintptr
 }
+
+type BLENDFUNC struct {
+	BlendOp             byte
+	BlendFlags          byte
+	SourceConstantAlpha byte
+	AlphaFormat         byte
+}
