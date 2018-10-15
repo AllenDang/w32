@@ -1031,7 +1031,12 @@ func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
 	return ret != 0
 }
 
+// DrawText does not support DT_MODIFYSTRING in this implementation.
 func DrawText(hDC HDC, text string, lpRect *RECT, uFormat uint) int {
+	// suppress DT_MODIFYSTRING because the given text is not a pointer and we
+	// do not return any text changes.
+	mod := uint(DT_MODIFYSTRING)
+	uFormat = uFormat & ^mod
 	count := -1 // because the text pointer is NULL terminated
 	ret, _, _ := drawText.Call(
 		uintptr(hDC),
