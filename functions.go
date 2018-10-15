@@ -1031,11 +1031,12 @@ func FillRect(hDC HDC, lprc *RECT, hbr HBRUSH) bool {
 	return ret != 0
 }
 
-func DrawText(hDC HDC, text string, uCount int, lpRect *RECT, uFormat uint) int {
+func DrawText(hDC HDC, text string, lpRect *RECT, uFormat uint) int {
+	count := -1 // because the text pointer is NULL terminated
 	ret, _, _ := drawText.Call(
 		uintptr(hDC),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(text))),
-		uintptr(uCount),
+		uintptr(count),
 		uintptr(unsafe.Pointer(lpRect)),
 		uintptr(uFormat),
 	)
