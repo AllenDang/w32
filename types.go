@@ -1059,9 +1059,16 @@ func (fi VS_FIXEDFILEINFO) FileDate() uint64 {
 }
 
 type ACCEL struct {
+	// Virt is a bit mask which may contain:
+	//   FALT, FCONTROL, FSHIFT: keys to be held for the accelerator
+	//   FVIRTKEY: means that Key is a virtual key code, if not set, Key is
+	//             interpreted as a character code
 	Virt byte
-	Key  uint16
-	Cmd  uint16
+	// Key can either be a virtual key code VK_... or a character
+	Key uint16
+	// Cmd is the value passed to WM_COMMAND or WM_SYSCOMMAND when the
+	// accelerator triggers
+	Cmd uint16
 }
 
 type PHYSICAL_MONITOR struct {
