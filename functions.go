@@ -93,6 +93,7 @@ var (
 	endDialog                     = user32.NewProc("EndDialog")
 	peekMessage                   = user32.NewProc("PeekMessageW")
 	createAcceleratorTable        = user32.NewProc("CreateAcceleratorTableW")
+	destroyAcceleratorTable       = user32.NewProc("DestroyAcceleratorTable")
 	translateAccelerator          = user32.NewProc("TranslateAcceleratorW")
 	setWindowPos                  = user32.NewProc("SetWindowPos")
 	fillRect                      = user32.NewProc("FillRect")
@@ -998,6 +999,11 @@ func CreateAcceleratorTable(acc []ACCEL) HACCEL {
 		uintptr(len(acc)),
 	)
 	return HACCEL(ret)
+}
+
+func DestroyAcceleratorTable(acc HACCEL) bool {
+	ret, _, _ := destroyAcceleratorTable.Call(uintptr(acc))
+	return ret != 0
 }
 
 func TranslateAccelerator(hwnd HWND, hAccTable HACCEL, lpMsg *MSG) bool {
