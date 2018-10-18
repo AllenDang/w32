@@ -196,6 +196,7 @@ var (
 	sendDlgItemMessage            = user32.NewProc("SendDlgItemMessageW")
 	lookupIconIdFromDirectoryEx   = user32.NewProc("LookupIconIdFromDirectoryEx")
 	setForegroundWindow           = user32.NewProc("SetForegroundWindow")
+	scrollWindow                  = user32.NewProc("ScrollWindow")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1886,6 +1887,17 @@ func LookupIconIdFromDirectoryEx(mem unsafe.Pointer, icon bool, width, height in
 
 func SetForegroundWindow(window HWND) bool {
 	ret, _, _ := setForegroundWindow.Call(uintptr(window))
+	return ret != 0
+}
+
+func ScrollWindow(window HWND, dx, dy int, r, clip *RECT) bool {
+	ret, _, _ := scrollWindow.Call(
+		uintptr(window),
+		uintptr(dx),
+		uintptr(dy),
+		uintptr(unsafe.Pointer(r)),
+		uintptr(unsafe.Pointer(clip)),
+	)
 	return ret != 0
 }
 
