@@ -565,6 +565,8 @@ type LVITEM struct {
 	IGroupId   int32
 	CColumns   uint32
 	PuColumns  uint32
+	PiColFmt   *int32
+	IGroup     int32
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb774754.aspx
