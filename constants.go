@@ -239,6 +239,96 @@ const (
 	CBN_SELENDCANCEL = 10
 )
 
+// List box message constants
+const (
+	LB_ADDSTRING           = 0xF180
+	LB_INSERTSTRING        = 0xF181
+	LB_DELETESTRING        = 0xF182
+	LB_SELITEMRANGEEX      = 0xF183
+	LB_RESETCONTENT        = 0xF184
+	LB_SETSEL              = 0xF185
+	LB_SETCURSEL           = 0xF186
+	LB_GETSEL              = 0xF187
+	LB_GETCURSEL           = 0xF188
+	LB_GETTEXT             = 0xF189
+	LB_GETTEXTLEN          = 0xF18A
+	LB_GETCOUNT            = 0xF18B
+	LB_SELECTSTRING        = 0xF18C
+	LB_DIR                 = 0xF18D
+	LB_GETTOPINDEX         = 0xF18E
+	LB_FINDSTRING          = 0xF18F
+	LB_GETSELCOUNT         = 0xF190
+	LB_GETSELITEMS         = 0xF191
+	LB_SETTABSTOPS         = 0xF192
+	LB_GETHORIZONTALEXTENT = 0xF193
+	LB_SETHORIZONTALEXTENT = 0xF194
+	LB_SETCOLUMNWIDTH      = 0xF195
+	LB_ADDFILE             = 0xF196
+	LB_SETTOPINDEX         = 0xF197
+	LB_GETITEMRECT         = 0xF198
+	LB_GETITEMDATA         = 0xF199
+	LB_SETITEMDATA         = 0xF19A
+	LB_SELITEMRANGE        = 0xF19B
+	LB_SETANCHORINDEX      = 0xF19C
+	LB_GETANCHORINDEX      = 0xF19D
+	LB_SETCARETINDEX       = 0xF19E
+	LB_GETCARETINDEX       = 0xF19F
+	LB_SETITEMHEIGHT       = 0xF1A0
+	LB_GETITEMHEIGHT       = 0xF1A1
+	LB_FINDSTRINGEXACT     = 0xF1A2
+	LB_SETLOCALE           = 0xF1A5
+	LB_GETLOCALE           = 0xF1A6
+	LB_SETCOUNT            = 0xF1A7
+	LB_INITSTORAGE         = 0xF1A8
+	LB_ITEMFROMPOINT       = 0xF1A9
+	LB_SETTEXT             = 0xF1AA
+	LB_GETCHECKMARK        = 0xF1AB
+	LB_SETCHECKMARK        = 0xF1AC
+	LB_GETITEMADDDATA      = 0xF1AD
+	LB_SETITEMADDDATA      = 0xF1AE
+)
+
+// List box styles
+const (
+	LBS_NOTIFY            = 0x0001
+	LBS_SORT              = 0x0002
+	LBS_NOREDRAW          = 0x0004
+	LBS_MULTIPLESEL       = 0x0008
+	LBS_OWNERDRAWFIXED    = 0x0010
+	LBS_OWNERDRAWVARIABLE = 0x0020
+	LBS_HASSTRINGS        = 0x0040
+	LBS_USETABSTOPS       = 0x0080
+	LBS_NOINTEGRALHEIGHT  = 0x0100
+	LBS_MULTICOLUMN       = 0x0200
+	LBS_WANTKEYBOARDINPUT = 0x0400
+	LBS_EXTENDEDSEL       = 0x0800
+	LBS_STANDARD          = LBS_NOTIFY | LBS_SORT | WS_VSCROLL | WS_BORDER
+	LBS_CHECKBOX          = 0x1000
+	LBS_USEICON           = 0x2000
+	LBS_AUTOCHECK         = 0x4000
+	LBS_AUTOCHECKBOX      = 0x5000
+	LBS_PRELOADED         = 0x4000
+	LBS_COMBOLBOX         = 0x8000
+)
+
+// List box notification messages
+const (
+	LBN_ERRSPACE       = (-2)
+	LBN_SELCHANGE      = 1
+	LBN_DBLCLK         = 2
+	LBN_SELCANCEL      = 3
+	LBN_SETFOCUS       = 4
+	LBN_KILLFOCUS      = 5
+	LBN_CLICKCHECKMARK = 6
+)
+
+// List box return values
+const (
+	LB_OKAY     = 0
+	LB_ERR      = (-1)
+	LB_ERRSPACE = (-2)
+)
+
 // Predefined brushes constants
 const (
 	COLOR_3DDKSHADOW              = 21
