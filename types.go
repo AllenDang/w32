@@ -545,6 +545,9 @@ type LVCOLUMN struct {
 	ISubItem   int32
 	IImage     int32
 	IOrder     int32
+	CxMin      int32
+	CxDefault  int32
+	CxIdeal    int32
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb774760.aspx
