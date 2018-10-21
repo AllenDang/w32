@@ -197,6 +197,7 @@ var (
 	lookupIconIdFromDirectoryEx   = user32.NewProc("LookupIconIdFromDirectoryEx")
 	setForegroundWindow           = user32.NewProc("SetForegroundWindow")
 	scrollWindow                  = user32.NewProc("ScrollWindow")
+	getFocus                      = user32.NewProc("GetFocus")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -1899,6 +1900,11 @@ func ScrollWindow(window HWND, dx, dy int, r, clip *RECT) bool {
 		uintptr(unsafe.Pointer(clip)),
 	)
 	return ret != 0
+}
+
+func GetFocus() HWND {
+	ret, _, _ := getFocus.Call()
+	return HWND(ret)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
