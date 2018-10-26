@@ -25,6 +25,7 @@ var (
 	winmm    = syscall.NewLazyDLL("winmm.dll")
 	dxva2    = syscall.NewLazyDLL("dxva2.dll")
 	msimg32  = syscall.NewLazyDLL("msimg32.dll")
+	mpr      = syscall.NewLazyDLL("mpr.dll")
 
 	registerClassEx               = user32.NewProc("RegisterClassExW")
 	loadIcon                      = user32.NewProc("LoadIconW")
@@ -417,6 +418,9 @@ var (
 	getPhysicalMonitorsFromHMONITOR         = dxva2.NewProc("GetPhysicalMonitorsFromHMONITOR")
 
 	alphaBlend = msimg32.NewProc("AlphaBlend")
+
+	wNetAddConnection2 = mpr.NewProc("WNetAddConnection2W")
+	wNetAddConnection3 = mpr.NewProc("WNetAddConnection3W")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -4079,4 +4083,33 @@ func AlphaBlend(
 		uintptr(*((*uintptr)(unsafe.Pointer(&f)))),
 	)
 	return ret != 0
+}
+
+func WNetAddConnection2(rsc *NETRESOURCE, pass, user string, flags uint32) uint32 {
+	var resource *netresource
+	if rsc != nil {
+		resource = rsc.toInternal()
+	}
+	ret, _, _ := wNetAddConnection2.Call(
+		uintptr(unsafe.Pointer(resource)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(pass))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(user))),
+		uintptr(flags),
+	)
+	return uint32(ret)
+}
+
+func WNetAddConnection3(owner HWND, rsc *NETRESOURCE, pass, user string, flags uint32) uint32 {
+	var resource *netresource
+	if rsc != nil {
+		resource = rsc.toInternal()
+	}
+	ret, _, _ := wNetAddConnection3.Call(
+		uintptr(owner),
+		uintptr(unsafe.Pointer(resource)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(pass))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(user))),
+		uintptr(flags),
+	)
+	return uint32(ret)
 }

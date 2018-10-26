@@ -5,6 +5,7 @@
 package w32
 
 import (
+	"syscall"
 	"unsafe"
 )
 
@@ -1149,4 +1150,39 @@ type BLENDFUNC struct {
 	BlendFlags          byte
 	SourceConstantAlpha byte
 	AlphaFormat         byte
+}
+
+type NETRESOURCE struct {
+	Scope       uint32
+	Type        uint32
+	DisplayType uint32
+	Usage       uint32
+	LocalName   string
+	RemoteName  string
+	Comment     string
+	Provider    string
+}
+
+func (n *NETRESOURCE) toInternal() *netresource {
+	return &netresource{
+		Scope:       n.Scope,
+		Type:        n.Type,
+		DisplayType: n.DisplayType,
+		Usage:       n.Usage,
+		LocalName:   syscall.StringToUTF16Ptr(n.LocalName),
+		RemoteName:  syscall.StringToUTF16Ptr(n.RemoteName),
+		Comment:     syscall.StringToUTF16Ptr(n.Comment),
+		Provider:    syscall.StringToUTF16Ptr(n.Provider),
+	}
+}
+
+type netresource struct {
+	Scope       uint32
+	Type        uint32
+	DisplayType uint32
+	Usage       uint32
+	LocalName   *uint16
+	RemoteName  *uint16
+	Comment     *uint16
+	Provider    *uint16
 }
