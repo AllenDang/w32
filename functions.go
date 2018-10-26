@@ -419,8 +419,9 @@ var (
 
 	alphaBlend = msimg32.NewProc("AlphaBlend")
 
-	wNetAddConnection2 = mpr.NewProc("WNetAddConnection2W")
-	wNetAddConnection3 = mpr.NewProc("WNetAddConnection3W")
+	wNetAddConnection2    = mpr.NewProc("WNetAddConnection2W")
+	wNetAddConnection3    = mpr.NewProc("WNetAddConnection3W")
+	wNetCancelConnection2 = mpr.NewProc("WNetCancelConnection2W")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -4110,6 +4111,15 @@ func WNetAddConnection3(owner HWND, rsc *NETRESOURCE, pass, user string, flags u
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(pass))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(user))),
 		uintptr(flags),
+	)
+	return uint32(ret)
+}
+
+func WNetCancelConnection2(name string, flags uint32, force bool) uint32 {
+	ret, _, _ := wNetCancelConnection2.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+		uintptr(flags),
+		uintptr(BoolToBOOL(force)),
 	)
 	return uint32(ret)
 }
