@@ -2355,7 +2355,11 @@ func GetOpenFileName(ofn *OPENFILENAME) bool {
 	return ret != 0
 }
 
+// GetSaveFileName automatically sets the StructSize member of the OPENFILENAME.
 func GetSaveFileName(ofn *OPENFILENAME) bool {
+	if ofn != nil {
+		ofn.StructSize = uint32(unsafe.Sizeof(*ofn))
+	}
 	ret, _, _ := getSaveFileName.Call(uintptr(unsafe.Pointer(ofn)))
 	return ret != 0
 }
