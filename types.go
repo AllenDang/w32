@@ -1164,16 +1164,25 @@ type NETRESOURCE struct {
 }
 
 func (n *NETRESOURCE) toInternal() *netresource {
-	return &netresource{
+	internal := &netresource{
 		Scope:       n.Scope,
 		Type:        n.Type,
 		DisplayType: n.DisplayType,
 		Usage:       n.Usage,
-		LocalName:   syscall.StringToUTF16Ptr(n.LocalName),
-		RemoteName:  syscall.StringToUTF16Ptr(n.RemoteName),
-		Comment:     syscall.StringToUTF16Ptr(n.Comment),
-		Provider:    syscall.StringToUTF16Ptr(n.Provider),
 	}
+	if n.LocalName != "" {
+		internal.LocalName = syscall.StringToUTF16Ptr(n.LocalName)
+	}
+	if n.RemoteName != "" {
+		internal.RemoteName = syscall.StringToUTF16Ptr(n.RemoteName)
+	}
+	if n.Comment != "" {
+		internal.Comment = syscall.StringToUTF16Ptr(n.Comment)
+	}
+	if n.Provider != "" {
+		internal.Provider = syscall.StringToUTF16Ptr(n.Provider)
+	}
+	return internal
 }
 
 type netresource struct {
