@@ -1195,3 +1195,11 @@ type netresource struct {
 	Comment     *uint16
 	Provider    *uint16
 }
+
+type NMLVODSTATECHANGE struct {
+	Hdr      NMHDR
+	From     int32
+	To       int32
+	NewState uint32
+	OldState uint32
+}
