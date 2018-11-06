@@ -199,6 +199,7 @@ var (
 	setForegroundWindow           = user32.NewProc("SetForegroundWindow")
 	scrollWindow                  = user32.NewProc("ScrollWindow")
 	getFocus                      = user32.NewProc("GetFocus")
+	printWindow                   = user32.NewProc("PrintWindow")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -366,6 +367,7 @@ var (
 	activateActCtx             = kernel32.NewProc("ActivateActCtx")
 	createActCtx               = kernel32.NewProc("CreateActCtxW")
 	getCurrentActCtx           = kernel32.NewProc("GetCurrentActCtx")
+	setErrorMode               = kernel32.NewProc("SetErrorMode")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -1910,6 +1912,15 @@ func ScrollWindow(window HWND, dx, dy int, r, clip *RECT) bool {
 func GetFocus() HWND {
 	ret, _, _ := getFocus.Call()
 	return HWND(ret)
+}
+
+func PrintWindow(w HWND, dc HDC, flags uint) bool {
+	ret, _, _ := printWindow.Call(
+		uintptr(w),
+		uintptr(dc),
+		uintptr(flags),
+	)
+	return ret != 0
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
@@ -3477,6 +3488,11 @@ func GetCurrentActCtx() (HANDLE, bool) {
 	var h HANDLE
 	ret, _, _ := getCurrentActCtx.Call(uintptr(unsafe.Pointer(&h)))
 	return h, ret != 0
+}
+
+func SetErrorMode(mode uint) uint {
+	ret, _, _ := setErrorMode.Call(uintptr(mode))
+	return uint(ret)
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
