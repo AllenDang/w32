@@ -368,6 +368,7 @@ var (
 	createActCtx               = kernel32.NewProc("CreateActCtxW")
 	getCurrentActCtx           = kernel32.NewProc("GetCurrentActCtx")
 	setErrorMode               = kernel32.NewProc("SetErrorMode")
+	createFile                 = kernel32.NewProc("CreateFileW")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -3493,6 +3494,27 @@ func GetCurrentActCtx() (HANDLE, bool) {
 func SetErrorMode(mode uint) uint {
 	ret, _, _ := setErrorMode.Call(uintptr(mode))
 	return uint(ret)
+}
+
+func CreateFile(
+	filename string,
+	access uint32,
+	shareMode uint32,
+	security *SECURITY_ATTRIBUTES,
+	disposition uint32,
+	flags uint32,
+	templateFile HANDLE,
+) HANDLE {
+	ret, _, _ := createFile.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(filename))),
+		uintptr(access),
+		uintptr(shareMode),
+		uintptr(unsafe.Pointer(security)),
+		uintptr(disposition),
+		uintptr(flags),
+		uintptr(templateFile),
+	)
+	return HANDLE(ret)
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {

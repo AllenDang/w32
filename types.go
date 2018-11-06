@@ -1203,3 +1203,9 @@ type NMLVODSTATECHANGE struct {
 	NewState uint32
 	OldState uint32
 }
+
+type SECURITY_ATTRIBUTES struct {
+	Length             uint32
+	SecurityDescriptor unsafe.Pointer
+	InheritHandle      uint32 // bool value
+}
