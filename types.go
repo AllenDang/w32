@@ -1209,3 +1209,10 @@ type SECURITY_ATTRIBUTES struct {
 	SecurityDescriptor unsafe.Pointer
 	InheritHandle      uint32 // bool value
 }
+
+type OVERLAPPED struct {
+	Internal     uintptr
+	InternalHigh uintptr
+	Pointer      uintptr
+	Event        HANDLE
+}
