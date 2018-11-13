@@ -3521,25 +3521,23 @@ func CreateFile(
 func DeviceIoControl(
 	dev HANDLE,
 	controlCode uint32,
-	inBuffer []byte,
-	outBuffer []byte,
+	inBuffer unsafe.Pointer,
+	inBufferSize uint32,
+	outBuffer unsafe.Pointer,
+	outBufferSize uint32,
 	overlapped *OVERLAPPED,
-) (bool, []byte) {
-	var outBufSize uint32
+) (outBufWrittenBytes uint32, ok bool) {
 	ret, _, _ := deviceIoControl.Call(
 		uintptr(dev),
 		uintptr(controlCode),
-		uintptr(unsafe.Pointer(&inBuffer[0])),
-		uintptr(len(inBuffer)),
-		uintptr(unsafe.Pointer(&outBuffer[0])),
-		uintptr(len(outBuffer)),
-		uintptr(unsafe.Pointer(&outBufSize)),
+		uintptr(inBuffer),
+		uintptr(inBufferSize),
+		uintptr(outBuffer),
+		uintptr(outBufferSize),
+		uintptr(unsafe.Pointer(&outBufWrittenBytes)),
 	)
-	max := uint32(len(outBuffer) - 1)
-	if outBufSize > max {
-		outBufSize = max
-	}
-	return ret != 0, outBuffer[:outBufSize]
+	ok = ret != 0
+	return
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {

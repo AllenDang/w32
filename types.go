@@ -1216,3 +1216,25 @@ type OVERLAPPED struct {
 	Pointer      uintptr
 	Event        HANDLE
 }
+
+type STORAGE_DEVICE_DESCRIPTOR struct {
+	Version               uint32
+	Size                  uint32
+	DeviceType            byte
+	DeviceTypeModifier    byte
+	RemovableMedia        byte // bool value
+	CommandQueueing       byte // bool value
+	VendorIdOffset        uint32
+	ProductIdOffset       uint32
+	ProductRevisionOffset uint32
+	SerialNumberOffset    uint32
+	BusType               uint32 // STORAGE_BUS_TYPE
+	RawPropertiesLength   uint32
+	RawDeviceProperties   [1]byte
+}
+
+type STORAGE_PROPERTY_QUERY struct {
+	PropertyId           uint32
+	QueryType            uint32
+	AdditionalParameters [1]byte
+}

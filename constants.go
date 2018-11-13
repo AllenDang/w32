@@ -3342,3 +3342,57 @@ const (
 	SECURITY_SQOS_PRESENT     = 0x00100000
 	SECURITY_VALID_SQOS_FLAGS = 0x001F0000
 )
+
+const INVALID_HANDLE_VALUE = ^HANDLE(0)
+
+// STORAGE_BUS_TYPE values
+const (
+	BusTypeUnknown = iota
+	BusTypeScsi
+	BusTypeAtapi
+	BusTypeAta
+	BusType1394
+	BusTypeSsa
+	BusTypeFibre
+	BusTypeUsb
+	BusTypeRAID
+	BusTypeiScsi
+	BusTypeSas
+	BusTypeSata
+	BusTypeSd
+	BusTypeMmc
+	BusTypeVirtual
+	BusTypeFileBackedVirtual
+	BusTypeSpaces
+	BusTypeNvme
+	BusTypeMax
+	BusTypeMaxReserved = 0x7F
+)
+
+// STORAGE_QUERY_TYPE values
+const (
+	PropertyStandardQuery = iota
+	PropertyExistsQuery
+	PropertyMaskQuery
+	PropertyQueryMaxDefined
+)
+
+// STORAGE_PROPERTY_ID values
+const (
+	StorageDeviceProperty = iota
+	StorageAdapterProperty
+	StorageDeviceIdProperty
+	StorageDeviceUniqueIdProperty
+	StorageDeviceWriteCacheProperty
+	StorageMiniportProperty
+	StorageAccessAlignmentProperty
+	StorageDeviceSeekPenaltyProperty
+	StorageDeviceTrimProperty
+	StorageDeviceWriteAggregationProperty
+	StorageDeviceDeviceTelemetryProperty
+	StorageDeviceLBProvisioningProperty
+	StorageDevicePowerProperty
+	StorageDeviceCopyOffloadProperty
+	StorageDeviceResiliencyProperty
+	StorageDeviceMediumProductType
+)
