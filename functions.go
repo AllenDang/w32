@@ -3535,6 +3535,7 @@ func DeviceIoControl(
 		uintptr(outBuffer),
 		uintptr(outBufferSize),
 		uintptr(unsafe.Pointer(&outBufWrittenBytes)),
+		uintptr(unsafe.Pointer(overlapped)),
 	)
 	ok = ret != 0
 	return
