@@ -42,6 +42,7 @@ var (
 	defDlgProc                    = user32.NewProc("DefDlgProcW")
 	postQuitMessage               = user32.NewProc("PostQuitMessage")
 	getMessage                    = user32.NewProc("GetMessageW")
+	getMessageTime                = user32.NewProc("GetMessageTime")
 	translateMessage              = user32.NewProc("TranslateMessage")
 	dispatchMessage               = user32.NewProc("DispatchMessageW")
 	sendMessage                   = user32.NewProc("SendMessageW")
@@ -586,6 +587,11 @@ func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
 		uintptr(msgFilterMin),
 		uintptr(msgFilterMax),
 	)
+	return int(ret)
+}
+
+func GetMessageTime() int {
+	ret, _, _ := getMessageTime.Call()
 	return int(ret)
 }
 
