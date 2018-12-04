@@ -3561,7 +3561,7 @@ func FindFirstStream(
 		0,
 	)
 	aHandle = HANDLE(ret)
-	ok = (aHandle != ERROR_HANDLE_EOF && aHandle != INVALID_HANDLE_VALUE)
+	ok = (aHandle != INVALID_HANDLE_VALUE)
 	return aHandle, ok
 }
 

@@ -3345,7 +3345,6 @@ const (
 )
 
 const INVALID_HANDLE_VALUE = ^HANDLE(0)
-const ERROR_HANDLE_EOF = ^HANDLE(38)
 
 // STORAGE_BUS_TYPE values
 const (
