@@ -3552,18 +3552,16 @@ func DeviceIoControl(
 
 func FindFirstStream(
 	lpFileName string,
-	infoLevel uint32,
 	lpFindStreamData *WIN32_FIND_STREAM_DATA,
-	flags DWORD,
 ) (aHandle HANDLE, ok bool) {
 	ret, _, _ := findFirstStream.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpFileName))),
-		uintptr(infoLevel),
+		FindStreamInfoStandard,
 		uintptr(unsafe.Pointer(lpFindStreamData)),
-		uintptr(flags),
+		0,
 	)
 	aHandle = HANDLE(ret)
-	ok = (aHandle != 0 && aHandle != ERROR_HANDLE_EOF && aHandle != INVALID_HANDLE_VALUE)
+	ok = (aHandle != ERROR_HANDLE_EOF && aHandle != INVALID_HANDLE_VALUE)
 	return aHandle, ok
 }
 
