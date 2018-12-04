@@ -3397,3 +3397,8 @@ const (
 	StorageDeviceResiliencyProperty
 	StorageDeviceMediumProductType
 )
+
+// STREAM_INFO_LEVELS
+const (
+	FindStreamInfoStandard = 0
+)

@@ -371,6 +371,9 @@ var (
 	setErrorMode               = kernel32.NewProc("SetErrorMode")
 	createFile                 = kernel32.NewProc("CreateFileW")
 	deviceIoControl            = kernel32.NewProc("DeviceIoControl")
+	findFirstStream            = kernel32.NewProc("FindFirstStreamW")
+	findNextStream             = kernel32.NewProc("FindNextStreamW")
+	findClose                  = kernel32.NewProc("FindClose")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -3545,6 +3548,41 @@ func DeviceIoControl(
 	)
 	ok = ret != 0
 	return
+}
+
+func FindFirstStream(
+	lpFileName string,
+	lpFindStreamData *WIN32_FIND_STREAM_DATA,
+) (aHandle HANDLE, ok bool) {
+	ret, _, _ := findFirstStream.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpFileName))),
+		FindStreamInfoStandard,
+		uintptr(unsafe.Pointer(lpFindStreamData)),
+		0,
+	)
+	aHandle = HANDLE(ret)
+	ok = (aHandle != INVALID_HANDLE_VALUE)
+	return aHandle, ok
+}
+
+func FindNextStream(
+	hFindStream HANDLE,
+	lpFindStreamData *WIN32_FIND_STREAM_DATA,
+) (ok bool) {
+	ret, _, _ := findNextStream.Call(
+		uintptr(hFindStream),
+		uintptr(unsafe.Pointer(lpFindStreamData)),
+	)
+	return ret != 0
+}
+
+func FindClose(
+	hFindFile HANDLE,
+) bool {
+	ret, _, _ := findClose.Call(
+		uintptr(hFindFile),
+	)
+	return (ret != 0)
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {

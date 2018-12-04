@@ -1238,3 +1238,9 @@ type STORAGE_PROPERTY_QUERY struct {
 	QueryType            uint32
 	AdditionalParameters [1]byte
 }
+
+// https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/ns-fileapi-_win32_find_stream_data
+type WIN32_FIND_STREAM_DATA struct {
+	Size int64
+	Name [MAX_PATH + 36]uint16
+}
