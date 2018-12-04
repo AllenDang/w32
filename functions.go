@@ -3550,39 +3550,30 @@ func DeviceIoControl(
 	return
 }
 
-func FindFirstStream(
-	lpFileName string,
-	lpFindStreamData *WIN32_FIND_STREAM_DATA,
-) (aHandle HANDLE, ok bool) {
+func FindFirstStream(filename string, data *WIN32_FIND_STREAM_DATA) (HANDLE, bool) {
 	ret, _, _ := findFirstStream.Call(
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(lpFileName))),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(filename))),
 		FindStreamInfoStandard,
-		uintptr(unsafe.Pointer(lpFindStreamData)),
+		uintptr(unsafe.Pointer(data)),
 		0,
 	)
-	aHandle = HANDLE(ret)
-	ok = (aHandle != INVALID_HANDLE_VALUE)
-	return aHandle, ok
+	h := HANDLE(ret)
+	return h, h != INVALID_HANDLE_VALUE
 }
 
-func FindNextStream(
-	hFindStream HANDLE,
-	lpFindStreamData *WIN32_FIND_STREAM_DATA,
-) (ok bool) {
+func FindNextStream(finder HANDLE, data *WIN32_FIND_STREAM_DATA) bool {
 	ret, _, _ := findNextStream.Call(
-		uintptr(hFindStream),
-		uintptr(unsafe.Pointer(lpFindStreamData)),
+		uintptr(finder),
+		uintptr(unsafe.Pointer(data)),
 	)
 	return ret != 0
 }
 
-func FindClose(
-	hFindFile HANDLE,
-) bool {
+func FindClose(finder HANDLE) bool {
 	ret, _, _ := findClose.Call(
-		uintptr(hFindFile),
+		uintptr(finder),
 	)
-	return (ret != 0)
+	return ret != 0
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
