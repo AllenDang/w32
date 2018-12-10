@@ -73,6 +73,7 @@ var (
 	releaseCapture                = user32.NewProc("ReleaseCapture")
 	getWindowThreadProcessId      = user32.NewProc("GetWindowThreadProcessId")
 	messageBox                    = user32.NewProc("MessageBoxW")
+	messageBoxIndirect            = user32.NewProc("MessageBoxIndirectW")
 	getSystemMetrics              = user32.NewProc("GetSystemMetrics")
 	copyRect                      = user32.NewProc("CopyRect")
 	equalRect                     = user32.NewProc("EqualRect")
@@ -830,6 +831,14 @@ func MessageBox(hwnd HWND, text, caption string, flags uint) int {
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
 		uintptr(flags),
 	)
+	return int(ret)
+}
+
+func MessageBoxIndirect(params *MSGBOXPARAMS) int {
+	if params != nil {
+		params.Size = uint32(unsafe.Sizeof(*params))
+	}
+	ret, _, _ := messageBoxIndirect.Call(uintptr(unsafe.Pointer(params)))
 	return int(ret)
 }
 

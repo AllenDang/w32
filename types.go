@@ -1244,3 +1244,16 @@ type WIN32_FIND_STREAM_DATA struct {
 	Size int64
 	Name [MAX_PATH + 36]uint16
 }
+
+type MSGBOXPARAMS struct {
+	Size           uint32
+	Owner          HWND
+	Instance       HINSTANCE
+	Text           *uint16
+	Caption        *uint16
+	Style          uint32
+	Icon           *uint16
+	ContextHelpId  *uint32
+	MsgBoxCallback uintptr
+	LanguageId     uint32
+}
