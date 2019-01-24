@@ -1661,6 +1661,9 @@ func GetMenuItemID(m HMENU, pos int) int {
 }
 
 func GetMenuItemInfo(m HMENU, item uint, byPos bool, info *MENUITEMINFO) bool {
+	if info != nil {
+		info.Size = uint32(unsafe.Sizeof(*info))
+	}
 	ret, _, _ := getMenuItemInfo.Call(
 		uintptr(m),
 		uintptr(item),
@@ -1846,6 +1849,9 @@ func SetMenuItemBitmaps(m HMENU, pos, flags uint, unchecked, checked HBITMAP) bo
 
 // SetMenuItemInfo changes information about a menu item.
 func SetMenuItemInfo(m HMENU, item uint, byPos bool, mii *MENUITEMINFO) bool {
+	if mii != nil {
+		mii.Size = uint32(unsafe.Sizeof(*mii))
+	}
 	ret, _, _ := setMenuItemInfo.Call(
 		uintptr(m),
 		uintptr(item),

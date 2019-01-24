@@ -3402,3 +3402,38 @@ const (
 const (
 	FindStreamInfoStandard = 0
 )
+
+const (
+	MIIM_STATE      = 1
+	MIIM_ID         = 2
+	MIIM_SUBMENU    = 4
+	MIIM_CHECKMARKS = 8
+	MIIM_TYPE       = 16
+	MIIM_DATA       = 32
+	MIIM_STRING     = 64
+	MIIM_BITMAP     = 128
+	MIIM_FTYPE      = 256
+)
+
+const (
+	MFT_BITMAP       = 4
+	MFT_MENUBARBREAK = 32
+	MFT_MENUBREAK    = 64
+	MFT_OWNERDRAW    = 256
+	MFT_RADIOCHECK   = 512
+	MFT_RIGHTJUSTIFY = 0x4000
+	MFT_SEPARATOR    = 0x800
+	MFT_RIGHTORDER   = 0x2000
+	MFT_STRING       = 0
+)
+
+const (
+	MFS_CHECKED   = 8
+	MFS_DEFAULT   = 4096
+	MFS_DISABLED  = 3
+	MFS_ENABLED   = 0
+	MFS_GRAYED    = 3
+	MFS_HILITE    = 128
+	MFS_UNCHECKED = 0
+	MFS_UNHILITE  = 0
+)
