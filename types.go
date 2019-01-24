@@ -1083,18 +1083,18 @@ type PHYSICAL_MONITOR struct {
 }
 
 type MENUITEMINFO struct {
-	Size              uint32
-	Mask              uint32
-	Type              uint32
-	State             uint32
-	ID                uint32
-	SubMenu           HMENU
-	BmpChecked        HBITMAP
-	BmpUnChecked      HBITMAP
-	ItemData          uintptr
-	TypeData          uintptr // UTF-16 string
-	ItemTextCharCount uint32
-	BmpItem           HBITMAP
+	Size         uint32
+	Mask         uint32
+	Type         uint32
+	State        uint32
+	ID           uint32
+	SubMenu      HMENU
+	BmpChecked   HBITMAP
+	BmpUnChecked HBITMAP
+	ItemData     uintptr
+	TypeData     uintptr // UTF-16 string
+	CCH          uint32
+	BmpItem      HBITMAP
 }
 
 type TPMPARAMS struct {
