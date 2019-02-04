@@ -375,6 +375,8 @@ var (
 	findFirstStream            = kernel32.NewProc("FindFirstStreamW")
 	findNextStream             = kernel32.NewProc("FindNextStreamW")
 	findClose                  = kernel32.NewProc("FindClose")
+	openMutex                  = kernel32.NewProc("OpenMutexW")
+	createMutex                = kernel32.NewProc("CreateMutexW")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -3347,8 +3349,7 @@ func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
 }
 
 func CloseHandle(object HANDLE) bool {
-	ret, _, _ := closeHandle.Call(
-		uintptr(object))
+	ret, _, _ := closeHandle.Call(uintptr(object))
 	return ret != 0
 }
 
@@ -3589,6 +3590,24 @@ func FindClose(finder HANDLE) bool {
 		uintptr(finder),
 	)
 	return ret != 0
+}
+
+func OpenMutex(desiredAccess uint32, inheritHandle bool, name string) HANDLE {
+	ret, _, _ := openMutex.Call(
+		uintptr(desiredAccess),
+		uintptr(BoolToBOOL(inheritHandle)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+	)
+	return HANDLE(ret)
+}
+
+func CreateMutex(attributes *SECURITY_ATTRIBUTES, initialOwner bool, name string) HANDLE {
+	ret, _, _ := createMutex.Call(
+		uintptr(unsafe.Pointer(attributes)),
+		uintptr(BoolToBOOL(initialOwner)),
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
+	)
+	return HANDLE(ret)
 }
 
 func CoInitializeEx(coInit uintptr) HRESULT {
