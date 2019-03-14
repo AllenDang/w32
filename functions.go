@@ -28,6 +28,7 @@ var (
 	mpr      = syscall.NewLazyDLL("mpr.dll")
 
 	registerClassEx               = user32.NewProc("RegisterClassExW")
+	unregisterClass               = user32.NewProc("UnregisterClassW")
 	loadIcon                      = user32.NewProc("LoadIconW")
 	loadCursor                    = user32.NewProc("LoadCursorW")
 	showWindow                    = user32.NewProc("ShowWindow")
@@ -442,6 +443,14 @@ func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
 	}
 	ret, _, _ := registerClassEx.Call(uintptr(unsafe.Pointer(wndClassEx)))
 	return ATOM(ret)
+}
+
+func UnregisterClass(className string, instance HINSTANCE) bool {
+	ret, _, _ := unregisterClass.Call(
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(className))),
+		uintptr(instance),
+	)
+	return ret != 0
 }
 
 func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
