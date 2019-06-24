@@ -402,14 +402,15 @@ var (
 
 	enumProcesses = psapi.NewProc("EnumProcesses")
 
-	sHBrowseForFolder   = shell32.NewProc("SHBrowseForFolderW")
-	sHGetPathFromIDList = shell32.NewProc("SHGetPathFromIDListW")
-	dragAcceptFiles     = shell32.NewProc("DragAcceptFiles")
-	dragQueryFile       = shell32.NewProc("DragQueryFileW")
-	dragQueryPoint      = shell32.NewProc("DragQueryPoint")
-	dragFinish          = shell32.NewProc("DragFinish")
-	shellExecute        = shell32.NewProc("ShellExecuteW")
-	extractIcon         = shell32.NewProc("ExtractIconW")
+	sHBrowseForFolder      = shell32.NewProc("SHBrowseForFolderW")
+	sHGetPathFromIDList    = shell32.NewProc("SHGetPathFromIDListW")
+	shGetSpecialFolderPath = shell32.NewProc("SHGetSpecialFolderPathW")
+	dragAcceptFiles        = shell32.NewProc("DragAcceptFiles")
+	dragQueryFile          = shell32.NewProc("DragQueryFileW")
+	dragQueryPoint         = shell32.NewProc("DragQueryPoint")
+	dragFinish             = shell32.NewProc("DragFinish")
+	shellExecute           = shell32.NewProc("ShellExecuteW")
+	extractIcon            = shell32.NewProc("ExtractIconW")
 
 	gdipCreateBitmapFromFile     = gdiplus.NewProc("GdipCreateBitmapFromFile")
 	gdipCreateBitmapFromHBITMAP  = gdiplus.NewProc("GdipCreateBitmapFromHBITMAP")
@@ -3783,6 +3784,17 @@ func SHGetPathFromIDList(idl uintptr) string {
 		uintptr(unsafe.Pointer(&buf[0])),
 	)
 	return syscall.UTF16ToString(buf)
+}
+
+func SHGetSpecialFolderPath(window HWND, id int, create bool) (string, bool) {
+	var buf [MAX_PATH]uint16
+	ret, _, _ := shGetSpecialFolderPath.Call(
+		uintptr(window),
+		uintptr(unsafe.Pointer(&buf[0])),
+		uintptr(id),
+		uintptr(BoolToBOOL(create)),
+	)
+	return syscall.UTF16ToString(buf[:]), ret != 0
 }
 
 func DragAcceptFiles(hwnd HWND, accept bool) {
