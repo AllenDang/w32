@@ -3437,3 +3437,247 @@ const (
 	MFS_UNCHECKED = 0
 	MFS_UNHILITE  = 0
 )
+
+const (
+	// DEVICE_NOTIFY_WINDOW_HANDLE
+	// Notifications are sent using WM_POWERBROADCAST messages with a wParam
+	// parameter of PBT_POWERSETTINGCHANGE.
+	DEVICE_NOTIFY_WINDOW_HANDLE = 0
+
+	// DEVICE_NOTIFY_SERVICE_HANDLE
+	// Notifications are sent to the HandlerEx callback function with a
+	// dwControl parameter of SERVICE_CONTROL_POWEREVENT and a dwEventType of
+	// PBT_POWERSETTINGCHANGE.
+	DEVICE_NOTIFY_SERVICE_HANDLE = 1
+)
+
+// Power setting GUIDs identify power change events. This topic lists power
+// setting GUIDs for notifications that are most useful to applications. An
+// application should register for each power change event that might impact its
+// behavior. Notification is sent each time a setting changes, through
+// WM_POWERBROADCAST.
+var (
+	// GUID_ACDC_POWER_SOURCE
+	//
+	// The system power source has changed. The Data member is a uint32 with
+	// values from the SYSTEM_POWER_CONDITION enumeration that indicates the
+	// current power source.
+	//
+	// PoAc (0) - The computer is powered by an AC power source (or similar,
+	// such as a laptop powered by a 12V automotive adapter).
+	//
+	// PoDc (1) - The computer is powered by an onboard battery power source.
+	//
+	// PoHot (2) - The computer is powered by a short-term power source such as
+	// a UPS device.
+	GUID_ACDC_POWER_SOURCE = &GUID{0x5d3e9a59, 0xe9D5, 0x4b00, [8]byte{0xa6, 0xbd, 0xff, 0x34, 0xff, 0x51, 0x65, 0x48}}
+
+	// GUID_BATTERY_PERCENTAGE_REMAINING
+	//
+	// The remaining battery capacity has changed. The granularity varies from
+	// system to system but the finest granularity is 1 percent. The Data member
+	// is a uint32 that indicates the current battery capacity remaining as a
+	// percentage from 0 through 100.
+	GUID_BATTERY_PERCENTAGE_REMAINING = &GUID{0xa7ad8041, 0xb45a, 0x4cae, [8]byte{0x87, 0xa3, 0xee, 0xcb, 0xb4, 0x68, 0xa9, 0xe1}}
+
+	// GUID_CONSOLE_DISPLAY_STATE
+	//
+	// The current monitor's display state has changed.
+	//
+	// Windows 7, Windows Server 2008 R2, Windows Vista and Windows Server 2008:
+	// This notification is available starting with Windows 8 and Windows Server
+	// 2012.
+	//
+	// The Data member is a uint32 with one of the following values.
+	//
+	// 0x0 - The display is off.
+	//
+	// 0x1 - The display is on.
+	//
+	// 0x2 - The display is dimmed.
+	GUID_CONSOLE_DISPLAY_STATE = &GUID{0x6fe69556, 0x704a, 0x47a0, [8]byte{0x8f, 0x24, 0xc2, 0x8d, 0x93, 0x6f, 0xda, 0x47}}
+
+	// GUID_GLOBAL_USER_PRESENCE
+	//
+	// The user status associated with any session has changed. This represents
+	// the combined status of user presence across all local and remote sessions
+	// on the system.
+	//
+	// This notification is sent only to services and other programs running in
+	// session 0. User-mode applications should register for
+	// GUID_SESSION_USER_PRESENCE instead.
+	//
+	// Windows 7, Windows Server 2008 R2, Windows Vista and Windows Server 2008:
+	// This notification is available starting with Windows 8 and Windows Server
+	// 2012.
+	//
+	// The Data member is a DWORD with one of the following values.
+	//
+	// PowerUserPresent (0) - The user is present in any local or remote session
+	// on the system.
+	//
+	// PowerUserInactive (2) - The user is not present in any local or remote
+	// session on the system.
+	GUID_GLOBAL_USER_PRESENCE = &GUID{0x786E8A1D, 0xB427, 0x4344, [8]byte{0x92, 0x07, 0x09, 0xE7, 0x0B, 0xDC, 0xBE, 0xA9}}
+
+	// GUID_IDLE_BACKGROUND_TASK
+	//
+	// The system is busy. This indicates that the system will not be moving
+	// into an idle state in the near future and that the current time is a good
+	// time for components to perform background or idle tasks that would
+	// otherwise prevent the computer from entering an idle state.
+	//
+	// There is no notification when the system is able to move into an idle
+	// state. The idle background task notification does not indicate whether a
+	// user is present at the computer. The Data member has no information and
+	// can be ignored.
+	GUID_IDLE_BACKGROUND_TASK = &GUID{0x515c31d8, 0xf734, 0x163d, [8]byte{0xa0, 0xfd, 0x11, 0xa0, 0x8c, 0x91, 0xe8, 0xf1}}
+
+	// GUID_MONITOR_POWER_ON
+	//
+	// The primary system monitor has been powered on or off. This notification
+	// is useful for components that actively render content to the display
+	// device, such as media visualization. These applications should register
+	// for this notification and stop rendering graphics content when the
+	// monitor is off to reduce system power consumption. The Data member is a
+	// DWORD that indicates the current monitor state.
+	//
+	// 0x0 - The monitor is off.
+	//
+	// 0x1 - The monitor is on.
+	//
+	// Windows 8 and Windows Server 2012: New applications should use
+	// GUID_CONSOLE_DISPLAY_STATE instead of this notification.
+	GUID_MONITOR_POWER_ON = &GUID{0x02731015, 0x4510, 0x4526, [8]byte{0x99, 0xe6, 0xe5, 0xa1, 0x7e, 0xbd, 0x1a, 0xea}}
+
+	// GUID_POWER_SAVING_STATUS
+	//
+	// Battery saver has been turned off or on in response to changing power
+	// conditions. This notification is useful for components that participate
+	// in energy conservation. These applications should register for this
+	// notification and save power when battery saver is on.
+	//
+	// The Data member is a DWORD that indicates battery saver state.
+	//
+	// 0x0 - Battery saver is off.
+	//
+	// 0x1 - Battery saver is on. Save energy where possible.
+	//
+	// For general information about battery saver, see battery saver (in the
+	// hardware component guidelines).
+	GUID_POWER_SAVING_STATUS = &GUID{0xE00958C0, 0xC213, 0x4ACE, [8]byte{0xAC, 0x77, 0xFE, 0xCC, 0xED, 0x2E, 0xEE, 0xA5}}
+
+	// GUID_POWERSCHEME_PERSONALITY
+	//
+	// The active power scheme personality has changed. All power schemes map to
+	// one of these personalities. The Data member is a GUID that indicates the
+	// new active power scheme personality (GUID_MIN_POWER_SAVINGS,
+	// GUID_MAX_POWER_SAVINGS or GUID_TYPICAL_POWER_SAVINGS).
+	GUID_POWERSCHEME_PERSONALITY = &GUID{0x245d8541, 0x3943, 0x4422, [8]byte{0xb0, 0x25, 0x13, 0xA7, 0x84, 0xF6, 0x79, 0xB7}}
+
+	// GUID_MIN_POWER_SAVINGS
+	//
+	// High Performance - The scheme is designed to deliver maximum performance
+	// at the expense of power consumption savings.
+	GUID_MIN_POWER_SAVINGS = &GUID{0x8c5e7fda, 0xe8bf, 0x4a96, [8]byte{0x9a, 0x85, 0xa6, 0xe2, 0x3a, 0x8c, 0x63, 0x5c}}
+
+	// GUID_MAX_POWER_SAVINGS
+	//
+	// Power Saver - The scheme is designed to deliver maximum power consumption
+	// savings at the expense of system performance and responsiveness.
+	GUID_MAX_POWER_SAVINGS = &GUID{0xa1841308, 0x3541, 0x4fab, [8]byte{0xbc, 0x81, 0xf7, 0x15, 0x56, 0xf2, 0x0b, 0x4a}}
+
+	// GUID_TYPICAL_POWER_SAVINGS
+	//
+	// Automatic - The scheme is designed to automatically balance performance
+	// and power consumption savings.
+	GUID_TYPICAL_POWER_SAVINGS = &GUID{0x381b4222, 0xf694, 0x41f0, [8]byte{0x96, 0x85, 0xff, 0x5b, 0xb2, 0x60, 0xdf, 0x2e}}
+
+	// GUID_SESSION_DISPLAY_STATUS
+	//
+	// The display associated with the application's session has been powered on
+	// or off.
+	//
+	// Windows 7, Windows Server 2008 R2, Windows Vista and Windows Server 2008:
+	// This notification is available starting with Windows 8 and Windows Server
+	// 2012.
+	//
+	// This notification is sent only to user-mode applications. Services and
+	// other programs running in session 0 do not receive this notification. The
+	// Data member is a DWORD with one of the following values.
+	//
+	// 0x0 - The display is off.
+	//
+	// 0x1 - The display is on.
+	//
+	// 0x2 - The display is dimmed.
+	GUID_SESSION_DISPLAY_STATUS = &GUID{0x2B84C20E, 0xAD23, 0x4ddf, [8]byte{0x93, 0xDB, 0x05, 0xFF, 0xBD, 0x7E, 0xFC, 0xA5}}
+
+	// GUID_SESSION_USER_PRESENCE
+	//
+	// The user status associated with the application's session has changed.
+	//
+	// Windows 7, Windows Server 2008 R2, Windows Vista and Windows Server 2008:
+	// This notification is available starting with Windows 8 and Windows Server
+	// 2012.
+	//
+	// This notification is sent only to user-mode applications running in an
+	// interactive session. Services and other programs running in session 0
+	// should register for GUID_GLOBAL_USER_PRESENCE. The Data member is a DWORD
+	// with one of the following values.
+	//
+	// PowerUserPresent (0) - The user is providing input to the session.
+	//
+	// PowerUserInactive (2) - The user activity timeout has elapsed with no
+	// interaction from the user.
+	//
+	// NOTE All applications that run in an interactive user-mode session should
+	// use this setting. When kernel mode applications register for monitor
+	// status they should use GUID_CONSOLE_DISPLAY_STATUS instead.
+	GUID_SESSION_USER_PRESENCE = &GUID{0x3C0F4548, 0xC03F, 0x4c4d, [8]byte{0xB9, 0xF2, 0x23, 0x7E, 0xDE, 0x68, 0x63, 0x76}}
+
+	// GUID_SYSTEM_AWAYMODE
+	//
+	// The system is entering or exiting away mode. The Data member is a DWORD
+	// that indicates the current away mode state.
+	//
+	// 0x0 - The computer is exiting away mode.
+	//
+	// 0x1 - The computer is entering away mode.
+	GUID_SYSTEM_AWAYMODE = &GUID{0x98a7f580, 0x01f7, 0x48aa, [8]byte{0x9c, 0x0f, 0x44, 0x35, 0x2c, 0x29, 0xe5, 0xC0}}
+)
+
+const (
+	// Power status has changed.
+	PBT_APMPOWERSTATUSCHANGE = 0x000A
+
+	// Operation is resuming automatically from a low-power state. This message
+	// is sent every time the system resumes.
+	PBT_APMRESUMEAUTOMATIC = 0x0012
+
+	// Operation is resuming from a low-power state. This message is sent after
+	// PBT_APMRESUMEAUTOMATIC if the resume is triggered by user input, such as
+	// pressing a key.
+	PBT_APMRESUMESUSPEND = 0x0007
+
+	// System is suspending operation.
+	PBT_APMSUSPEND = 0x0004
+
+	// A power setting change event has been received.
+	PBT_POWERSETTINGCHANGE = 0x8013
+)
+
+// SYSTEM_POWER_CONDITION enumeration
+const (
+	// PoAc: the computer is powered by an AC power source (or similar, such as
+	// a laptop powered by a 12V automotive adapter).
+	PoAc = iota
+	// PoDc: the system is receiving power from built-in batteries.
+	PoDc
+	// PoHot: the computer is powered by a short-term power source such as a UPS
+	// device.
+	PoHot
+	// PoConditionMaximum: values equal to or greater than this value indicate
+	// an out of range value.
+	PoConditionMaximum
+)

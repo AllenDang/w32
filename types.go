@@ -1257,3 +1257,9 @@ type MSGBOXPARAMS struct {
 	MsgBoxCallback uintptr
 	LanguageId     uint32
 }
+
+type POWERBROADCAST_SETTING struct {
+	PowerSetting GUID
+	DataLength   uint32
+	Data         [1]byte
+}
