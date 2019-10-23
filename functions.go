@@ -68,6 +68,7 @@ var (
 	isWindowVisible                  = user32.NewProc("IsWindowVisible")
 	setFocus                         = user32.NewProc("SetFocus")
 	invalidateRect                   = user32.NewProc("InvalidateRect")
+	validateRect                     = user32.NewProc("ValidateRect")
 	getClientRect                    = user32.NewProc("GetClientRect")
 	getDC                            = user32.NewProc("GetDC")
 	releaseDC                        = user32.NewProc("ReleaseDC")
@@ -801,6 +802,14 @@ func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
 		uintptr(hwnd),
 		uintptr(unsafe.Pointer(rect)),
 		uintptr(BoolToBOOL(erase)),
+	)
+	return ret != 0
+}
+
+func ValidateRect(hwnd HWND, rect *RECT) bool {
+	ret, _, _ := validateRect.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(rect)),
 	)
 	return ret != 0
 }
