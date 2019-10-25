@@ -121,6 +121,7 @@ var (
 	procSetTimer                      = moduser32.NewProc("SetTimer")
 	procKillTimer                     = moduser32.NewProc("KillTimer")
 	procRedrawWindow                  = moduser32.NewProc("RedrawWindow")
+	procGetForegroundWindow           = moduser32.NewProc("GetForegroundWindow")
 )
 
 func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
@@ -1037,10 +1038,15 @@ func RedrawWindow(hWnd HWND, lpRect *RECT, hrgnUpdate HRGN, flag uint32) {
 		uintptr(hWnd),
 		uintptr(unsafe.Pointer(lpRect)),
 		uintptr(hrgnUpdate),
-		flag,
+		uintptr(flag),
 	)
 	if ret!=0{
 		panic("RedrawWindow fail")
 	}
 	return
+}
+
+func GetForegroundWindow() HWND {
+	ret,_,_ := procGetForegroundWindow.Call()
+	return HWND(ret)
 }
