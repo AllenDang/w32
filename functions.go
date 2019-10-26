@@ -126,6 +126,7 @@ var (
 	setCursorPos                     = user32.NewProc("SetCursorPos")
 	setCursor                        = user32.NewProc("SetCursor")
 	createIcon                       = user32.NewProc("CreateIcon")
+	createIconFromResource           = user32.NewProc("CreateIconFromResource")
 	createIconFromResourceEx         = user32.NewProc("CreateIconFromResourceEx")
 	destroyIcon                      = user32.NewProc("DestroyIcon")
 	monitorFromPoint                 = user32.NewProc("MonitorFromPoint")
@@ -1265,6 +1266,21 @@ func CreateIcon(instance HINSTANCE, nWidth, nHeight int, cPlanes, cBitsPerPixel 
 		uintptr(cBitsPerPixel),
 		uintptr(unsafe.Pointer(ANDbits)),
 		uintptr(unsafe.Pointer(XORbits)),
+	)
+	return HICON(ret)
+}
+
+func CreateIconFromResource(
+	mem unsafe.Pointer,
+	memSize uint32,
+	icon bool,
+	version uint32,
+) HICON {
+	ret, _, _ := createIconFromResourceEx.Call(
+		uintptr(mem),
+		uintptr(memSize),
+		uintptr(BoolToBOOL(icon)),
+		uintptr(version),
 	)
 	return HICON(ret)
 }
