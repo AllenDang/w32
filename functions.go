@@ -1564,9 +1564,12 @@ func GetWindowDC(window HWND) HDC {
 	return HDC(ret)
 }
 
-func EnumWindows(callback func(window HWND)) bool {
-	f := syscall.NewCallback(func(w, _ uintptr) {
-		callback(HWND(w))
+func EnumWindows(callback func(window HWND) bool) bool {
+	f := syscall.NewCallback(func(w, _ uintptr) uintptr {
+		if callback(HWND(w)) {
+			return 1
+		}
+		return 0
 	})
 	ret, _, _ := enumWindows.Call(f, 0)
 	return ret != 0
