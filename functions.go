@@ -157,6 +157,7 @@ var (
 	getCaretBlinkTime                = user32.NewProc("GetCaretBlinkTime")
 	getWindowDC                      = user32.NewProc("GetWindowDC")
 	enumWindows                      = user32.NewProc("EnumWindows")
+	enumChildWindows                 = user32.NewProc("EnumChildWindows")
 	getTopWindow                     = user32.NewProc("GetTopWindow")
 	getWindow                        = user32.NewProc("GetWindow")
 	getKeyState                      = user32.NewProc("GetKeyState")
@@ -1572,6 +1573,17 @@ func EnumWindows(callback func(window HWND) bool) bool {
 		return 0
 	})
 	ret, _, _ := enumWindows.Call(f, 0)
+	return ret != 0
+}
+
+func EnumChildWindows(parent HWND, callback func(window HWND) bool) bool {
+	f := syscall.NewCallback(func(w, _ uintptr) uintptr {
+		if callback(HWND(w)) {
+			return 1
+		}
+		return 0
+	})
+	ret, _, _ := enumChildWindows.Call(uintptr(parent), f, 0)
 	return ret != 0
 }
 
