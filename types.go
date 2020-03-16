@@ -1263,3 +1263,17 @@ type POWERBROADCAST_SETTING struct {
 	DataLength   uint32
 	Data         [1]byte
 }
+
+type RTL_OSVERSIONINFOEXW struct {
+	OSVersionInfoSize uint32
+	MajorVersion      uint32
+	MinorVersion      uint32
+	BuildNumber       uint32
+	PlatformId        uint32
+	CSDVersion        [128]uint16
+	ServicePackMajor  uint16
+	ServicePackMinor  uint16
+	SuiteMask         uint16
+	ProductType       byte
+	Reserved          byte
+}
