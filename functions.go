@@ -462,6 +462,14 @@ func UnregisterClass(className string, instance HINSTANCE) bool {
 	return ret != 0
 }
 
+func UnregisterClassAtom(atom ATOM, instance HINSTANCE) bool {
+	ret, _, _ := unregisterClass.Call(
+		uintptr(atom),
+		uintptr(instance),
+	)
+	return ret != 0
+}
+
 func GetClassInfoEx(inst HINSTANCE, className string) (c WNDCLASSEX, found bool) {
 	ret, _, _ := getClassInfoEx.Call(
 		uintptr(inst),
