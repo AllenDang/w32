@@ -1450,7 +1450,7 @@ func SetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
 
 func ShowCursor(show bool) int {
 	ret, _, _ := showCursor.Call(uintptr(BoolToBOOL(show)))
-	return int(ret)
+	return int(int32(ret))
 }
 
 func LoadImage(
