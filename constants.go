@@ -2668,6 +2668,12 @@ const (
 	DWMWA_LAST
 )
 
+const (
+	DWM_CLOAKED_APP       = 1
+	DWM_CLOAKED_SHELL     = 2
+	DWM_CLOAKED_INHERITED = 4
+)
+
 // enum-lite implementation for the following constant structure
 type GESTURE_TYPE int32
 

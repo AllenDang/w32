@@ -1,6 +1,7 @@
 package w32
 
 import (
+	"errors"
 	"syscall"
 	"unicode/utf16"
 	"unsafe"
@@ -16,7 +17,7 @@ type IUnknown struct {
 	lpVtbl *pIUnknownVtbl
 }
 
-func (u *IUnknown) QueryInterface(id *GUID) *IDispatch {
+func (u *IUnknown) QueryInterface(id *GUID) (*IDispatch, HRESULT) {
 	return ComQueryInterface(u, id)
 }
 
@@ -42,7 +43,7 @@ type IDispatch struct {
 	lpVtbl *pIDispatchVtbl
 }
 
-func (d *IDispatch) QueryInterface(id *GUID) *IDispatch {
+func (d *IDispatch) QueryInterface(id *GUID) (*IDispatch, HRESULT) {
 	return ComQueryInterface((*IUnknown)(unsafe.Pointer(d)), id)
 }
 
@@ -54,11 +55,11 @@ func (d *IDispatch) Release() int32 {
 	return ComRelease((*IUnknown)(unsafe.Pointer(d)))
 }
 
-func (d *IDispatch) GetIDsOfName(names []string) []int32 {
+func (d *IDispatch) GetIDsOfName(names []string) ([]int32, HRESULT) {
 	return ComGetIDsOfName(d, names)
 }
 
-func (d *IDispatch) Invoke(dispid int32, dispatch int16, params ...interface{}) *VARIANT {
+func (d *IDispatch) Invoke(dispid int32, dispatch int16, params ...interface{}) (*VARIANT, error) {
 	return ComInvoke(d, dispid, dispatch, params...)
 }
 
@@ -72,7 +73,7 @@ type IStream struct {
 	lpVtbl *pIStreamVtbl
 }
 
-func (s *IStream) QueryInterface(id *GUID) *IDispatch {
+func (s *IStream) QueryInterface(id *GUID) (*IDispatch, HRESULT) {
 	return ComQueryInterface((*IUnknown)(unsafe.Pointer(s)), id)
 }
 
@@ -100,19 +101,17 @@ func ComRelease(unknown *IUnknown) int32 {
 	return int32(ret)
 }
 
-func ComQueryInterface(unknown *IUnknown, id *GUID) *IDispatch {
+func ComQueryInterface(unknown *IUnknown, id *GUID) (*IDispatch, HRESULT) {
 	var disp *IDispatch
 	hr, _, _ := syscall.Syscall(unknown.lpVtbl.queryInterface, 3,
 		uintptr(unsafe.Pointer(unknown)),
 		uintptr(unsafe.Pointer(id)),
-		uintptr(unsafe.Pointer(&disp)))
-	if hr != 0 {
-		panic("Invoke QieryInterface error.")
-	}
-	return disp
+		uintptr(unsafe.Pointer(&disp)),
+	)
+	return disp, HRESULT(hr)
 }
 
-func ComGetIDsOfName(disp *IDispatch, names []string) []int32 {
+func ComGetIDsOfName(disp *IDispatch, names []string) ([]int32, HRESULT) {
 	wnames := make([]*uint16, len(names))
 	dispid := make([]int32, len(names))
 	for i := 0; i < len(names); i++ {
@@ -124,14 +123,12 @@ func ComGetIDsOfName(disp *IDispatch, names []string) []int32 {
 		uintptr(unsafe.Pointer(&wnames[0])),
 		uintptr(len(names)),
 		uintptr(GetUserDefaultLCID()),
-		uintptr(unsafe.Pointer(&dispid[0])))
-	if hr != 0 {
-		panic("Invoke GetIDsOfName error.")
-	}
-	return dispid
+		uintptr(unsafe.Pointer(&dispid[0])),
+	)
+	return dispid, HRESULT(hr)
 }
 
-func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interface{}) (result *VARIANT) {
+func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interface{}) (result *VARIANT, err error) {
 	var dispparams DISPPARAMS
 
 	if dispatch&DISPATCH_PROPERTYPUT != 0 {
@@ -203,7 +200,7 @@ func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interfac
 			case *VARIANT:
 				vargs[n] = VARIANT{VT_VARIANT | VT_BYREF, 0, 0, 0, int64(uintptr(unsafe.Pointer(v.(*VARIANT))))}
 			default:
-				panic("unknown type")
+				return nil, errors.New("w32.ComInvoke: unknown variant type")
 			}
 		}
 		dispparams.Rgvarg = uintptr(unsafe.Pointer(&vargs[0]))
@@ -226,7 +223,7 @@ func ComInvoke(disp *IDispatch, dispid int32, dispatch int16, params ...interfac
 	if hr != 0 {
 		if excepInfo.BstrDescription != nil {
 			bs := UTF16PtrToString(excepInfo.BstrDescription)
-			panic(bs)
+			return nil, errors.New(bs)
 		}
 	}
 	for _, varg := range vargs {

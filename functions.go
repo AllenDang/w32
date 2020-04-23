@@ -2363,14 +2363,11 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 	return nil
 }
 
-func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_STATUS) bool {
-	if lpServiceStatus == nil {
-		panic("ControlService: lpServiceStatus cannot be nil")
-	}
+func ControlService(service HANDLE, control uint32, serviceStatus *SERVICE_STATUS) bool {
 	ret, _, _ := controlService.Call(
-		uintptr(hService),
-		uintptr(dwControl),
-		uintptr(unsafe.Pointer(lpServiceStatus)),
+		uintptr(service),
+		uintptr(control),
+		uintptr(unsafe.Pointer(serviceStatus)),
 	)
 	return ret != 0
 }
@@ -2557,33 +2554,50 @@ func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGener
 	return HRESULT(ret)
 }
 
-// TODO: verify handling of variable arguments
-func DwmGetWindowAttribute(hWnd HWND, dwAttribute uint32) (pAttribute interface{}, result HRESULT) {
-	var pvAttribute, pvAttrSize uintptr
-	switch dwAttribute {
-	case DWMWA_NCRENDERING_ENABLED:
-		v := new(BOOL)
-		pAttribute = v
-		pvAttribute = uintptr(unsafe.Pointer(v))
-		pvAttrSize = unsafe.Sizeof(*v)
-	case DWMWA_CAPTION_BUTTON_BOUNDS, DWMWA_EXTENDED_FRAME_BOUNDS:
-		v := new(RECT)
-		pAttribute = v
-		pvAttribute = uintptr(unsafe.Pointer(v))
-		pvAttrSize = unsafe.Sizeof(*v)
-	case DWMWA_CLOAKED:
-		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not currently supported.", dwAttribute))
-	default:
-		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not valid.", dwAttribute))
-	}
-
+func DwmGetWindowAttributeNCRENDERING_ENABLED(window HWND) (ok, enabled bool) {
+	var b uint32
 	ret, _, _ := dwmGetWindowAttribute.Call(
-		uintptr(hWnd),
-		uintptr(dwAttribute),
-		pvAttribute,
-		pvAttrSize,
+		uintptr(window),
+		uintptr(DWMWA_NCRENDERING_ENABLED),
+		uintptr(unsafe.Pointer(&b)),
+		4, // size of uint32
 	)
-	result = HRESULT(ret)
+	ok = ret == S_OK
+	enabled = b != 0
+	return
+}
+
+func DwmGetWindowAttributeCAPTION_BUTTON_BOUNDS(window HWND) (ok bool, r RECT) {
+	ret, _, _ := dwmGetWindowAttribute.Call(
+		uintptr(window),
+		uintptr(DWMWA_CAPTION_BUTTON_BOUNDS),
+		uintptr(unsafe.Pointer(&r)),
+		16, // size of RECT
+	)
+	ok = ret == S_OK
+	return
+}
+
+func DwmGetWindowAttributeEXTENDED_FRAME_BOUNDS(window HWND) (ok bool, r RECT) {
+	ret, _, _ := dwmGetWindowAttribute.Call(
+		uintptr(window),
+		uintptr(DWMWA_EXTENDED_FRAME_BOUNDS),
+		uintptr(unsafe.Pointer(&r)),
+		16, // size of RECT
+	)
+	ok = ret == S_OK
+	return
+}
+
+// DwmGetWindowAttributeCLOAKED returns one of the DWM_... constants.
+func DwmGetWindowAttributeCLOAKED(window HWND) (ok bool, cloaked uint32) {
+	ret, _, _ := dwmGetWindowAttribute.Call(
+		uintptr(window),
+		uintptr(DWMWA_CLOAKED),
+		uintptr(unsafe.Pointer(&cloaked)),
+		16, // size of uint32
+	)
+	ok = ret == S_OK
 	return
 }
 
@@ -3696,20 +3710,8 @@ func CreateMutex(attributes *SECURITY_ATTRIBUTES, initialOwner bool, name string
 	return HANDLE(ret)
 }
 
-func CoInitializeEx(coInit uintptr) HRESULT {
-	ret, _, _ := coInitializeEx.Call(
-		0,
-		coInit)
-
-	switch uint32(ret) {
-	case E_INVALIDARG:
-		panic("CoInitializeEx failed with E_INVALIDARG")
-	case E_OUTOFMEMORY:
-		panic("CoInitializeEx failed with E_OUTOFMEMORY")
-	case E_UNEXPECTED:
-		panic("CoInitializeEx failed with E_UNEXPECTED")
-	}
-
+func CoInitializeEx(coInit uint32) HRESULT {
+	ret, _, _ := coInitializeEx.Call(0, uintptr(coInit))
 	return HRESULT(ret)
 }
 
@@ -3721,32 +3723,19 @@ func CoUninitialize() {
 	coUninitialize.Call()
 }
 
-func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
+func CreateStreamOnHGlobal(global HGLOBAL, deleteOnRelease bool) (*IStream, HRESULT) {
 	stream := new(IStream)
 	ret, _, _ := createStreamOnHGlobal.Call(
-		uintptr(hGlobal),
-		uintptr(BoolToBOOL(fDeleteOnRelease)),
+		uintptr(global),
+		uintptr(BoolToBOOL(deleteOnRelease)),
 		uintptr(unsafe.Pointer(&stream)),
 	)
 
-	switch uint32(ret) {
-	case E_INVALIDARG:
-		panic("CreateStreamOnHGlobal failed with E_INVALIDARG")
-	case E_OUTOFMEMORY:
-		panic("CreateStreamOnHGlobal failed with E_OUTOFMEMORY")
-	case E_UNEXPECTED:
-		panic("CreateStreamOnHGlobal failed with E_UNEXPECTED")
-	}
-
-	return stream
+	return stream, HRESULT(ret)
 }
 
 func VariantInit(v *VARIANT) {
-	hr, _, _ := variantInit.Call(uintptr(unsafe.Pointer(v)))
-	if hr != 0 {
-		panic("Invoke VariantInit error.")
-	}
-	return
+	variantInit.Call(uintptr(unsafe.Pointer(v)))
 }
 
 func SysAllocString(v string) (ss *int16) {
@@ -3758,11 +3747,7 @@ func SysAllocString(v string) (ss *int16) {
 }
 
 func SysFreeString(v *int16) {
-	hr, _, _ := sysFreeString.Call(uintptr(unsafe.Pointer(v)))
-	if hr != 0 {
-		panic("Invoke SysFreeString error.")
-	}
-	return
+	sysFreeString.Call(uintptr(unsafe.Pointer(v)))
 }
 
 func SysStringLen(v *int16) uint {
@@ -3855,33 +3840,32 @@ func DragAcceptFiles(hwnd HWND, accept bool) {
 	)
 }
 
-func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
+func DragQueryFile(drop HDROP, file uint) string {
 	ret, _, _ := dragQueryFile.Call(
-		uintptr(hDrop),
-		uintptr(iFile),
+		uintptr(drop),
+		uintptr(file),
 		0,
 		0,
 	)
 
-	fileCount = uint(ret)
+	stringSize := uint(ret)
+	var fileName string
 
-	if iFile != 0xFFFFFFFF {
-		buf := make([]uint16, fileCount+1)
+	if file != 0xFFFFFFFF {
+		buf := make([]uint16, stringSize+1)
 
 		ret, _, _ := dragQueryFile.Call(
-			uintptr(hDrop),
-			uintptr(iFile),
+			uintptr(drop),
+			uintptr(file),
 			uintptr(unsafe.Pointer(&buf[0])),
-			uintptr(fileCount+1))
-
-		if ret == 0 {
-			panic("Invoke DragQueryFile error.")
+			uintptr(len(buf)),
+		)
+		if ret != 0 {
+			fileName = syscall.UTF16ToString(buf)
 		}
-
-		fileName = syscall.UTF16ToString(buf)
 	}
 
-	return
+	return fileName
 }
 
 func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
@@ -4083,17 +4067,14 @@ func GdiplusShutdown(token uintptr) {
 	gdiplusShutdown.Call(token)
 }
 
-func GdiplusStartup(input *GdiplusStartupInput, output *GdiplusStartupOutput) uintptr {
-	var token uintptr
+func GdiplusStartup(input *GdiplusStartupInput, output *GdiplusStartupOutput) (token uintptr, status uint32) {
 	ret, _, _ := gdiplusStartup.Call(
 		uintptr(unsafe.Pointer(&token)),
 		uintptr(unsafe.Pointer(input)),
-		uintptr(unsafe.Pointer(output)))
-
-	if ret != Ok {
-		panic("GdiplusStartup failed with status " + GetGpStatus(int32(ret)))
-	}
-	return token
+		uintptr(unsafe.Pointer(output)),
+	)
+	status = uint32(ret)
+	return
 }
 
 func MakeIntResource(id uint16) *uint16 {
