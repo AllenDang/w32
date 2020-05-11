@@ -275,6 +275,7 @@ var (
 	createFontIndirect        = gdi32.NewProc("CreateFontIndirectW")
 	abortDoc                  = gdi32.NewProc("AbortDoc")
 	bitBlt                    = gdi32.NewProc("BitBlt")
+	maskBlt                   = gdi32.NewProc("MaskBlt")
 	patBlt                    = gdi32.NewProc("PatBlt")
 	closeEnhMetaFile          = gdi32.NewProc("CloseEnhMetaFile")
 	copyEnhMetaFile           = gdi32.NewProc("CopyEnhMetaFileW")
@@ -2764,6 +2765,29 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
 		uintptr(nXSrc),
 		uintptr(nYSrc),
 		uintptr(dwRop),
+	)
+	return ret != 0
+}
+
+func MaskBlt(
+	dest HDC, destX, destY, destWidth, destHeight int,
+	source HDC, sourceX, sourceY int,
+	mask HBITMAP, maskX, maskY int,
+	operation uint,
+) bool {
+	ret, _, _ := maskBlt.Call(
+		uintptr(dest),
+		uintptr(destX),
+		uintptr(destY),
+		uintptr(destWidth),
+		uintptr(destHeight),
+		uintptr(source),
+		uintptr(sourceX),
+		uintptr(sourceY),
+		uintptr(mask),
+		uintptr(maskX),
+		uintptr(maskX),
+		uintptr(operation),
 	)
 	return ret != 0
 }
