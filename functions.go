@@ -282,6 +282,7 @@ var (
 	createBrushIndirect       = gdi32.NewProc("CreateBrushIndirect")
 	createCompatibleDC        = gdi32.NewProc("CreateCompatibleDC")
 	createCompatibleBitmap    = gdi32.NewProc("CreateCompatibleBitmap")
+	createBitmap              = gdi32.NewProc("CreateBitmap")
 	createDC                  = gdi32.NewProc("CreateDCW")
 	createDIBSection          = gdi32.NewProc("CreateDIBSection")
 	createEnhMetaFile         = gdi32.NewProc("CreateEnhMetaFileW")
@@ -2832,6 +2833,17 @@ func CreateCompatibleBitmap(hdc HDC, width, height int) HBITMAP {
 		uintptr(hdc),
 		uintptr(width),
 		uintptr(height),
+	)
+	return HBITMAP(ret)
+}
+
+func CreateBitmap(width, height int, planes, bitCount uint, bits unsafe.Pointer) HBITMAP {
+	ret, _, _ := createBitmap.Call(
+		uintptr(width),
+		uintptr(height),
+		uintptr(planes),
+		uintptr(bitCount),
+		uintptr(bits),
 	)
 	return HBITMAP(ret)
 }
