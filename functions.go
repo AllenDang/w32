@@ -342,6 +342,7 @@ var (
 	getConsoleWindow           = kernel32.NewProc("GetConsoleWindow")
 	getCurrentThread           = kernel32.NewProc("GetCurrentThread")
 	getLogicalDrives           = kernel32.NewProc("GetLogicalDrives")
+	getDriveType               = kernel32.NewProc("GetDriveTypeW")
 	getUserDefaultLCID         = kernel32.NewProc("GetUserDefaultLCID")
 	lstrlen                    = kernel32.NewProc("lstrlenW")
 	lstrcpy                    = kernel32.NewProc("lstrcpyW")
@@ -3378,6 +3379,11 @@ func GetCurrentThread() HANDLE {
 func GetLogicalDrives() uint32 {
 	ret, _, _ := getLogicalDrives.Call()
 	return uint32(ret)
+}
+
+func GetDriveType(drive string) uint {
+	ret, _, _ := getDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))))
+	return uint(ret)
 }
 
 func GetUserDefaultLCID() uint32 {
