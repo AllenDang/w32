@@ -1264,6 +1264,7 @@ type POWERBROADCAST_SETTING struct {
 	Data         [1]byte
 }
 
+// https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw
 type RTL_OSVERSIONINFOEXW struct {
 	OSVersionInfoSize uint32
 	MajorVersion      uint32

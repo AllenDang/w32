@@ -27,6 +27,7 @@ var (
 	msimg32  = syscall.NewLazyDLL("msimg32.dll")
 	mpr      = syscall.NewLazyDLL("mpr.dll")
 	ntoskrnl = syscall.NewLazyDLL("ntoskrnl.exe")
+	ntdll    = syscall.NewLazyDLL("ntdll.dll")
 
 	registerClassEx                  = user32.NewProc("RegisterClassExW")
 	unregisterClass                  = user32.NewProc("UnregisterClassW")
@@ -445,7 +446,7 @@ var (
 	wNetAddConnection3    = mpr.NewProc("WNetAddConnection3W")
 	wNetCancelConnection2 = mpr.NewProc("WNetCancelConnection2W")
 
-	rtlGetVersion = ntoskrnl.NewProc("RtlGetVersion")
+	rtlGetVersion = ntdll.NewProc("RtlGetVersion")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -4379,6 +4380,7 @@ func WNetCancelConnection2(name string, flags uint32, force bool) uint32 {
 	return uint32(ret)
 }
 
+// https://docs.microsoft.com/en-us/windows/win32/devnotes/rtlgetversion
 func RtlGetVersion() RTL_OSVERSIONINFOEXW {
 	var info RTL_OSVERSIONINFOEXW
 	info.OSVersionInfoSize = 5*4 + 128*2 + 3*2 + 2*1
