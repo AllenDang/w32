@@ -3756,3 +3756,33 @@ const (
 	DRIVE_CDROM       = 5
 	DRIVE_RAMDISK     = 6
 )
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexw
+const (
+	VER_PLATFORM_WIN32_NT = 2
+)
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexw
+const (
+	VER_NT_SERVER            = 0x0000003
+	VER_NT_DOMAIN_CONTROLLER = 0x0000002
+	VER_NT_WORKSTATION       = 0x0000001
+)
+
+// https://docs.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-osversioninfoexw
+const (
+	VER_SUITE_BACKOFFICE               = 0x00000004
+	VER_SUITE_BLADE                    = 0x00000400
+	VER_SUITE_COMPUTE_SERVER           = 0x00004000
+	VER_SUITE_DATACENTER               = 0x00000080
+	VER_SUITE_ENTERPRISE               = 0x00000002
+	VER_SUITE_EMBEDDEDNT               = 0x00000040
+	VER_SUITE_PERSONAL                 = 0x00000200
+	VER_SUITE_SINGLEUSERTS             = 0x00000100
+	VER_SUITE_SMALLBUSINESS            = 0x00000001
+	VER_SUITE_SMALLBUSINESS_RESTRICTED = 0x00000020
+	VER_SUITE_STORAGE_SERVER           = 0x00002000
+	VER_SUITE_TERMINAL                 = 0x00000010
+	VER_SUITE_WH_SERVER                = 0x00008000
+	VER_SUITE_MULTIUSERTS              = 0x00020000
+)
