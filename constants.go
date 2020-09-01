@@ -3786,3 +3786,13 @@ const (
 	VER_SUITE_WH_SERVER                = 0x00008000
 	VER_SUITE_MULTIUSERTS              = 0x00020000
 )
+
+// https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info
+const (
+	PROCESSOR_ARCHITECTURE_AMD64   = 9
+	PROCESSOR_ARCHITECTURE_ARM     = 5
+	PROCESSOR_ARCHITECTURE_ARM64   = 12
+	PROCESSOR_ARCHITECTURE_IA64    = 6
+	PROCESSOR_ARCHITECTURE_INTEL   = 0
+	PROCESSOR_ARCHITECTURE_UNKNOWN = 0xffff
+)

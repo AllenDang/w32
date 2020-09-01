@@ -388,6 +388,7 @@ var (
 	findClose                  = kernel32.NewProc("FindClose")
 	openMutex                  = kernel32.NewProc("OpenMutexW")
 	createMutex                = kernel32.NewProc("CreateMutexW")
+	getNativeSystemInfo        = kernel32.NewProc("GetNativeSystemInfo")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -4385,5 +4386,12 @@ func RtlGetVersion() RTL_OSVERSIONINFOEXW {
 	var info RTL_OSVERSIONINFOEXW
 	info.OSVersionInfoSize = 5*4 + 128*2 + 3*2 + 2*1
 	rtlGetVersion.Call(uintptr(unsafe.Pointer(&info)))
+	return info
+}
+
+// https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo
+func GetNativeSystemInfo() SYSTEM_INFO {
+	var info SYSTEM_INFO
+	getNativeSystemInfo.Call(uintptr(unsafe.Pointer(&info)))
 	return info
 }
