@@ -210,6 +210,8 @@ var (
 	scrollWindow                     = user32.NewProc("ScrollWindow")
 	getFocus                         = user32.NewProc("GetFocus")
 	printWindow                      = user32.NewProc("PrintWindow")
+	setLayeredWindowAttributes       = user32.NewProc("SetLayeredWindowAttributes")
+	redrawWindow                     = user32.NewProc("RedrawWindow")
 
 	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
@@ -2037,6 +2039,26 @@ func PrintWindow(w HWND, dc HDC, flags uint) bool {
 	ret, _, _ := printWindow.Call(
 		uintptr(w),
 		uintptr(dc),
+		uintptr(flags),
+	)
+	return ret != 0
+}
+
+func SetLayeredWindowAttributes(window HWND, key COLORREF, alpha uint8, flags uint32) bool {
+	ret, _, _ := setLayeredWindowAttributes.Call(
+		uintptr(window),
+		uintptr(key),
+		uintptr(alpha),
+		uintptr(flags),
+	)
+	return ret != 0
+}
+
+func RedrawWindow(window HWND, updateRect *RECT, updateRegion HRGN, flags uint32) bool {
+	ret, _, _ := redrawWindow.Call(
+		uintptr(window),
+		uintptr(unsafe.Pointer(updateRect)),
+		uintptr(updateRegion),
 		uintptr(flags),
 	)
 	return ret != 0
