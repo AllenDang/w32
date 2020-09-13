@@ -746,13 +746,13 @@ func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint32, wParam, lParam ui
 	return ret
 }
 
-func SetWindowLong(hwnd HWND, index int, value uint32) uint32 {
+func SetWindowLong(hwnd HWND, index int, value int32) int32 {
 	ret, _, _ := setWindowLong.Call(
 		uintptr(hwnd),
 		uintptr(index),
 		uintptr(value),
 	)
-	return uint32(ret)
+	return int32(ret)
 }
 
 func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
