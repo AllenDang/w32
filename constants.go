@@ -3818,3 +3818,13 @@ const (
 	RDW_FRAME           = 0x0400
 	RDW_NOFRAME         = 0x0800
 )
+
+// DrawIconEx flags.
+const (
+	DI_COMPAT      = 0x0004
+	DI_DEFAULTSIZE = 0x0008
+	DI_IMAGE       = 0x0002
+	DI_MASK        = 0x0001
+	DI_NOMIRROR    = 0x0010
+	DI_NORMAL      = DI_IMAGE | DI_MASK
+)
