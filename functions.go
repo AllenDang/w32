@@ -95,6 +95,7 @@ var (
 	dialogBoxParam                   = user32.NewProc("DialogBoxParamW")
 	getDlgItem                       = user32.NewProc("GetDlgItem")
 	drawIcon                         = user32.NewProc("DrawIcon")
+	drawIconEx                       = user32.NewProc("DrawIconEx")
 	clientToScreen                   = user32.NewProc("ClientToScreen")
 	isDialogMessage                  = user32.NewProc("IsDialogMessageW")
 	isWindow                         = user32.NewProc("IsWindow")
@@ -1019,6 +1020,24 @@ func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
 		uintptr(nIDDlgItem),
 	)
 	return HWND(ret)
+}
+
+func DrawIconEx(
+	hDC HDC, x, y int, hIcon HICON, width, height int,
+	frame uint, flickerFreeDraw HBRUSH, flags uint,
+) bool {
+	ret, _, _ := drawIconEx.Call(
+		uintptr(unsafe.Pointer(hDC)),
+		uintptr(x),
+		uintptr(y),
+		uintptr(unsafe.Pointer(hIcon)),
+		uintptr(width),
+		uintptr(height),
+		uintptr(frame),
+		uintptr(flickerFreeDraw),
+		uintptr(flags),
+	)
+	return ret != 0
 }
 
 func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
