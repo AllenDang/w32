@@ -2322,12 +2322,13 @@ func OpenEventLog(servername string, sourcename string) HANDLE {
 	return HANDLE(ret)
 }
 
-func GetNumberOfEventLogRecords(eventlog HANDLE, numberofrecords *uint32) bool {
+func GetNumberOfEventLogRecords(eventlog HANDLE) (n uint32, ok bool) {
 	ret, _, _ := getNumberOfEventLogRecords.Call(
 		uintptr(eventlog),
-		uintptr(unsafe.Pointer(numberofrecords)),
+		uintptr(unsafe.Pointer(&n)),
 	)
-	return ret != 0
+	ok = ret != 0
+	return
 }
 
 func ReadEventLog(eventlog HANDLE, readflags, recordoffset uint32, buffer []byte, numberofbytestoread uint32, bytesread, minnumberofbytesneeded *uint32) bool {
