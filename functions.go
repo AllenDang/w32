@@ -214,23 +214,24 @@ var (
 	setLayeredWindowAttributes       = user32.NewProc("SetLayeredWindowAttributes")
 	redrawWindow                     = user32.NewProc("RedrawWindow")
 
-	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
-	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
-	regCloseKey        = advapi32.NewProc("RegCloseKey")
-	regGetValue        = advapi32.NewProc("RegGetValueW")
-	regEnumKeyEx       = advapi32.NewProc("RegEnumKeyExW")
-	regSetValueEx      = advapi32.NewProc("RegSetValueExW")
-	regDeleteKeyValue  = advapi32.NewProc("RegDeleteKeyValueW")
-	regDeleteValue     = advapi32.NewProc("RegDeleteValueW")
-	regDeleteTree      = advapi32.NewProc("RegDeleteTreeW")
-	openEventLog       = advapi32.NewProc("OpenEventLogW")
-	readEventLog       = advapi32.NewProc("ReadEventLogW")
-	closeEventLog      = advapi32.NewProc("CloseEventLog")
-	openSCManager      = advapi32.NewProc("OpenSCManagerW")
-	closeServiceHandle = advapi32.NewProc("CloseServiceHandle")
-	openService        = advapi32.NewProc("OpenServiceW")
-	startService       = advapi32.NewProc("StartServiceW")
-	controlService     = advapi32.NewProc("ControlService")
+	regCreateKeyEx             = advapi32.NewProc("RegCreateKeyExW")
+	regOpenKeyEx               = advapi32.NewProc("RegOpenKeyExW")
+	regCloseKey                = advapi32.NewProc("RegCloseKey")
+	regGetValue                = advapi32.NewProc("RegGetValueW")
+	regEnumKeyEx               = advapi32.NewProc("RegEnumKeyExW")
+	regSetValueEx              = advapi32.NewProc("RegSetValueExW")
+	regDeleteKeyValue          = advapi32.NewProc("RegDeleteKeyValueW")
+	regDeleteValue             = advapi32.NewProc("RegDeleteValueW")
+	regDeleteTree              = advapi32.NewProc("RegDeleteTreeW")
+	openEventLog               = advapi32.NewProc("OpenEventLogW")
+	getNumberOfEventLogRecords = advapi32.NewProc("GetNumberOfEventLogRecords")
+	readEventLog               = advapi32.NewProc("ReadEventLogW")
+	closeEventLog              = advapi32.NewProc("CloseEventLog")
+	openSCManager              = advapi32.NewProc("OpenSCManagerW")
+	closeServiceHandle         = advapi32.NewProc("CloseServiceHandle")
+	openService                = advapi32.NewProc("OpenServiceW")
+	startService               = advapi32.NewProc("StartServiceW")
+	controlService             = advapi32.NewProc("ControlService")
 
 	initCommonControlsEx    = comctl32.NewProc("InitCommonControlsEx")
 	imageList_Create        = comctl32.NewProc("ImageList_Create")
@@ -2319,6 +2320,14 @@ func OpenEventLog(servername string, sourcename string) HANDLE {
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sourcename))),
 	)
 	return HANDLE(ret)
+}
+
+func GetNumberOfEventLogRecords(eventlog HANDLE, numberofrecords *uint32) bool {
+	ret, _, _ := getNumberOfEventLogRecords.Call(
+		uintptr(eventlog),
+		uintptr(unsafe.Pointer(numberofrecords)),
+	)
+	return ret != 0
 }
 
 func ReadEventLog(eventlog HANDLE, readflags, recordoffset uint32, buffer []byte, numberofbytestoread uint32, bytesread, minnumberofbytesneeded *uint32) bool {
