@@ -343,6 +343,7 @@ var (
 	polyBezierTo              = gdi32.NewProc("PolyBezierTo")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
+	getModuleFileName          = kernel32.NewProc("GetModuleFileNameW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
 	getConsoleWindow           = kernel32.NewProc("GetConsoleWindow")
 	getCurrentThread           = kernel32.NewProc("GetCurrentThread")
@@ -3408,6 +3409,19 @@ func GetModuleHandle(modulename string) HINSTANCE {
 	}
 	ret, _, _ := getModuleHandle.Call(mn)
 	return HINSTANCE(ret)
+}
+
+func GetModuleFileName(mod HMODULE) string {
+	var path [32768]uint16
+	ret, _, _ := getModuleFileName.Call(
+		uintptr(mod),
+		uintptr(unsafe.Pointer(&path[0])),
+		uintptr(len(path)),
+	)
+	if ret == 0 {
+		return ""
+	}
+	return syscall.UTF16ToString(path[:])
 }
 
 func MulDiv(number, numerator, denominator int) int {
