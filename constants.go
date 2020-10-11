@@ -3828,3 +3828,64 @@ const (
 	DI_NOMIRROR    = 0x0010
 	DI_NORMAL      = DI_IMAGE | DI_MASK
 )
+
+// Track bar messages.
+const (
+	TBM_GETPOS         = WM_USER
+	TBM_GETRANGEMIN    = WM_USER + 1
+	TBM_GETRANGEMAX    = WM_USER + 2
+	TBM_GETTIC         = WM_USER + 3
+	TBM_SETTIC         = WM_USER + 4
+	TBM_SETPOS         = WM_USER + 5
+	TBM_SETRANGE       = WM_USER + 6
+	TBM_SETRANGEMIN    = WM_USER + 7
+	TBM_SETRANGEMAX    = WM_USER + 8
+	TBM_CLEARTICS      = WM_USER + 9
+	TBM_SETSEL         = WM_USER + 10
+	TBM_SETSELSTART    = WM_USER + 11
+	TBM_SETSELEND      = WM_USER + 12
+	TBM_GETPTICS       = WM_USER + 14
+	TBM_GETTICPOS      = WM_USER + 15
+	TBM_GETNUMTICS     = WM_USER + 16
+	TBM_GETSELSTART    = WM_USER + 17
+	TBM_GETSELEND      = WM_USER + 18
+	TBM_CLEARSEL       = WM_USER + 19
+	TBM_SETTICFREQ     = WM_USER + 20
+	TBM_SETPAGESIZE    = WM_USER + 21
+	TBM_GETPAGESIZE    = WM_USER + 22
+	TBM_SETLINESIZE    = WM_USER + 23
+	TBM_GETLINESIZE    = WM_USER + 24
+	TBM_GETTHUMBRECT   = WM_USER + 25
+	TBM_GETCHANNELRECT = WM_USER + 26
+	TBM_SETTHUMBLENGTH = WM_USER + 27
+	TBM_GETTHUMBLENGTH = WM_USER + 28
+)
+
+// Track bar styles.
+const (
+	TBS_AUTOTICKS      = 1
+	TBS_VERT           = 2
+	TBS_HORZ           = 0
+	TBS_TOP            = 4
+	TBS_BOTTOM         = 0
+	TBS_LEFT           = 4
+	TBS_RIGHT          = 0
+	TBS_BOTH           = 8
+	TBS_NOTICKS        = 16
+	TBS_ENABLESELRANGE = 32
+	TBS_FIXEDLENGTH    = 64
+	TBS_NOTHUMB        = 128
+)
+
+// Track bar scroll notifications.
+const (
+	TB_LINEUP        = 0
+	TB_LINEDOWN      = 1
+	TB_PAGEUP        = 2
+	TB_PAGEDOWN      = 3
+	TB_THUMBPOSITION = 4
+	TB_THUMBTRACK    = 5
+	TB_TOP           = 6
+	TB_BOTTOM        = 7
+	TB_ENDTRACK      = 8
+)
