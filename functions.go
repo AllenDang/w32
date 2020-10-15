@@ -342,6 +342,8 @@ var (
 	polyBezier                = gdi32.NewProc("PolyBezier")
 	intersectClipRect         = gdi32.NewProc("IntersectClipRect")
 	selectClipRgn             = gdi32.NewProc("SelectClipRgn")
+	createRectRgn             = gdi32.NewProc("CreateRectRgn")
+	combineRgn                = gdi32.NewProc("CombineRgn")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	getModuleFileName          = kernel32.NewProc("GetModuleFileNameW")
@@ -3414,6 +3416,26 @@ func IntersectClipRect(hdc HDC, left, top, right, bottom int) int {
 
 func SelectClipRgn(hdc HDC, region HRGN) int {
 	ret, _, _ := selectClipRgn.Call(uintptr(hdc), uintptr(region))
+	return int(ret)
+}
+
+func CreateRectRgn(x1, y1, x2, y2 int) HRGN {
+	ret, _, _ := createRectRgn.Call(
+		uintptr(x1),
+		uintptr(y1),
+		uintptr(x2),
+		uintptr(y2),
+	)
+	return HRGN(ret)
+}
+
+func CombineRgn(dest, src1, src2 HRGN, mode int) int {
+	ret, _, _ := combineRgn.Call(
+		uintptr(dest),
+		uintptr(src1),
+		uintptr(src2),
+		uintptr(mode),
+	)
 	return int(ret)
 }
 
