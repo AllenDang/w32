@@ -3890,3 +3890,11 @@ const (
 	TB_BOTTOM        = 7
 	TB_ENDTRACK      = 8
 )
+
+// Clip region types, e.g. returned from IntersectClipRect.
+const (
+	ERROR         = 0
+	NULLREGION    = 1
+	SIMPLEREGION  = 2
+	COMPLEXREGION = 3
+)

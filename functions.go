@@ -340,7 +340,8 @@ var (
 	polygon                   = gdi32.NewProc("Polygon")
 	polyline                  = gdi32.NewProc("Polyline")
 	polyBezier                = gdi32.NewProc("PolyBezier")
-	polyBezierTo              = gdi32.NewProc("PolyBezierTo")
+	intersectClipRect         = gdi32.NewProc("IntersectClipRect")
+	selectClipRgn             = gdi32.NewProc("SelectClipRgn")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	getModuleFileName          = kernel32.NewProc("GetModuleFileNameW")
@@ -3398,6 +3399,22 @@ func PolyBezier(hdc HDC, p []POINT) bool {
 		uintptr(len(p)),
 	)
 	return ret != 0
+}
+
+func IntersectClipRect(hdc HDC, left, top, right, bottom int) int {
+	ret, _, _ := intersectClipRect.Call(
+		uintptr(hdc),
+		uintptr(left),
+		uintptr(top),
+		uintptr(right),
+		uintptr(bottom),
+	)
+	return int(ret)
+}
+
+func SelectClipRgn(hdc HDC, region HRGN) int {
+	ret, _, _ := selectClipRgn.Call(uintptr(hdc), uintptr(region))
+	return int(ret)
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
