@@ -213,6 +213,8 @@ var (
 	printWindow                      = user32.NewProc("PrintWindow")
 	setLayeredWindowAttributes       = user32.NewProc("SetLayeredWindowAttributes")
 	redrawWindow                     = user32.NewProc("RedrawWindow")
+	createCursor                     = user32.NewProc("CreateCursor")
+	destroyCursor                    = user32.NewProc("DestroyCursor")
 
 	regCreateKeyEx             = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx               = advapi32.NewProc("RegOpenKeyExW")
@@ -2085,6 +2087,35 @@ func RedrawWindow(window HWND, updateRect *RECT, updateRegion HRGN, flags uint32
 		uintptr(updateRegion),
 		uintptr(flags),
 	)
+	return ret != 0
+}
+
+func CreateCursor(
+	instance HINSTANCE,
+	xHotSpot, yHotSpot, width, height int,
+	andPlane, xorPlane []byte,
+) HCURSOR {
+	var and, xor uintptr
+	if len(andPlane) > 0 {
+		and = uintptr(unsafe.Pointer(&andPlane[0]))
+	}
+	if len(xorPlane) > 0 {
+		xor = uintptr(unsafe.Pointer(&xorPlane[0]))
+	}
+	ret, _, _ := createCursor.Call(
+		uintptr(instance),
+		uintptr(xHotSpot),
+		uintptr(yHotSpot),
+		uintptr(width),
+		uintptr(height),
+		and,
+		xor,
+	)
+	return HCURSOR(ret)
+}
+
+func DestroyCursor(c HCURSOR) bool {
+	ret, _, _ := destroyCursor.Call(uintptr(c))
 	return ret != 0
 }
 
