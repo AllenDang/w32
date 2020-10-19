@@ -1126,13 +1126,20 @@ const (
 	PBM_DELTAPOS    = WM_USER + 3
 	PBM_SETSTEP     = WM_USER + 4
 	PBM_STEPIT      = WM_USER + 5
-	PBM_SETRANGE32  = 1030
-	PBM_GETRANGE    = 1031
-	PBM_GETPOS      = 1032
-	PBM_SETBARCOLOR = 1033
+	PBM_SETRANGE32  = WM_USER + 6
+	PBM_GETRANGE    = WM_USER + 7
+	PBM_GETPOS      = WM_USER + 8
+	PBM_SETBARCOLOR = WM_USER + 9
+	PBM_SETMARQUEE  = WM_USER + 10
 	PBM_SETBKCOLOR  = CCM_SETBKCOLOR
-	PBS_SMOOTH      = 1
-	PBS_VERTICAL    = 4
+)
+
+// Progress bar styles.
+const (
+	PBS_SMOOTH        = 0x01
+	PBS_VERTICAL      = 0x04
+	PBS_MARQUEE       = 0x08
+	PBS_SMOOTHREVERSE = 0x10
 )
 
 // GetOpenFileName and GetSaveFileName extended flags
