@@ -215,6 +215,7 @@ var (
 	redrawWindow                     = user32.NewProc("RedrawWindow")
 	createCursor                     = user32.NewProc("CreateCursor")
 	destroyCursor                    = user32.NewProc("DestroyCursor")
+	getDlgCtrlID                     = user32.NewProc("GetDlgCtrlID")
 
 	regCreateKeyEx             = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx               = advapi32.NewProc("RegOpenKeyExW")
@@ -2117,6 +2118,11 @@ func CreateCursor(
 func DestroyCursor(c HCURSOR) bool {
 	ret, _, _ := destroyCursor.Call(uintptr(c))
 	return ret != 0
+}
+
+func GetDlgCtrlID(w HWND) int {
+	ret, _, _ := getDlgCtrlID.Call(uintptr(w))
+	return int(ret)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
