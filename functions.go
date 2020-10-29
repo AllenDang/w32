@@ -3985,12 +3985,39 @@ func WglShareLists(hglrc1, hglrc2 HGLRC) bool {
 	return ret == TRUE
 }
 
-func EnumProcesses(processIds []uint32, cb uint32, bytesReturned *uint32) bool {
+// EnumAllProcesses retrieves the process identifier for each process object in
+// the system. It returns ok = true on success. If ok = false call GetLastError
+// to see why it failed.
+func EnumAllProcesses() (processIDs []uint32, ok bool) {
+	n := 128
+	for {
+		processIDs, ok = EnumProcesses(make([]uint32, n))
+		if !ok || len(processIDs) < n {
+			return
+		}
+		n *= 2
+	}
+}
+
+// EnumProcesses retrieves the process identifier for each process object in the
+// system. It takes a pre-sized slice to fill and returns the filled sub-slice
+// and an OK status to report success. If ok is false, call GetLastError to see
+// what the problem was.
+// If the given slice is filled completely, there might be more unenumerated
+// process IDs. In that case increase the buffer size and call EnumProcesses
+// again. You can also call EnumAllProcesses which does this automatically.
+func EnumProcesses(into []uint32) (processIDs []uint32, ok bool) {
+	if len(into) == 0 {
+		return nil, true
+	}
+	var writtenBytes uint32
 	ret, _, _ := enumProcesses.Call(
-		uintptr(unsafe.Pointer(&processIds[0])),
-		uintptr(cb),
-		uintptr(unsafe.Pointer(bytesReturned)))
-	return ret != 0
+		uintptr(unsafe.Pointer(&into[0])),
+		uintptr(len(into)*4),
+		uintptr(unsafe.Pointer(&writtenBytes)),
+	)
+	writtenIDs := writtenBytes / 4
+	return into[:writtenIDs], ret != 0
 }
 
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
