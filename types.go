@@ -6,6 +6,7 @@ package w32
 
 import (
 	"syscall"
+	"unicode/utf16"
 	"unsafe"
 )
 
@@ -280,6 +281,106 @@ type LOGFONT struct {
 	Quality        byte
 	PitchAndFamily byte
 	FaceName       [LF_FACESIZE]uint16
+}
+
+func toString(s []uint16) string {
+	for i, c := range s {
+		if c == 0 {
+			return string(utf16.Decode(s[:i]))
+		}
+	}
+	return string(utf16.Decode(s))
+}
+
+func (f *LOGFONT) GetFaceName() string {
+	return toString(f.FaceName[:])
+}
+
+func (f *LOGFONT) SetFaceName(name string) {
+	s := utf16.Encode([]rune(name))
+	max := len(f.FaceName) - 1
+	if len(s) > max {
+		s = s[:max]
+	}
+	copy(f.FaceName[:], s)
+	f.FaceName[len(s)] = 0
+}
+
+type ENUMLOGFONTEX struct {
+	LOGFONT
+	FullName [LF_FULLFACESIZE]uint16
+	Style    [LF_FACESIZE]uint16
+	Script   [LF_FACESIZE]uint16
+}
+
+func (f *ENUMLOGFONTEX) GetFullName() string {
+	return toString(f.FullName[:])
+}
+
+func (f *ENUMLOGFONTEX) GetStyle() string {
+	return toString(f.Style[:])
+}
+
+func (f *ENUMLOGFONTEX) GetScript() string {
+	return toString(f.Script[:])
+}
+
+type ENUMTEXTMETRIC struct {
+	NEWTEXTMETRICEX
+	AXESLIST
+}
+
+type NEWTEXTMETRICEX struct {
+	NEWTEXTMETRIC
+	FONTSIGNATURE
+}
+
+type NEWTEXTMETRIC struct {
+	Height           int32
+	Ascent           int32
+	Descent          int32
+	InternalLeading  int32
+	ExternalLeading  int32
+	AveCharWidth     int32
+	MaxCharWidth     int32
+	Weight           int32
+	Overhang         int32
+	DigitizedAspectX int32
+	DigitizedAspectY int32
+	FirstChar        uint16
+	LastChar         uint16
+	DefaultChar      uint16
+	BreakChar        uint16
+	Italic           byte
+	Underlined       byte
+	StruckOut        byte
+	PitchAndFamily   byte
+	CharSet          byte
+	Flags            uint32
+	SizeEM           uint32
+	CellHeight       uint32
+	AvgWidth         uint32
+}
+
+type FONTSIGNATURE struct {
+	Usb [4]uint32
+	Csb [2]uint32
+}
+
+type AXESLIST struct {
+	Reserved uint32
+	NumAxes  uint32
+	AxisInfo [MM_MAX_NUMAXES]AXISINFO
+}
+
+type AXISINFO struct {
+	MinValue int32
+	MaxValue int32
+	AxisName [MM_MAX_AXES_NAMELEN]uint16
+}
+
+func (i *AXISINFO) GetAxisName() string {
+	return toString(i.AxisName[:])
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms646839.aspx
