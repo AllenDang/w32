@@ -686,7 +686,15 @@ const (
 	WA_CLICKACTIVE = 2
 )
 
-const LF_FACESIZE = 32
+const (
+	LF_FACESIZE     = 32
+	LF_FULLFACESIZE = 64
+)
+
+const (
+	MM_MAX_NUMAXES      = 16
+	MM_MAX_AXES_NAMELEN = 16
+)
 
 // Font weight constants
 const (

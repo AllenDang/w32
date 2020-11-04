@@ -3,6 +3,7 @@ package w32
 import (
 	"errors"
 	"fmt"
+	"strconv"
 	"syscall"
 	"unsafe"
 )
@@ -347,6 +348,7 @@ var (
 	selectClipRgn             = gdi32.NewProc("SelectClipRgn")
 	createRectRgn             = gdi32.NewProc("CreateRectRgn")
 	combineRgn                = gdi32.NewProc("CombineRgn")
+	enumFontFamiliesEx        = gdi32.NewProc("EnumFontFamiliesExW")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
 	getModuleFileName          = kernel32.NewProc("GetModuleFileNameW")
@@ -3474,6 +3476,46 @@ func CombineRgn(dest, src1, src2 HRGN, mode int) int {
 		uintptr(mode),
 	)
 	return int(ret)
+}
+
+type FontType int
+
+const (
+	RASTER_FONTTYPE   FontType = 1
+	DEVICE_FONTTYPE   FontType = 2
+	TRUETYPE_FONTTYPE FontType = 4
+)
+
+func (t FontType) String() string {
+	switch t {
+	case RASTER_FONTTYPE:
+		return "RASTER_FONTTYPE"
+	case DEVICE_FONTTYPE:
+		return "DEVICE_FONTTYPE"
+	case TRUETYPE_FONTTYPE:
+		return "TRUETYPE_FONTTYPE"
+	}
+	return strconv.Itoa(int(t))
+}
+
+func EnumFontFamiliesEx(hdc HDC, font LOGFONT, f func(font *ENUMLOGFONTEX, metric *ENUMTEXTMETRIC, fontType FontType) bool) {
+	callback := syscall.NewCallback(func(font, metric uintptr, typ uint32, _ uintptr) uintptr {
+		if f(
+			(*ENUMLOGFONTEX)(unsafe.Pointer(font)),
+			(*ENUMTEXTMETRIC)(unsafe.Pointer(metric)),
+			FontType(typ),
+		) {
+			return 1
+		}
+		return 0
+	})
+	enumFontFamiliesEx.Call(
+		uintptr(hdc),
+		uintptr(unsafe.Pointer(&font)),
+		callback,
+		0,
+		0,
+	)
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
