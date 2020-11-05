@@ -165,6 +165,7 @@ var (
 	getTopWindow                     = user32.NewProc("GetTopWindow")
 	getWindow                        = user32.NewProc("GetWindow")
 	getKeyState                      = user32.NewProc("GetKeyState")
+	getSysColor                      = user32.NewProc("GetSysColor")
 	getSysColorBrush                 = user32.NewProc("GetSysColorBrush")
 	appendMenu                       = user32.NewProc("AppendMenuW")
 	checkMenuItem                    = user32.NewProc("CheckMenuItem")
@@ -1651,6 +1652,11 @@ func GetNextWindow(rel HWND, cmd uint) HWND {
 func GetKeyState(key int) uint16 {
 	ret, _, _ := getKeyState.Call(uintptr(key))
 	return uint16(ret)
+}
+
+func GetSysColor(index int) uint32 {
+	ret, _, _ := getSysColor.Call(uintptr(index))
+	return uint32(ret)
 }
 
 func GetSysColorBrush(index int) HBRUSH {
