@@ -385,6 +385,8 @@ var (
 	setLocalTime               = kernel32.NewProc("SetLocalTime")
 	getSystemTime              = kernel32.NewProc("GetSystemTime")
 	getSystemTimeAsFileTime    = kernel32.NewProc("GetSystemTimeAsFileTime")
+	systemTimeToFileTime       = kernel32.NewProc("SystemTimeToFileTime")
+	fileTimeToSystemTime       = kernel32.NewProc("FileTimeToSystemTime")
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
 	getVersion                 = kernel32.NewProc("GetVersion")
@@ -3769,15 +3771,31 @@ func GetSystemTimeAsFileTime() (time FILETIME) {
 	return
 }
 
-func SetSystemTime(time *SYSTEMTIME) bool {
-	ret, _, _ := setSystemTime.Call(
-		uintptr(unsafe.Pointer(time)))
+func SystemTimeToFileTime(sysTime SYSTEMTIME) (fileTime FILETIME, ok bool) {
+	ret, _, _ := systemTimeToFileTime.Call(
+		uintptr(unsafe.Pointer(&sysTime)),
+		uintptr(unsafe.Pointer(&fileTime)),
+	)
+	ok = ret != 0
+	return
+}
+
+func FileTimeToSystemTime(fileTime FILETIME) (sysTime SYSTEMTIME, ok bool) {
+	ret, _, _ := fileTimeToSystemTime.Call(
+		uintptr(unsafe.Pointer(&fileTime)),
+		uintptr(unsafe.Pointer(&sysTime)),
+	)
+	ok = ret != 0
+	return
+}
+
+func SetSystemTime(time SYSTEMTIME) bool {
+	ret, _, _ := setSystemTime.Call(uintptr(unsafe.Pointer(&time)))
 	return ret != 0
 }
 
-func SetLocalTime(time *SYSTEMTIME) bool {
-	ret, _, _ := setLocalTime.Call(
-		uintptr(unsafe.Pointer(time)))
+func SetLocalTime(time SYSTEMTIME) bool {
+	ret, _, _ := setLocalTime.Call(uintptr(unsafe.Pointer(&time)))
 	return ret != 0
 }
 
