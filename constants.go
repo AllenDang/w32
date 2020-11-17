@@ -330,42 +330,146 @@ const (
 	LB_ERRSPACE = (-2)
 )
 
-// Predefined brushes constants
+// Predefined color/brush constants.
 const (
-	COLOR_3DDKSHADOW              = 21
-	COLOR_3DFACE                  = 15
-	COLOR_3DHILIGHT               = 20
-	COLOR_3DHIGHLIGHT             = 20
-	COLOR_3DLIGHT                 = 22
-	COLOR_BTNHILIGHT              = 20
-	COLOR_3DSHADOW                = 16
-	COLOR_ACTIVEBORDER            = 10
-	COLOR_ACTIVECAPTION           = 2
-	COLOR_APPWORKSPACE            = 12
-	COLOR_BACKGROUND              = 1
-	COLOR_DESKTOP                 = 1
-	COLOR_BTNFACE                 = 15
-	COLOR_BTNHIGHLIGHT            = 20
-	COLOR_BTNSHADOW               = 16
-	COLOR_BTNTEXT                 = 18
-	COLOR_CAPTIONTEXT             = 9
-	COLOR_GRAYTEXT                = 17
-	COLOR_HIGHLIGHT               = 13
-	COLOR_HIGHLIGHTTEXT           = 14
-	COLOR_INACTIVEBORDER          = 11
-	COLOR_INACTIVECAPTION         = 3
-	COLOR_INACTIVECAPTIONTEXT     = 19
-	COLOR_INFOBK                  = 24
-	COLOR_INFOTEXT                = 23
-	COLOR_MENU                    = 4
-	COLOR_MENUTEXT                = 7
-	COLOR_SCROLLBAR               = 0
-	COLOR_WINDOW                  = 5
-	COLOR_WINDOWFRAME             = 6
-	COLOR_WINDOWTEXT              = 8
-	COLOR_HOTLIGHT                = 26
-	COLOR_GRADIENTACTIVECAPTION   = 27
+	// Scroll bar gray area.
+	COLOR_SCROLLBAR = 0
+
+	// Desktop.
+	COLOR_BACKGROUND = 1
+
+	// Desktop.
+	COLOR_DESKTOP = 1
+
+	// Active window title bar. The associated foreground color is
+	// COLOR_CAPTIONTEXT. Specifies the left side color in the color gradient of
+	// an active window's title bar if the gradient effect is enabled.
+	COLOR_ACTIVECAPTION = 2
+
+	// Inactive window caption.
+	// The associated foreground color is COLOR_INACTIVECAPTIONTEXT.
+	// Specifies the left side color in the color gradient of an inactive window's title bar if the gradient effect is enabled.
+	COLOR_INACTIVECAPTION = 3
+
+	// Menu background. The associated foreground color is COLOR_MENUTEXT.
+	COLOR_MENU = 4
+
+	// Window background. The associated foreground colors are COLOR_WINDOWTEXT
+	// and COLOR_HOTLITE.
+	COLOR_WINDOW = 5
+
+	// Window frame.
+	COLOR_WINDOWFRAME = 6
+
+	// Text in menus. The associated background color is COLOR_MENU.
+	COLOR_MENUTEXT = 7
+
+	// Text in windows. The associated background color is COLOR_WINDOW.
+	COLOR_WINDOWTEXT = 8
+
+	// Text in caption, size box, and scroll bar arrow box. The associated
+	// background color is COLOR_ACTIVECAPTION.
+	COLOR_CAPTIONTEXT = 9
+
+	// Active window border.
+	COLOR_ACTIVEBORDER = 10
+
+	// Inactive window border.
+	COLOR_INACTIVEBORDER = 11
+
+	// Background color of multiple document interface (MDI) applications.
+	COLOR_APPWORKSPACE = 12
+
+	// Item(s) selected in a control. The associated foreground color is
+	// COLOR_HIGHLIGHTTEXT.
+	COLOR_HIGHLIGHT = 13
+
+	// Text of item(s) selected in a control. The associated background color is
+	// COLOR_HIGHLIGHT.
+	COLOR_HIGHLIGHTTEXT = 14
+
+	// Face color for three-dimensional display elements and for dialog box
+	// backgrounds.
+	COLOR_3DFACE = 15
+
+	// Face color for three-dimensional display elements and for dialog box
+	// backgrounds. The associated foreground color is COLOR_BTNTEXT.
+	COLOR_BTNFACE = 15
+
+	// Shadow color for three-dimensional display elements (for edges facing
+	// away from the light source).
+	COLOR_3DSHADOW = 16
+
+	// Shadow color for three-dimensional display elements (for edges facing
+	// away from the light source).
+	COLOR_BTNSHADOW = 16
+
+	// Grayed (disabled) text. This color is set to 0 if the current display
+	// driver does not support a solid gray color.
+	COLOR_GRAYTEXT = 17
+
+	// Text on push buttons. The associated background color is COLOR_BTNFACE.
+	COLOR_BTNTEXT = 18
+
+	// Color of text in an inactive caption. The associated background color is
+	// COLOR_INACTIVECAPTION.
+	COLOR_INACTIVECAPTIONTEXT = 19
+
+	// Highlight color for three-dimensional display elements (for edges facing
+	// the light source.)
+	COLOR_3DHIGHLIGHT = 20
+
+	// Highlight color for three-dimensional display elements (for edges facing
+	// the light source.)
+	COLOR_3DHILIGHT = 20
+
+	// Highlight color for three-dimensional display elements (for edges facing
+	// the light source.)
+	COLOR_BTNHIGHLIGHT = 20
+
+	// Highlight color for three-dimensional display elements (for edges facing
+	// the light source.)
+	COLOR_BTNHILIGHT = 20
+
+	// Dark shadow for three-dimensional display elements.
+	COLOR_3DDKSHADOW = 21
+
+	// Light color for three-dimensional display elements (for edges facing the
+	// light source.)
+	COLOR_3DLIGHT = 22
+
+	// Text color for tooltip controls. The associated background color is
+	// COLOR_INFOBK.
+	COLOR_INFOTEXT = 23
+
+	// Background color for tooltip controls. The associated foreground color is
+	// COLOR_INFOTEXT.
+	COLOR_INFOBK = 24
+
+	// Color for a hyperlink or hot-tracked item. The associated background
+	// color is COLOR_WINDOW.
+	COLOR_HOTLIGHT = 26
+
+	// Right side color in the color gradient of an active window's title bar.
+	// COLOR_ACTIVECAPTION specifies the left side color. Use
+	// SPI_GETGRADIENTCAPTIONS with the SystemParametersInfo function to
+	// determine whether the gradient effect is enabled.
+	COLOR_GRADIENTACTIVECAPTION = 27
+
+	// Right side color in the color gradient of an inactive window's title bar.
+	// COLOR_INACTIVECAPTION specifies the left side color.
 	COLOR_GRADIENTINACTIVECAPTION = 28
+
+	// The color used to highlight menu items when the menu appears as a flat
+	// menu (see SystemParametersInfo). The highlighted menu item is outlined
+	// with COLOR_HIGHLIGHT. Windows 2000: This value is not supported.
+	COLOR_MENUHILIGHT = 29
+
+	// The background color for the menu bar when menus appear as flat menus
+	// (see SystemParametersInfo). However, COLOR_MENU continues to specify the
+	// background color of the menu popup. Windows 2000: This value is not
+	// supported.
+	COLOR_MENUBAR = 30
 )
 
 // Button message constants
@@ -436,10 +540,9 @@ const (
 	WS_TILED            = 0x00000000
 	WS_ICONIC           = 0x20000000
 	WS_SIZEBOX          = 0x00040000
-	WS_OVERLAPPEDWINDOW = WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_SIZEBOX |
-		WS_MINIMIZEBOX | WS_MAXIMIZEBOX
-	WS_POPUPWINDOW = WS_POPUP | WS_BORDER | WS_SYSMENU
-	WS_CHILDWINDOW = WS_CHILD
+	WS_OVERLAPPEDWINDOW = 0x00000000 | 0X00C00000 | 0X00080000 | 0X00040000 | 0X00020000 | 0X00010000
+	WS_POPUPWINDOW      = 0x80000000 | 0X00800000 | 0X00080000
+	WS_CHILDWINDOW      = 0x40000000
 )
 
 // Extended window style constants
