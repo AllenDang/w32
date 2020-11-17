@@ -848,6 +848,14 @@ type WINDOWPLACEMENT struct {
 	RcNormalPosition RECT
 }
 
+type MINMAXINFO struct {
+	PtReserved     POINT
+	PtMaxSize      POINT
+	PtMaxPosition  POINT
+	PtMinTrackSize POINT
+	PtMaxTrackSize POINT
+}
+
 type RAWINPUTHEADER struct {
 	Type   uint32
 	Size   uint32
