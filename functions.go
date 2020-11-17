@@ -1245,8 +1245,11 @@ func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
 	)
 }
 
-func GetKeyboardState(lpKeyState *[]byte) bool {
-	ret, _, _ := getKeyboardState.Call(uintptr(unsafe.Pointer(&(*lpKeyState)[0])))
+func GetKeyboardState(keyState []byte) bool {
+	if len(keyState) < 256 {
+		return false
+	}
+	ret, _, _ := getKeyboardState.Call(uintptr(unsafe.Pointer(&keyState[0])))
 	return ret != 0
 }
 
