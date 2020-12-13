@@ -29,6 +29,7 @@ var (
 	mpr      = syscall.NewLazyDLL("mpr.dll")
 	ntoskrnl = syscall.NewLazyDLL("ntoskrnl.exe")
 	ntdll    = syscall.NewLazyDLL("ntdll.dll")
+	setupAPI = syscall.NewLazyDLL("SetupAPI.dll")
 
 	registerClassEx                  = user32.NewProc("RegisterClassExW")
 	unregisterClass                  = user32.NewProc("UnregisterClassW")
@@ -224,6 +225,7 @@ var (
 	regCloseKey                = advapi32.NewProc("RegCloseKey")
 	regGetValue                = advapi32.NewProc("RegGetValueW")
 	regEnumKeyEx               = advapi32.NewProc("RegEnumKeyExW")
+	regEnumValue               = advapi32.NewProc("RegEnumValueW")
 	regSetValueEx              = advapi32.NewProc("RegSetValueExW")
 	regDeleteKeyValue          = advapi32.NewProc("RegDeleteKeyValueW")
 	regDeleteValue             = advapi32.NewProc("RegDeleteValueW")
@@ -464,6 +466,11 @@ var (
 	wNetCancelConnection2 = mpr.NewProc("WNetCancelConnection2W")
 
 	rtlGetVersion = ntdll.NewProc("RtlGetVersion")
+
+	setupDiGetClassDevs          = setupAPI.NewProc("SetupDiGetClassDevsW")
+	setupDiDestroyDeviceInfoList = setupAPI.NewProc("SetupDiDestroyDeviceInfoList")
+	setupDiEnumDeviceInfo        = setupAPI.NewProc("SetupDiEnumDeviceInfo")
+	setupDiOpenDevRegKey         = setupAPI.NewProc("SetupDiOpenDevRegKey")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -2163,7 +2170,7 @@ func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
 		uintptr(samDesired),
 		uintptr(unsafe.Pointer(&result)))
 	if ret != ERROR_SUCCESS {
-		return 0
+		return HKEY(INVALID_HANDLE_VALUE)
 	}
 	return result
 }
@@ -2366,6 +2373,17 @@ func RegEnumKeyEx(hKey HKEY, index uint32) string {
 		0,
 	)
 	return syscall.UTF16ToString(buf)
+}
+
+func RegEnumValue(key HKEY, index uint32) {
+	var valueLen uint32
+	_, _, _ = regEnumValue.Call(
+		uintptr(key),
+		uintptr(index),
+		0,
+		uintptr(unsafe.Pointer(&valueLen)),
+		0,
+	)
 }
 
 func OpenEventLog(servername string, sourcename string) HANDLE {
@@ -4631,4 +4649,47 @@ func GetNativeSystemInfo() SYSTEM_INFO {
 	var info SYSTEM_INFO
 	getNativeSystemInfo.Call(uintptr(unsafe.Pointer(&info)))
 	return info
+}
+
+// https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdigetclassdevsw
+func SetupDiGetClassDevs(classGUID *GUID, flags uint32) HANDLE {
+	ret, _, _ := setupDiGetClassDevs.Call(
+		uintptr(unsafe.Pointer(classGUID)),
+		0,
+		0,
+		uintptr(flags),
+	)
+	return HANDLE(ret)
+}
+
+func SetupDiDestroyDeviceInfoList(list HANDLE) bool {
+	ret, _, _ := setupDiDestroyDeviceInfoList.Call(uintptr(list))
+	return ret != 0
+}
+
+func SetupDiEnumDeviceInfo(deviceInfoList HANDLE, index uint32) (SP_DEVINFO_DATA, bool) {
+	var data SP_DEVINFO_DATA
+	data.Size = uint32(unsafe.Sizeof(data))
+	ret, _, _ := setupDiEnumDeviceInfo.Call(
+		uintptr(deviceInfoList),
+		uintptr(index),
+		uintptr(unsafe.Pointer(&data)),
+	)
+	return data, ret != 0
+}
+
+func SetupDiOpenDevRegKey(
+	DeviceInfoList HANDLE,
+	data *SP_DEVINFO_DATA,
+	scope, hwProfile, keyType, access uint32,
+) HKEY {
+	ret, _, _ := setupDiOpenDevRegKey.Call(
+		uintptr(DeviceInfoList),
+		uintptr(unsafe.Pointer(data)),
+		uintptr(scope),
+		uintptr(hwProfile),
+		uintptr(keyType),
+		uintptr(access),
+	)
+	return HKEY(ret)
 }

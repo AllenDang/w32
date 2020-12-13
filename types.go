@@ -1238,3 +1238,10 @@ type SYSTEM_INFO struct {
 	ProcessorLevel            uint16
 	ProcessorRevision         uint16
 }
+
+type SP_DEVINFO_DATA struct {
+	Size      uint32
+	ClassGuid GUID
+	DevInst   uint32
+	Reserved  uintptr
+}
