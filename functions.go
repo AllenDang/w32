@@ -3445,6 +3445,9 @@ func Chord(hdc HDC, x1, y1, x2, y2, x3, y3, x4, y4 int) bool {
 }
 
 func Polygon(hdc HDC, p []POINT) bool {
+	if len(p) == 0 {
+		return true
+	}
 	ret, _, _ := polygon.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
@@ -3454,6 +3457,9 @@ func Polygon(hdc HDC, p []POINT) bool {
 }
 
 func Polyline(hdc HDC, p []POINT) bool {
+	if len(p) == 0 {
+		return true
+	}
 	ret, _, _ := polyline.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
@@ -3463,6 +3469,9 @@ func Polyline(hdc HDC, p []POINT) bool {
 }
 
 func PolyBezier(hdc HDC, p []POINT) bool {
+	if len(p) == 0 {
+		return true
+	}
 	ret, _, _ := polyBezier.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
