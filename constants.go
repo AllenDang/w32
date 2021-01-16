@@ -314,7 +314,7 @@ const (
 
 // List box notification messages
 const (
-	LBN_ERRSPACE       = (-2)
+	LBN_ERRSPACE       = -2
 	LBN_SELCHANGE      = 1
 	LBN_DBLCLK         = 2
 	LBN_SELCANCEL      = 3
@@ -326,8 +326,8 @@ const (
 // List box return values
 const (
 	LB_OKAY     = 0
-	LB_ERR      = (-1)
-	LB_ERRSPACE = (-2)
+	LB_ERR      = -1
+	LB_ERRSPACE = -2
 )
 
 // Predefined color/brush constants.
@@ -1473,17 +1473,17 @@ const (
 )
 
 const (
-	CC_FASTCALL = iota
-	CC_CDECL
-	CC_MSCPASCAL
-	CC_PASCAL = CC_MSCPASCAL
-	CC_MACPASCAL
-	CC_STDCALL
-	CC_FPFASTCALL
-	CC_SYSCALL
-	CC_MPWCDECL
-	CC_MPWPASCAL
-	CC_MAX = CC_MPWPASCAL
+	CC_FASTCALL   = 0
+	CC_CDECL      = 1
+	CC_MSCPASCAL  = 2
+	CC_PASCAL     = CC_MSCPASCAL
+	CC_MACPASCAL  = 3
+	CC_STDCALL    = 4
+	CC_FPFASTCALL = 5
+	CC_SYSCALL    = 6
+	CC_MPWCDECL   = 7
+	CC_MPWPASCAL  = 8
+	CC_MAX        = CC_MPWPASCAL
 )
 
 const (
@@ -1964,8 +1964,8 @@ const (
 	RRF_RT_REG_DWORD        = 0x00000010
 	RRF_RT_REG_MULTI_SZ     = 0x00000020
 	RRF_RT_REG_QWORD        = 0x00000040
-	RRF_RT_DWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_DWORD)
-	RRF_RT_QWORD            = (RRF_RT_REG_BINARY | RRF_RT_REG_QWORD)
+	RRF_RT_DWORD            = RRF_RT_REG_BINARY | RRF_RT_REG_DWORD
+	RRF_RT_QWORD            = RRF_RT_REG_BINARY | RRF_RT_REG_QWORD
 	RRF_RT_ANY              = 0x0000ffff
 	RRF_NOEXPAND            = 0x10000000
 	RRF_ZEROONFAILURE       = 0x20000000
@@ -2201,39 +2201,39 @@ const (
 
 // Tooltip messages
 const (
-	TTM_ACTIVATE        = (WM_USER + 1)
-	TTM_SETDELAYTIME    = (WM_USER + 3)
-	TTM_ADDTOOL         = (WM_USER + 50)
-	TTM_DELTOOL         = (WM_USER + 51)
-	TTM_NEWTOOLRECT     = (WM_USER + 52)
-	TTM_RELAYEVENT      = (WM_USER + 7)
-	TTM_GETTOOLINFO     = (WM_USER + 53)
-	TTM_SETTOOLINFO     = (WM_USER + 54)
-	TTM_HITTEST         = (WM_USER + 55)
-	TTM_GETTEXT         = (WM_USER + 56)
-	TTM_UPDATETIPTEXT   = (WM_USER + 57)
-	TTM_GETTOOLCOUNT    = (WM_USER + 13)
-	TTM_ENUMTOOLS       = (WM_USER + 58)
-	TTM_GETCURRENTTOOL  = (WM_USER + 59)
-	TTM_WINDOWFROMPOINT = (WM_USER + 16)
-	TTM_TRACKACTIVATE   = (WM_USER + 17)
-	TTM_TRACKPOSITION   = (WM_USER + 18)
-	TTM_SETTIPBKCOLOR   = (WM_USER + 19)
-	TTM_SETTIPTEXTCOLOR = (WM_USER + 20)
-	TTM_GETDELAYTIME    = (WM_USER + 21)
-	TTM_GETTIPBKCOLOR   = (WM_USER + 22)
-	TTM_GETTIPTEXTCOLOR = (WM_USER + 23)
-	TTM_SETMAXTIPWIDTH  = (WM_USER + 24)
-	TTM_GETMAXTIPWIDTH  = (WM_USER + 25)
-	TTM_SETMARGIN       = (WM_USER + 26)
-	TTM_GETMARGIN       = (WM_USER + 27)
-	TTM_POP             = (WM_USER + 28)
-	TTM_UPDATE          = (WM_USER + 29)
-	TTM_GETBUBBLESIZE   = (WM_USER + 30)
-	TTM_ADJUSTRECT      = (WM_USER + 31)
-	TTM_SETTITLE        = (WM_USER + 33)
-	TTM_POPUP           = (WM_USER + 34)
-	TTM_GETTITLE        = (WM_USER + 35)
+	TTM_ACTIVATE        = WM_USER + 1
+	TTM_SETDELAYTIME    = WM_USER + 3
+	TTM_ADDTOOL         = WM_USER + 50
+	TTM_DELTOOL         = WM_USER + 51
+	TTM_NEWTOOLRECT     = WM_USER + 52
+	TTM_RELAYEVENT      = WM_USER + 7
+	TTM_GETTOOLINFO     = WM_USER + 53
+	TTM_SETTOOLINFO     = WM_USER + 54
+	TTM_HITTEST         = WM_USER + 55
+	TTM_GETTEXT         = WM_USER + 56
+	TTM_UPDATETIPTEXT   = WM_USER + 57
+	TTM_GETTOOLCOUNT    = WM_USER + 13
+	TTM_ENUMTOOLS       = WM_USER + 58
+	TTM_GETCURRENTTOOL  = WM_USER + 59
+	TTM_WINDOWFROMPOINT = WM_USER + 16
+	TTM_TRACKACTIVATE   = WM_USER + 17
+	TTM_TRACKPOSITION   = WM_USER + 18
+	TTM_SETTIPBKCOLOR   = WM_USER + 19
+	TTM_SETTIPTEXTCOLOR = WM_USER + 20
+	TTM_GETDELAYTIME    = WM_USER + 21
+	TTM_GETTIPBKCOLOR   = WM_USER + 22
+	TTM_GETTIPTEXTCOLOR = WM_USER + 23
+	TTM_SETMAXTIPWIDTH  = WM_USER + 24
+	TTM_GETMAXTIPWIDTH  = WM_USER + 25
+	TTM_SETMARGIN       = WM_USER + 26
+	TTM_GETMARGIN       = WM_USER + 27
+	TTM_POP             = WM_USER + 28
+	TTM_UPDATE          = WM_USER + 29
+	TTM_GETBUBBLESIZE   = WM_USER + 30
+	TTM_ADJUSTRECT      = WM_USER + 31
+	TTM_SETTITLE        = WM_USER + 33
+	TTM_POPUP           = WM_USER + 34
+	TTM_GETTITLE        = WM_USER + 35
 )
 
 // Tooltip icons
@@ -2251,10 +2251,10 @@ const (
 const (
 	TTN_FIRST       = -520
 	TTN_LAST        = -549
-	TTN_GETDISPINFO = (TTN_FIRST - 10)
-	TTN_SHOW        = (TTN_FIRST - 1)
-	TTN_POP         = (TTN_FIRST - 2)
-	TTN_LINKCLICK   = (TTN_FIRST - 3)
+	TTN_GETDISPINFO = TTN_FIRST - 10
+	TTN_SHOW        = TTN_FIRST - 1
+	TTN_POP         = TTN_FIRST - 2
+	TTN_LINKCLICK   = TTN_FIRST - 3
 	TTN_NEEDTEXT    = TTN_GETDISPINFO
 )
 
@@ -2398,8 +2398,8 @@ const (
 
 // WM_NCHITTEST and MOUSEHOOKSTRUCT Mouse Position Codes
 const (
-	HTERROR       = (-2)
-	HTTRANSPARENT = (-1)
+	HTERROR       = -2
+	HTTRANSPARENT = -1
 	HTNOWHERE     = 0
 	HTCLIENT      = 1
 	HTCAPTION     = 2
@@ -2482,8 +2482,8 @@ const (
 	GMEM_LOWER          = GMEM_NOT_BANKED
 	GMEM_VALID_FLAGS    = 0x7F72
 	GMEM_INVALID_HANDLE = 0x8000
-	GHND                = (GMEM_MOVEABLE | GMEM_ZEROINIT)
-	GPTR                = (GMEM_FIXED | GMEM_ZEROINIT)
+	GHND                = GMEM_MOVEABLE | GMEM_ZEROINIT
+	GPTR                = GMEM_FIXED | GMEM_ZEROINIT
 )
 
 // Ternary raster operations
@@ -2714,9 +2714,9 @@ type DWM_SOURCE_FRAME_SAMPLING int32
 // Flags used by the DwmSetPresentParameters function
 // to specify the frame sampling type
 const (
-	DWM_SOURCE_FRAME_SAMPLING_POINT = iota + 1
-	DWM_SOURCE_FRAME_SAMPLING_COVERAGE
-	DWM_SOURCE_FRAME_SAMPLING_LAST
+	DWM_SOURCE_FRAME_SAMPLING_POINT    = 1
+	DWM_SOURCE_FRAME_SAMPLING_COVERAGE = 2
+	DWM_SOURCE_FRAME_SAMPLING_LAST     = 3
 )
 
 // Flags used by the DWM_THUMBNAIL_PROPERTIES structure to
@@ -2736,10 +2736,10 @@ type DWMFLIP3DWINDOWPOLICY int32
 // Flags used by the DwmSetWindowAttribute function
 // to specify the Flip3D window policy
 const (
-	DWMFLIP3D_DEFAULT = iota + 1
-	DWMFLIP3D_EXCLUDEBELOW
-	DWMFLIP3D_EXCLUDEABOVE
-	DWMFLIP3D_LAST
+	DWMFLIP3D_DEFAULT      = 1
+	DWMFLIP3D_EXCLUDEBELOW = 2
+	DWMFLIP3D_EXCLUDEABOVE = 3
+	DWMFLIP3D_LAST         = 4
 )
 
 // enum-lite implementation for the following constant structure
@@ -2749,10 +2749,10 @@ type DWMNCRENDERINGPOLICY int32
 // Flags used by the DwmSetWindowAttribute function
 // to specify the non-client area rendering policy
 const (
-	DWMNCRP_USEWINDOWSTYLE = iota + 1
-	DWMNCRP_DISABLED
-	DWMNCRP_ENABLED
-	DWMNCRP_LAST
+	DWMNCRP_USEWINDOWSTYLE = 1
+	DWMNCRP_DISABLED       = 2
+	DWMNCRP_ENABLED        = 3
+	DWMNCRP_LAST           = 4
 )
 
 // enum-lite implementation for the following constant structure
@@ -2770,22 +2770,22 @@ type DWMWINDOWATTRIBUTE int32
 // Flags used by the DwmGetWindowAttribute and DwmSetWindowAttribute functions
 // to specify window attributes for non-client rendering
 const (
-	DWMWA_NCRENDERING_ENABLED = iota + 1
-	DWMWA_NCRENDERING_POLICY
-	DWMWA_TRANSITIONS_FORCEDISABLED
-	DWMWA_ALLOW_NCPAINT
-	DWMWA_CAPTION_BUTTON_BOUNDS
-	DWMWA_NONCLIENT_RTL_LAYOUT
-	DWMWA_FORCE_ICONIC_REPRESENTATION
-	DWMWA_FLIP3D_POLICY
-	DWMWA_EXTENDED_FRAME_BOUNDS
-	DWMWA_HAS_ICONIC_BITMAP
-	DWMWA_DISALLOW_PEEK
-	DWMWA_EXCLUDED_FROM_PEEK
-	DWMWA_CLOAK
-	DWMWA_CLOAKED
-	DWMWA_FREEZE_REPRESENTATION
-	DWMWA_LAST
+	DWMWA_NCRENDERING_ENABLED         = 1
+	DWMWA_NCRENDERING_POLICY          = 2
+	DWMWA_TRANSITIONS_FORCEDISABLED   = 3
+	DWMWA_ALLOW_NCPAINT               = 4
+	DWMWA_CAPTION_BUTTON_BOUNDS       = 5
+	DWMWA_NONCLIENT_RTL_LAYOUT        = 6
+	DWMWA_FORCE_ICONIC_REPRESENTATION = 7
+	DWMWA_FLIP3D_POLICY               = 8
+	DWMWA_EXTENDED_FRAME_BOUNDS       = 9
+	DWMWA_HAS_ICONIC_BITMAP           = 10
+	DWMWA_DISALLOW_PEEK               = 11
+	DWMWA_EXCLUDED_FROM_PEEK          = 12
+	DWMWA_CLOAK                       = 13
+	DWMWA_CLOAKED                     = 14
+	DWMWA_FREEZE_REPRESENTATION       = 15
+	DWMWA_LAST                        = 16
 )
 
 const (
@@ -3419,10 +3419,10 @@ const (
 	FILE_DELETE_CHILD                  = 64
 	FILE_READ_ATTRIBUTES               = 128
 	FILE_WRITE_ATTRIBUTES              = 256
-	FILE_ALL_ACCESS                    = (STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1FF)
-	FILE_GENERIC_READ                  = (STANDARD_RIGHTS_READ | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA | SYNCHRONIZE)
-	FILE_GENERIC_WRITE                 = (STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE)
-	FILE_GENERIC_EXECUTE               = (STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE)
+	FILE_ALL_ACCESS                    = STANDARD_RIGHTS_REQUIRED | SYNCHRONIZE | 0x1FF
+	FILE_GENERIC_READ                  = STANDARD_RIGHTS_READ | FILE_READ_DATA | FILE_READ_ATTRIBUTES | FILE_READ_EA | SYNCHRONIZE
+	FILE_GENERIC_WRITE                 = STANDARD_RIGHTS_WRITE | FILE_WRITE_DATA | FILE_WRITE_ATTRIBUTES | FILE_WRITE_EA | FILE_APPEND_DATA | SYNCHRONIZE
+	FILE_GENERIC_EXECUTE               = STANDARD_RIGHTS_EXECUTE | FILE_READ_ATTRIBUTES | FILE_EXECUTE | SYNCHRONIZE
 	FILE_SHARE_READ                    = 1
 	FILE_SHARE_WRITE                   = 2
 	FILE_SHARE_DELETE                  = 4
@@ -3476,54 +3476,54 @@ const INVALID_HANDLE_VALUE = ^HANDLE(0)
 
 // STORAGE_BUS_TYPE values
 const (
-	BusTypeUnknown = iota
-	BusTypeScsi
-	BusTypeAtapi
-	BusTypeAta
-	BusType1394
-	BusTypeSsa
-	BusTypeFibre
-	BusTypeUsb
-	BusTypeRAID
-	BusTypeiScsi
-	BusTypeSas
-	BusTypeSata
-	BusTypeSd
-	BusTypeMmc
-	BusTypeVirtual
-	BusTypeFileBackedVirtual
-	BusTypeSpaces
-	BusTypeNvme
-	BusTypeMax
-	BusTypeMaxReserved = 0x7F
+	BusTypeUnknown           = 0
+	BusTypeScsi              = 1
+	BusTypeAtapi             = 2
+	BusTypeAta               = 3
+	BusType1394              = 4
+	BusTypeSsa               = 5
+	BusTypeFibre             = 6
+	BusTypeUsb               = 7
+	BusTypeRAID              = 8
+	BusTypeiScsi             = 9
+	BusTypeSas               = 10
+	BusTypeSata              = 11
+	BusTypeSd                = 12
+	BusTypeMmc               = 13
+	BusTypeVirtual           = 14
+	BusTypeFileBackedVirtual = 15
+	BusTypeSpaces            = 16
+	BusTypeNvme              = 17
+	BusTypeMax               = 18
+	BusTypeMaxReserved       = 0x7F
 )
 
 // STORAGE_QUERY_TYPE values
 const (
-	PropertyStandardQuery = iota
-	PropertyExistsQuery
-	PropertyMaskQuery
-	PropertyQueryMaxDefined
+	PropertyStandardQuery   = 0
+	PropertyExistsQuery     = 1
+	PropertyMaskQuery       = 2
+	PropertyQueryMaxDefined = 3
 )
 
 // STORAGE_PROPERTY_ID values
 const (
-	StorageDeviceProperty = iota
-	StorageAdapterProperty
-	StorageDeviceIdProperty
-	StorageDeviceUniqueIdProperty
-	StorageDeviceWriteCacheProperty
-	StorageMiniportProperty
-	StorageAccessAlignmentProperty
-	StorageDeviceSeekPenaltyProperty
-	StorageDeviceTrimProperty
-	StorageDeviceWriteAggregationProperty
-	StorageDeviceDeviceTelemetryProperty
-	StorageDeviceLBProvisioningProperty
-	StorageDevicePowerProperty
-	StorageDeviceCopyOffloadProperty
-	StorageDeviceResiliencyProperty
-	StorageDeviceMediumProductType
+	StorageDeviceProperty                 = 0
+	StorageAdapterProperty                = 1
+	StorageDeviceIdProperty               = 2
+	StorageDeviceUniqueIdProperty         = 3
+	StorageDeviceWriteCacheProperty       = 4
+	StorageMiniportProperty               = 5
+	StorageAccessAlignmentProperty        = 6
+	StorageDeviceSeekPenaltyProperty      = 7
+	StorageDeviceTrimProperty             = 8
+	StorageDeviceWriteAggregationProperty = 9
+	StorageDeviceDeviceTelemetryProperty  = 10
+	StorageDeviceLBProvisioningProperty   = 11
+	StorageDevicePowerProperty            = 12
+	StorageDeviceCopyOffloadProperty      = 13
+	StorageDeviceResiliencyProperty       = 14
+	StorageDeviceMediumProductType        = 15
 )
 
 // STREAM_INFO_LEVELS
@@ -3802,15 +3802,15 @@ const (
 const (
 	// PoAc: the computer is powered by an AC power source (or similar, such as
 	// a laptop powered by a 12V automotive adapter).
-	PoAc = iota
+	PoAc = 0
 	// PoDc: the system is receiving power from built-in batteries.
-	PoDc
+	PoDc = 1
 	// PoHot: the computer is powered by a short-term power source such as a UPS
 	// device.
-	PoHot
+	PoHot = 2
 	// PoConditionMaximum: values equal to or greater than this value indicate
 	// an out of range value.
-	PoConditionMaximum
+	PoConditionMaximum = 3
 )
 
 const (
