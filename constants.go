@@ -47,7 +47,7 @@ const (
 )
 
 const (
-	CW_USEDEFAULT = ^0x7fffffff
+	CW_USEDEFAULT = ^0x7FFFFFFF
 )
 
 // ShowWindow constants
@@ -206,11 +206,11 @@ const (
 	CB_FINDSTRINGEXACT       = 0x0158
 	CB_SETLOCALE             = 0x0159
 	CB_GETLOCALE             = 0x015A
-	CB_GETTOPINDEX           = 0x015b
-	CB_SETTOPINDEX           = 0x015c
-	CB_GETHORIZONTALEXTENT   = 0x015d
-	CB_SETHORIZONTALEXTENT   = 0x015e
-	CB_GETDROPPEDWIDTH       = 0x015f
+	CB_GETTOPINDEX           = 0x015B
+	CB_SETTOPINDEX           = 0x015C
+	CB_GETHORIZONTALEXTENT   = 0x015D
+	CB_SETHORIZONTALEXTENT   = 0x015E
+	CB_GETDROPPEDWIDTH       = 0x015F
 	CB_SETDROPPEDWIDTH       = 0x0160
 	CB_INITSTORAGE           = 0x0161
 	CB_MULTIPLEADDSTRING     = 0x0163
@@ -540,8 +540,8 @@ const (
 	WS_TILED            = 0x00000000
 	WS_ICONIC           = 0x20000000
 	WS_SIZEBOX          = 0x00040000
-	WS_OVERLAPPEDWINDOW = 0x00000000 | 0X00C00000 | 0X00080000 | 0X00040000 | 0X00020000 | 0X00010000
-	WS_POPUPWINDOW      = 0x80000000 | 0X00800000 | 0X00080000
+	WS_OVERLAPPEDWINDOW = 0x00000000 | 0x00C00000 | 0x00080000 | 0x00040000 | 0x00020000 | 0x00010000
+	WS_POPUPWINDOW      = 0x80000000 | 0x00800000 | 0x00080000
 	WS_CHILDWINDOW      = 0x40000000
 )
 
@@ -566,8 +566,8 @@ const (
 	WS_EX_CONTROLPARENT    = 0x00010000
 	WS_EX_STATICEDGE       = 0x00020000
 	WS_EX_APPWINDOW        = 0x00040000
-	WS_EX_OVERLAPPEDWINDOW = 0x00000100 | 0X00000200
-	WS_EX_PALETTEWINDOW    = 0x00000100 | 0X00000080 | 0X00000008
+	WS_EX_OVERLAPPEDWINDOW = 0x00000100 | 0x00000200
+	WS_EX_PALETTEWINDOW    = 0x00000100 | 0x00000080 | 0x00000008
 	WS_EX_LAYERED          = 0x00080000
 	WS_EX_NOINHERITLAYOUT  = 0x00100000
 	WS_EX_LAYOUTRTL        = 0x00400000
@@ -592,7 +592,7 @@ const (
 	WM_CLEAR                  = 771
 	WM_CLOSE                  = 16
 	WM_COMMAND                = 273
-	WM_COMMNOTIFY             = 68 /* OBSOLETE */
+	WM_COMMNOTIFY             = 68 // obsolete
 	WM_COMPACTING             = 65
 	WM_COMPAREITEM            = 57
 	WM_CONTEXTMENU            = 123
@@ -1103,10 +1103,10 @@ const (
 	SS_GRAYRECT        = 5
 	SS_ICON            = 3
 	SS_LEFT            = 0
-	SS_LEFTNOWORDWRAP  = 0xc
+	SS_LEFTNOWORDWRAP  = 0xC
 	SS_NOPREFIX        = 128
 	SS_NOTIFY          = 256
-	SS_OWNERDRAW       = 0xd
+	SS_OWNERDRAW       = 0xD
 	SS_REALSIZECONTROL = 0x040
 	SS_REALSIZEIMAGE   = 0x800
 	SS_RIGHT           = 2
@@ -1212,8 +1212,8 @@ const (
 	CCM_SETVERSION       = 0x2007
 	CCM_GETVERSION       = 0x2008
 	CCM_SETNOTIFYWINDOW  = 0x2009
-	CCM_SETWINDOWTHEME   = 0x200b
-	CCM_DPISCALE         = 0x200c
+	CCM_SETWINDOWTHEME   = 0x200B
+	CCM_DPISCALE         = 0x200C
 )
 
 // Common controls styles
@@ -1497,11 +1497,11 @@ const (
 	VT_DATE            = 0x7
 	VT_BSTR            = 0x8
 	VT_DISPATCH        = 0x9
-	VT_ERROR           = 0xa
-	VT_BOOL            = 0xb
-	VT_VARIANT         = 0xc
-	VT_UNKNOWN         = 0xd
-	VT_DECIMAL         = 0xe
+	VT_ERROR           = 0xA
+	VT_BOOL            = 0xB
+	VT_VARIANT         = 0xC
+	VT_UNKNOWN         = 0xD
+	VT_DECIMAL         = 0xE
 	VT_I1              = 0x10
 	VT_UI1             = 0x11
 	VT_UI2             = 0x12
@@ -1512,12 +1512,12 @@ const (
 	VT_UINT            = 0x17
 	VT_VOID            = 0x18
 	VT_HRESULT         = 0x19
-	VT_PTR             = 0x1a
-	VT_SAFEARRAY       = 0x1b
-	VT_CARRAY          = 0x1c
-	VT_USERDEFINED     = 0x1d
-	VT_LPSTR           = 0x1e
-	VT_LPWSTR          = 0x1f
+	VT_PTR             = 0x1A
+	VT_SAFEARRAY       = 0x1B
+	VT_CARRAY          = 0x1C
+	VT_USERDEFINED     = 0x1D
+	VT_LPSTR           = 0x1E
+	VT_LPWSTR          = 0x1F
 	VT_RECORD          = 0x24
 	VT_INT_PTR         = 0x25
 	VT_UINT_PTR        = 0x26
@@ -1530,14 +1530,14 @@ const (
 	VT_BLOB_OBJECT     = 0x46
 	VT_CF              = 0x47
 	VT_CLSID           = 0x48
-	VT_BSTR_BLOB       = 0xfff
+	VT_BSTR_BLOB       = 0xFFF
 	VT_VECTOR          = 0x1000
 	VT_ARRAY           = 0x2000
 	VT_BYREF           = 0x4000
 	VT_RESERVED        = 0x8000
-	VT_ILLEGAL         = 0xffff
-	VT_ILLEGALMASKED   = 0xfff
-	VT_TYPEMASK        = 0xfff
+	VT_ILLEGAL         = 0xFFFF
+	VT_ILLEGALMASKED   = 0xFFF
+	VT_TYPEMASK        = 0xFFF
 )
 
 const (
@@ -1782,10 +1782,10 @@ const (
 	LVS_EDITLABELS      = 0x0200
 	LVS_OWNERDATA       = 0x1000
 	LVS_NOSCROLL        = 0x2000
-	LVS_TYPESTYLEMASK   = 0xfc00
+	LVS_TYPESTYLEMASK   = 0xFC00
 	LVS_ALIGNTOP        = 0x0000
 	LVS_ALIGNLEFT       = 0x0800
-	LVS_ALIGNMASK       = 0x0c00
+	LVS_ALIGNMASK       = 0x0C00
 	LVS_OWNERDRAWFIXED  = 0x0400
 	LVS_NOCOLUMNHEADER  = 0x4000
 	LVS_NOSORTHEADER    = 0x8000
@@ -1966,7 +1966,7 @@ const (
 	RRF_RT_REG_QWORD        = 0x00000040
 	RRF_RT_DWORD            = RRF_RT_REG_BINARY | RRF_RT_REG_DWORD
 	RRF_RT_QWORD            = RRF_RT_REG_BINARY | RRF_RT_REG_QWORD
-	RRF_RT_ANY              = 0x0000ffff
+	RRF_RT_ANY              = 0x0000FFFF
 	RRF_NOEXPAND            = 0x10000000
 	RRF_ZEROONFAILURE       = 0x20000000
 	REG_PROCESS_APPKEY      = 0x00000001
@@ -3824,11 +3824,11 @@ const (
 	CSIDL_STARTUP                 = 0x0007         // Start Menu\Programs\Startup
 	CSIDL_RECENT                  = 0x0008         // <user name>\Recent
 	CSIDL_SENDTO                  = 0x0009         // <user name>\SendTo
-	CSIDL_BITBUCKET               = 0x000a         // <desktop>\Recycle Bin
-	CSIDL_STARTMENU               = 0x000b         // <user name>\Start Menu
+	CSIDL_BITBUCKET               = 0x000A         // <desktop>\Recycle Bin
+	CSIDL_STARTMENU               = 0x000B         // <user name>\Start Menu
 	CSIDL_MYDOCUMENTS             = CSIDL_PERSONAL //  Personal was just a silly name for My Documents
-	CSIDL_MYMUSIC                 = 0x000d         // "My Music" folder
-	CSIDL_MYVIDEO                 = 0x000e         // "My Videos" folder
+	CSIDL_MYMUSIC                 = 0x000D         // "My Music" folder
+	CSIDL_MYVIDEO                 = 0x000E         // "My Videos" folder
 	CSIDL_DESKTOPDIRECTORY        = 0x0010         // <user name>\Desktop
 	CSIDL_DRIVES                  = 0x0011         // My Computer
 	CSIDL_NETWORK                 = 0x0012         // Network Neighborhood (My Network Places)
@@ -3836,15 +3836,15 @@ const (
 	CSIDL_FONTS                   = 0x0014         // windows\fonts
 	CSIDL_TEMPLATES               = 0x0015
 	CSIDL_COMMON_STARTMENU        = 0x0016 // All Users\Start Menu
-	CSIDL_COMMON_PROGRAMS         = 0X0017 // All Users\Start Menu\Programs
+	CSIDL_COMMON_PROGRAMS         = 0x0017 // All Users\Start Menu\Programs
 	CSIDL_COMMON_STARTUP          = 0x0018 // All Users\Startup
 	CSIDL_COMMON_DESKTOPDIRECTORY = 0x0019 // All Users\Desktop
-	CSIDL_APPDATA                 = 0x001a // <user name>\Application Data
-	CSIDL_PRINTHOOD               = 0x001b // <user name>\PrintHood
-	CSIDL_LOCAL_APPDATA           = 0x001c // <user name>\Local Settings\Applicaiton Data (non roaming)
-	CSIDL_ALTSTARTUP              = 0x001d // non localized startup
-	CSIDL_COMMON_ALTSTARTUP       = 0x001e // non localized common startup
-	CSIDL_COMMON_FAVORITES        = 0x001f
+	CSIDL_APPDATA                 = 0x001A // <user name>\Application Data
+	CSIDL_PRINTHOOD               = 0x001B // <user name>\PrintHood
+	CSIDL_LOCAL_APPDATA           = 0x001C // <user name>\Local Settings\Applicaiton Data (non roaming)
+	CSIDL_ALTSTARTUP              = 0x001D // non localized startup
+	CSIDL_COMMON_ALTSTARTUP       = 0x001E // non localized common startup
+	CSIDL_COMMON_FAVORITES        = 0x001F
 	CSIDL_INTERNET_CACHE          = 0x0020
 	CSIDL_COOKIES                 = 0x0021
 	CSIDL_HISTORY                 = 0x0022
@@ -3855,12 +3855,12 @@ const (
 	CSIDL_MYPICTURES              = 0x0027 // C:\Program Files\My Pictures
 	CSIDL_PROFILE                 = 0x0028 // USERPROFILE
 	CSIDL_SYSTEMX86               = 0x0029 // x86 system directory on RISC
-	CSIDL_PROGRAM_FILESX86        = 0x002a // x86 C:\Program Files on RISC
-	CSIDL_PROGRAM_FILES_COMMON    = 0x002b // C:\Program Files\Common
-	CSIDL_PROGRAM_FILES_COMMONX86 = 0x002c // x86 Program Files\Common on RISC
-	CSIDL_COMMON_TEMPLATES        = 0x002d // All Users\Templates
-	CSIDL_COMMON_DOCUMENTS        = 0x002e // All Users\Documents
-	CSIDL_COMMON_ADMINTOOLS       = 0x002f // All Users\Start Menu\Programs\Administrative Tools
+	CSIDL_PROGRAM_FILESX86        = 0x002A // x86 C:\Program Files on RISC
+	CSIDL_PROGRAM_FILES_COMMON    = 0x002B // C:\Program Files\Common
+	CSIDL_PROGRAM_FILES_COMMONX86 = 0x002C // x86 Program Files\Common on RISC
+	CSIDL_COMMON_TEMPLATES        = 0x002D // All Users\Templates
+	CSIDL_COMMON_DOCUMENTS        = 0x002E // All Users\Documents
+	CSIDL_COMMON_ADMINTOOLS       = 0x002F // All Users\Start Menu\Programs\Administrative Tools
 	CSIDL_ADMINTOOLS              = 0x0030 // <user name>\Start Menu\Programs\Administrative Tools
 	CSIDL_CONNECTIONS             = 0x0031 // Network and Dial-up Connections
 	CSIDL_COMMON_MUSIC            = 0x0035 // All Users\My Music
@@ -3917,7 +3917,7 @@ const (
 	PROCESSOR_ARCHITECTURE_ARM64   = 12
 	PROCESSOR_ARCHITECTURE_IA64    = 6
 	PROCESSOR_ARCHITECTURE_INTEL   = 0
-	PROCESSOR_ARCHITECTURE_UNKNOWN = 0xffff
+	PROCESSOR_ARCHITECTURE_UNKNOWN = 0xFFFF
 )
 
 // Flags for SetLayeredWindowAttributes.
