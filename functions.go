@@ -391,6 +391,7 @@ var (
 	systemTimeToFileTime       = kernel32.NewProc("SystemTimeToFileTime")
 	fileTimeToSystemTime       = kernel32.NewProc("FileTimeToSystemTime")
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
+	getCurrentProcess          = kernel32.NewProc("GetCurrentProcess")
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
 	getVersion                 = kernel32.NewProc("GetVersion")
 	setEnvironmentVariable     = kernel32.NewProc("SetEnvironmentVariableW")
@@ -3754,15 +3755,16 @@ func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
 	return ret != 0
 }
 
-func GetProcessTimes(hProcess HANDLE, lpCreationTime, lpExitTime, lpKernelTime, lpUserTime *FILETIME) bool {
+func GetProcessTimes(hProcess HANDLE) (creationTime, exitTime, kernelTime, userTime FILETIME, ok bool) {
 	ret, _, _ := getProcessTimes.Call(
 		uintptr(hProcess),
-		uintptr(unsafe.Pointer(lpCreationTime)),
-		uintptr(unsafe.Pointer(lpExitTime)),
-		uintptr(unsafe.Pointer(lpKernelTime)),
-		uintptr(unsafe.Pointer(lpUserTime)),
+		uintptr(unsafe.Pointer(&creationTime)),
+		uintptr(unsafe.Pointer(&exitTime)),
+		uintptr(unsafe.Pointer(&kernelTime)),
+		uintptr(unsafe.Pointer(&userTime)),
 	)
-	return ret != 0
+	ok = ret != 0
+	return
 }
 
 func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_INFO {
@@ -3841,6 +3843,11 @@ func CopyMemory(dest, source unsafe.Pointer, sizeInBytes int) {
 		uintptr(source),
 		uintptr(sizeInBytes),
 	)
+}
+
+func GetCurrentProcess() HANDLE {
+	id, _, _ := getCurrentProcess.Call()
+	return HANDLE(id)
 }
 
 func GetCurrentProcessId() DWORD {
