@@ -6,6 +6,7 @@ package w32
 
 import (
 	"syscall"
+	"time"
 	"unicode/utf16"
 	"unsafe"
 )
@@ -649,8 +650,21 @@ type FILETIME struct {
 	DwHighDateTime uint32
 }
 
-func (t FILETIME) ToUint64() uint64 {
+func (t FILETIME) Uint64() uint64 {
 	return uint64(t.DwHighDateTime)<<32 | uint64(t.DwLowDateTime)
+}
+
+func (t FILETIME) Time() time.Time {
+	// https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime
+	ref := time.Date(1601, time.January, 1, 0, 0, 0, 0, time.UTC)
+	const tick = 100 * time.Nanosecond
+	// The FILETIME is a uint64 of 100-nanosecond intervals since 1601.
+	// Unfortunately time.Duration is really an int64 so if we cast our uint64
+	// to a time.Duration it becomes negative. Thus we do it in 2 steps, adding
+	// half the time each step to avoid overflow.
+	return ref.
+		Add(time.Duration(t.Uint64()) * (tick / 2)).
+		Add(time.Duration(t.Uint64()) * (tick / 2))
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx
@@ -826,6 +840,19 @@ type SYSTEMTIME struct {
 	Minute       uint16
 	Second       uint16
 	Milliseconds uint16
+}
+
+func (t SYSTEMTIME) Time() time.Time {
+	return time.Date(
+		int(t.Year),
+		time.Month(t.Month),
+		int(t.Day),
+		int(t.Hour),
+		int(t.Minute),
+		int(t.Second),
+		int(t.Milliseconds)*int(time.Millisecond/time.Nanosecond),
+		time.UTC,
+	)
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms644967(v=vs.85).aspx
