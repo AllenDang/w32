@@ -2227,6 +2227,7 @@ const (
 	VK_ICO_00              = 0xE4
 	VK_PROCESSKEY          = 0xE5
 	VK_ICO_CLEAR           = 0xE6
+	VK_PACKET              = 0xE7
 	VK_OEM_RESET           = 0xE9
 	VK_OEM_JUMP            = 0xEA
 	VK_OEM_PA1             = 0xEB
