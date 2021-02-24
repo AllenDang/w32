@@ -3,7 +3,6 @@ package w32
 import (
 	"errors"
 	"fmt"
-	"strconv"
 	"syscall"
 	"unsafe"
 )
@@ -27,218 +26,198 @@ var (
 	dxva2    = syscall.NewLazyDLL("dxva2.dll")
 	msimg32  = syscall.NewLazyDLL("msimg32.dll")
 	mpr      = syscall.NewLazyDLL("mpr.dll")
-	ntoskrnl = syscall.NewLazyDLL("ntoskrnl.exe")
-	ntdll    = syscall.NewLazyDLL("ntdll.dll")
-	setupAPI = syscall.NewLazyDLL("SetupAPI.dll")
 
-	registerClassEx                  = user32.NewProc("RegisterClassExW")
-	unregisterClass                  = user32.NewProc("UnregisterClassW")
-	getClassInfoEx                   = user32.NewProc("GetClassInfoExW")
-	loadIcon                         = user32.NewProc("LoadIconW")
-	loadCursor                       = user32.NewProc("LoadCursorW")
-	showWindow                       = user32.NewProc("ShowWindow")
-	showWindowAsync                  = user32.NewProc("ShowWindowAsync")
-	updateWindow                     = user32.NewProc("UpdateWindow")
-	createWindow                     = user32.NewProc("CreateWindowW")
-	createWindowEx                   = user32.NewProc("CreateWindowExW")
-	adjustWindowRect                 = user32.NewProc("AdjustWindowRect")
-	adjustWindowRectEx               = user32.NewProc("AdjustWindowRectEx")
-	destroyWindow                    = user32.NewProc("DestroyWindow")
-	defWindowProc                    = user32.NewProc("DefWindowProcW")
-	defDlgProc                       = user32.NewProc("DefDlgProcW")
-	postQuitMessage                  = user32.NewProc("PostQuitMessage")
-	getMessage                       = user32.NewProc("GetMessageW")
-	getMessageTime                   = user32.NewProc("GetMessageTime")
-	translateMessage                 = user32.NewProc("TranslateMessage")
-	dispatchMessage                  = user32.NewProc("DispatchMessageW")
-	sendMessage                      = user32.NewProc("SendMessageW")
-	postMessage                      = user32.NewProc("PostMessageW")
-	waitMessage                      = user32.NewProc("WaitMessage")
-	setWindowText                    = user32.NewProc("SetWindowTextW")
-	getWindowTextLength              = user32.NewProc("GetWindowTextLengthW")
-	getWindowText                    = user32.NewProc("GetWindowTextW")
-	getWindowRect                    = user32.NewProc("GetWindowRect")
-	moveWindow                       = user32.NewProc("MoveWindow")
-	screenToClient                   = user32.NewProc("ScreenToClient")
-	callWindowProc                   = user32.NewProc("CallWindowProcW")
-	setWindowLong                    = user32.NewProc("SetWindowLongW")
-	setWindowLongPtr                 = user32.NewProc("SetWindowLongPtrW")
-	setClassLongPtr                  = user32.NewProc("SetClassLongPtrW")
-	getWindowLong                    = user32.NewProc("GetWindowLongW")
-	getWindowLongPtr                 = user32.NewProc("GetWindowLongPtrW")
-	getClassLongPtr                  = user32.NewProc("GetClassLongPtrW")
-	enableWindow                     = user32.NewProc("EnableWindow")
-	isWindowEnabled                  = user32.NewProc("IsWindowEnabled")
-	isWindowVisible                  = user32.NewProc("IsWindowVisible")
-	setFocus                         = user32.NewProc("SetFocus")
-	invalidateRect                   = user32.NewProc("InvalidateRect")
-	validateRect                     = user32.NewProc("ValidateRect")
-	getClientRect                    = user32.NewProc("GetClientRect")
-	getDC                            = user32.NewProc("GetDC")
-	releaseDC                        = user32.NewProc("ReleaseDC")
-	setCapture                       = user32.NewProc("SetCapture")
-	releaseCapture                   = user32.NewProc("ReleaseCapture")
-	getWindowThreadProcessId         = user32.NewProc("GetWindowThreadProcessId")
-	messageBox                       = user32.NewProc("MessageBoxW")
-	messageBoxIndirect               = user32.NewProc("MessageBoxIndirectW")
-	getSystemMetrics                 = user32.NewProc("GetSystemMetrics")
-	copyRect                         = user32.NewProc("CopyRect")
-	equalRect                        = user32.NewProc("EqualRect")
-	inflateRect                      = user32.NewProc("InflateRect")
-	intersectRect                    = user32.NewProc("IntersectRect")
-	isRectEmpty                      = user32.NewProc("IsRectEmpty")
-	offsetRect                       = user32.NewProc("OffsetRect")
-	ptInRect                         = user32.NewProc("PtInRect")
-	setRect                          = user32.NewProc("SetRect")
-	setRectEmpty                     = user32.NewProc("SetRectEmpty")
-	subtractRect                     = user32.NewProc("SubtractRect")
-	unionRect                        = user32.NewProc("UnionRect")
-	createDialogParam                = user32.NewProc("CreateDialogParamW")
-	dialogBoxParam                   = user32.NewProc("DialogBoxParamW")
-	getDlgItem                       = user32.NewProc("GetDlgItem")
-	drawIcon                         = user32.NewProc("DrawIcon")
-	drawIconEx                       = user32.NewProc("DrawIconEx")
-	clientToScreen                   = user32.NewProc("ClientToScreen")
-	isDialogMessage                  = user32.NewProc("IsDialogMessageW")
-	isWindow                         = user32.NewProc("IsWindow")
-	endDialog                        = user32.NewProc("EndDialog")
-	peekMessage                      = user32.NewProc("PeekMessageW")
-	createAcceleratorTable           = user32.NewProc("CreateAcceleratorTableW")
-	destroyAcceleratorTable          = user32.NewProc("DestroyAcceleratorTable")
-	translateAccelerator             = user32.NewProc("TranslateAcceleratorW")
-	setWindowPos                     = user32.NewProc("SetWindowPos")
-	fillRect                         = user32.NewProc("FillRect")
-	drawText                         = user32.NewProc("DrawTextW")
-	addClipboardFormatListener       = user32.NewProc("AddClipboardFormatListener")
-	removeClipboardFormatListener    = user32.NewProc("RemoveClipboardFormatListener")
-	openClipboard                    = user32.NewProc("OpenClipboard")
-	closeClipboard                   = user32.NewProc("CloseClipboard")
-	enumClipboardFormats             = user32.NewProc("EnumClipboardFormats")
-	getClipboardData                 = user32.NewProc("GetClipboardData")
-	setClipboardData                 = user32.NewProc("SetClipboardData")
-	emptyClipboard                   = user32.NewProc("EmptyClipboard")
-	getClipboardFormatName           = user32.NewProc("GetClipboardFormatNameW")
-	isClipboardFormatAvailable       = user32.NewProc("IsClipboardFormatAvailable")
-	beginPaint                       = user32.NewProc("BeginPaint")
-	endPaint                         = user32.NewProc("EndPaint")
-	getKeyboardState                 = user32.NewProc("GetKeyboardState")
-	mapVirtualKey                    = user32.NewProc("MapVirtualKeyW")
-	mapVirtualKeyEx                  = user32.NewProc("MapVirtualKeyExW")
-	getAsyncKeyState                 = user32.NewProc("GetAsyncKeyState")
-	toAscii                          = user32.NewProc("ToAscii")
-	swapMouseButton                  = user32.NewProc("SwapMouseButton")
-	getCursorPos                     = user32.NewProc("GetCursorPos")
-	setCursorPos                     = user32.NewProc("SetCursorPos")
-	setCursor                        = user32.NewProc("SetCursor")
-	createIcon                       = user32.NewProc("CreateIcon")
-	createIconFromResource           = user32.NewProc("CreateIconFromResource")
-	createIconFromResourceEx         = user32.NewProc("CreateIconFromResourceEx")
-	destroyIcon                      = user32.NewProc("DestroyIcon")
-	monitorFromPoint                 = user32.NewProc("MonitorFromPoint")
-	monitorFromRect                  = user32.NewProc("MonitorFromRect")
-	monitorFromWindow                = user32.NewProc("MonitorFromWindow")
-	getMonitorInfo                   = user32.NewProc("GetMonitorInfoW")
-	enumDisplayMonitors              = user32.NewProc("EnumDisplayMonitors")
-	enumDisplaySettingsEx            = user32.NewProc("EnumDisplaySettingsExW")
-	changeDisplaySettingsEx          = user32.NewProc("ChangeDisplaySettingsExW")
-	sendInput                        = user32.NewProc("SendInput")
-	setWindowsHookEx                 = user32.NewProc("SetWindowsHookExW")
-	unhookWindowsHookEx              = user32.NewProc("UnhookWindowsHookEx")
-	callNextHookEx                   = user32.NewProc("CallNextHookEx")
-	getWindowPlacement               = user32.NewProc("GetWindowPlacement")
-	setWindowPlacement               = user32.NewProc("SetWindowPlacement")
-	showCursor                       = user32.NewProc("ShowCursor")
-	loadImage                        = user32.NewProc("LoadImageW")
-	getForegroundWindow              = user32.NewProc("GetForegroundWindow")
-	findWindow                       = user32.NewProc("FindWindowW")
-	getClassName                     = user32.NewProc("GetClassNameW")
-	getDesktopWindow                 = user32.NewProc("GetDesktopWindow")
-	getRawInputData                  = user32.NewProc("GetRawInputData")
-	registerPowerSettingNotification = user32.NewProc("RegisterPowerSettingNotification")
-	registerRawInputDevices          = user32.NewProc("RegisterRawInputDevices")
-	setTimer                         = user32.NewProc("SetTimer")
-	getActiveWindow                  = user32.NewProc("GetActiveWindow")
-	messageBeep                      = user32.NewProc("MessageBeep")
-	getCaretBlinkTime                = user32.NewProc("GetCaretBlinkTime")
-	getWindowDC                      = user32.NewProc("GetWindowDC")
-	enumWindows                      = user32.NewProc("EnumWindows")
-	enumChildWindows                 = user32.NewProc("EnumChildWindows")
-	getTopWindow                     = user32.NewProc("GetTopWindow")
-	getWindow                        = user32.NewProc("GetWindow")
-	getKeyState                      = user32.NewProc("GetKeyState")
-	getSysColor                      = user32.NewProc("GetSysColor")
-	getSysColorBrush                 = user32.NewProc("GetSysColorBrush")
-	appendMenu                       = user32.NewProc("AppendMenuW")
-	checkMenuItem                    = user32.NewProc("CheckMenuItem")
-	checkMenuRadioItem               = user32.NewProc("CheckMenuRadioItem")
-	createMenu                       = user32.NewProc("CreateMenu")
-	createPopupMenu                  = user32.NewProc("CreatePopupMenu")
-	deleteMenu                       = user32.NewProc("DeleteMenu")
-	destroyMenu                      = user32.NewProc("DestroyMenu")
-	drawMenuBar                      = user32.NewProc("DrawMenuBar")
-	enableMenuItem                   = user32.NewProc("EnableMenuItem")
-	endMenu                          = user32.NewProc("EndMenu")
-	getMenu                          = user32.NewProc("GetMenu")
-	getMenuBarInfo                   = user32.NewProc("GetMenuBarInfo")
-	getMenuCheckMarkDimensions       = user32.NewProc("GetMenuCheckMarkDimensions")
-	getMenuDefaultItem               = user32.NewProc("GetMenuDefaultItem")
-	getMenuInfo                      = user32.NewProc("GetMenuInfo")
-	getMenuItemCount                 = user32.NewProc("GetMenuItemCount")
-	getMenuItemID                    = user32.NewProc("GetMenuItemID")
-	getMenuItemInfo                  = user32.NewProc("GetMenuItemInfoW")
-	getMenuItemRect                  = user32.NewProc("GetMenuItemRect")
-	getMenuState                     = user32.NewProc("GetMenuState")
-	getMenuString                    = user32.NewProc("GetMenuStringW")
-	getSubMenu                       = user32.NewProc("GetSubMenu")
-	getSystemMenu                    = user32.NewProc("GetSystemMenu")
-	hiliteMenuItem                   = user32.NewProc("HiliteMenuItem")
-	insertMenu                       = user32.NewProc("InsertMenuW")
-	insertMenuItem                   = user32.NewProc("InsertMenuItemW")
-	isMenu                           = user32.NewProc("IsMenu")
-	loadMenu                         = user32.NewProc("LoadMenuW")
-	loadMenuIndirect                 = user32.NewProc("LoadMenuIndirectW")
-	menuItemFromPoint                = user32.NewProc("MenuItemFromPoint")
-	modifyMenu                       = user32.NewProc("ModifyMenuW")
-	removeMenu                       = user32.NewProc("RemoveMenu")
-	setMenu                          = user32.NewProc("SetMenu")
-	setMenuDefaultItem               = user32.NewProc("SetMenuDefaultItem")
-	setMenuInfo                      = user32.NewProc("SetMenuInfo")
-	setMenuItemBitmaps               = user32.NewProc("SetMenuItemBitmaps")
-	setMenuItemInfo                  = user32.NewProc("SetMenuItemInfoW")
-	trackPopupMenu                   = user32.NewProc("TrackPopupMenu")
-	trackPopupMenuEx                 = user32.NewProc("TrackPopupMenuEx")
-	isDlgButtonChecked               = user32.NewProc("IsDlgButtonChecked")
-	sendDlgItemMessage               = user32.NewProc("SendDlgItemMessageW")
-	lookupIconIdFromDirectoryEx      = user32.NewProc("LookupIconIdFromDirectoryEx")
-	setForegroundWindow              = user32.NewProc("SetForegroundWindow")
-	scrollWindow                     = user32.NewProc("ScrollWindow")
-	getFocus                         = user32.NewProc("GetFocus")
-	printWindow                      = user32.NewProc("PrintWindow")
-	setLayeredWindowAttributes       = user32.NewProc("SetLayeredWindowAttributes")
-	redrawWindow                     = user32.NewProc("RedrawWindow")
-	createCursor                     = user32.NewProc("CreateCursor")
-	destroyCursor                    = user32.NewProc("DestroyCursor")
-	getDlgCtrlID                     = user32.NewProc("GetDlgCtrlID")
+	registerClassEx               = user32.NewProc("RegisterClassExW")
+	loadIcon                      = user32.NewProc("LoadIconW")
+	loadCursor                    = user32.NewProc("LoadCursorW")
+	showWindow                    = user32.NewProc("ShowWindow")
+	showWindowAsync               = user32.NewProc("ShowWindowAsync")
+	updateWindow                  = user32.NewProc("UpdateWindow")
+	createWindow                  = user32.NewProc("CreateWindowW")
+	createWindowEx                = user32.NewProc("CreateWindowExW")
+	adjustWindowRect              = user32.NewProc("AdjustWindowRect")
+	adjustWindowRectEx            = user32.NewProc("AdjustWindowRectEx")
+	destroyWindow                 = user32.NewProc("DestroyWindow")
+	defWindowProc                 = user32.NewProc("DefWindowProcW")
+	defDlgProc                    = user32.NewProc("DefDlgProcW")
+	postQuitMessage               = user32.NewProc("PostQuitMessage")
+	getMessage                    = user32.NewProc("GetMessageW")
+	translateMessage              = user32.NewProc("TranslateMessage")
+	dispatchMessage               = user32.NewProc("DispatchMessageW")
+	sendMessage                   = user32.NewProc("SendMessageW")
+	postMessage                   = user32.NewProc("PostMessageW")
+	waitMessage                   = user32.NewProc("WaitMessage")
+	setWindowText                 = user32.NewProc("SetWindowTextW")
+	getWindowTextLength           = user32.NewProc("GetWindowTextLengthW")
+	getWindowText                 = user32.NewProc("GetWindowTextW")
+	getWindowRect                 = user32.NewProc("GetWindowRect")
+	moveWindow                    = user32.NewProc("MoveWindow")
+	screenToClient                = user32.NewProc("ScreenToClient")
+	callWindowProc                = user32.NewProc("CallWindowProcW")
+	setWindowLong                 = user32.NewProc("SetWindowLongW")
+	setWindowLongPtr              = user32.NewProc("SetWindowLongPtrW")
+	setClassLongPtr               = user32.NewProc("SetClassLongPtrW")
+	getWindowLong                 = user32.NewProc("GetWindowLongW")
+	getWindowLongPtr              = user32.NewProc("GetWindowLongPtrW")
+	getClassLongPtr               = user32.NewProc("GetClassLongPtrW")
+	enableWindow                  = user32.NewProc("EnableWindow")
+	isWindowEnabled               = user32.NewProc("IsWindowEnabled")
+	isWindowVisible               = user32.NewProc("IsWindowVisible")
+	setFocus                      = user32.NewProc("SetFocus")
+	invalidateRect                = user32.NewProc("InvalidateRect")
+	getClientRect                 = user32.NewProc("GetClientRect")
+	getDC                         = user32.NewProc("GetDC")
+	releaseDC                     = user32.NewProc("ReleaseDC")
+	setCapture                    = user32.NewProc("SetCapture")
+	releaseCapture                = user32.NewProc("ReleaseCapture")
+	getWindowThreadProcessId      = user32.NewProc("GetWindowThreadProcessId")
+	messageBox                    = user32.NewProc("MessageBoxW")
+	getSystemMetrics              = user32.NewProc("GetSystemMetrics")
+	copyRect                      = user32.NewProc("CopyRect")
+	equalRect                     = user32.NewProc("EqualRect")
+	inflateRect                   = user32.NewProc("InflateRect")
+	intersectRect                 = user32.NewProc("IntersectRect")
+	isRectEmpty                   = user32.NewProc("IsRectEmpty")
+	offsetRect                    = user32.NewProc("OffsetRect")
+	ptInRect                      = user32.NewProc("PtInRect")
+	setRect                       = user32.NewProc("SetRect")
+	setRectEmpty                  = user32.NewProc("SetRectEmpty")
+	subtractRect                  = user32.NewProc("SubtractRect")
+	unionRect                     = user32.NewProc("UnionRect")
+	createDialogParam             = user32.NewProc("CreateDialogParamW")
+	dialogBoxParam                = user32.NewProc("DialogBoxParamW")
+	getDlgItem                    = user32.NewProc("GetDlgItem")
+	drawIcon                      = user32.NewProc("DrawIcon")
+	clientToScreen                = user32.NewProc("ClientToScreen")
+	isDialogMessage               = user32.NewProc("IsDialogMessageW")
+	isWindow                      = user32.NewProc("IsWindow")
+	endDialog                     = user32.NewProc("EndDialog")
+	peekMessage                   = user32.NewProc("PeekMessageW")
+	createAcceleratorTable        = user32.NewProc("CreateAcceleratorTableW")
+	destroyAcceleratorTable       = user32.NewProc("DestroyAcceleratorTable")
+	translateAccelerator          = user32.NewProc("TranslateAcceleratorW")
+	setWindowPos                  = user32.NewProc("SetWindowPos")
+	fillRect                      = user32.NewProc("FillRect")
+	drawText                      = user32.NewProc("DrawTextW")
+	addClipboardFormatListener    = user32.NewProc("AddClipboardFormatListener")
+	removeClipboardFormatListener = user32.NewProc("RemoveClipboardFormatListener")
+	openClipboard                 = user32.NewProc("OpenClipboard")
+	closeClipboard                = user32.NewProc("CloseClipboard")
+	enumClipboardFormats          = user32.NewProc("EnumClipboardFormats")
+	getClipboardData              = user32.NewProc("GetClipboardData")
+	setClipboardData              = user32.NewProc("SetClipboardData")
+	emptyClipboard                = user32.NewProc("EmptyClipboard")
+	getClipboardFormatName        = user32.NewProc("GetClipboardFormatNameW")
+	isClipboardFormatAvailable    = user32.NewProc("IsClipboardFormatAvailable")
+	beginPaint                    = user32.NewProc("BeginPaint")
+	endPaint                      = user32.NewProc("EndPaint")
+	getKeyboardState              = user32.NewProc("GetKeyboardState")
+	mapVirtualKey                 = user32.NewProc("MapVirtualKeyW")
+	mapVirtualKeyEx               = user32.NewProc("MapVirtualKeyExW")
+	getAsyncKeyState              = user32.NewProc("GetAsyncKeyState")
+	toAscii                       = user32.NewProc("ToAscii")
+	swapMouseButton               = user32.NewProc("SwapMouseButton")
+	getCursorPos                  = user32.NewProc("GetCursorPos")
+	setCursorPos                  = user32.NewProc("SetCursorPos")
+	setCursor                     = user32.NewProc("SetCursor")
+	createIcon                    = user32.NewProc("CreateIcon")
+	createIconFromResourceEx      = user32.NewProc("CreateIconFromResourceEx")
+	destroyIcon                   = user32.NewProc("DestroyIcon")
+	monitorFromPoint              = user32.NewProc("MonitorFromPoint")
+	monitorFromRect               = user32.NewProc("MonitorFromRect")
+	monitorFromWindow             = user32.NewProc("MonitorFromWindow")
+	getMonitorInfo                = user32.NewProc("GetMonitorInfoW")
+	enumDisplayMonitors           = user32.NewProc("EnumDisplayMonitors")
+	enumDisplaySettingsEx         = user32.NewProc("EnumDisplaySettingsExW")
+	changeDisplaySettingsEx       = user32.NewProc("ChangeDisplaySettingsExW")
+	sendInput                     = user32.NewProc("SendInput")
+	setWindowsHookEx              = user32.NewProc("SetWindowsHookExW")
+	unhookWindowsHookEx           = user32.NewProc("UnhookWindowsHookEx")
+	callNextHookEx                = user32.NewProc("CallNextHookEx")
+	getWindowPlacement            = user32.NewProc("GetWindowPlacement")
+	setWindowPlacement            = user32.NewProc("SetWindowPlacement")
+	showCursor                    = user32.NewProc("ShowCursor")
+	loadImage                     = user32.NewProc("LoadImageW")
+	getForegroundWindow           = user32.NewProc("GetForegroundWindow")
+	findWindow                    = user32.NewProc("FindWindowW")
+	getClassName                  = user32.NewProc("GetClassNameW")
+	getDesktopWindow              = user32.NewProc("GetDesktopWindow")
+	getRawInputData               = user32.NewProc("GetRawInputData")
+	registerRawInputDevices       = user32.NewProc("RegisterRawInputDevices")
+	setTimer                      = user32.NewProc("SetTimer")
+	getActiveWindow               = user32.NewProc("GetActiveWindow")
+	messageBeep                   = user32.NewProc("MessageBeep")
+	getCaretBlinkTime             = user32.NewProc("GetCaretBlinkTime")
+	getWindowDC                   = user32.NewProc("GetWindowDC")
+	enumWindows                   = user32.NewProc("EnumWindows")
+	getTopWindow                  = user32.NewProc("GetTopWindow")
+	getWindow                     = user32.NewProc("GetWindow")
+	getKeyState                   = user32.NewProc("GetKeyState")
+	getSysColorBrush              = user32.NewProc("GetSysColorBrush")
+	appendMenu                    = user32.NewProc("AppendMenuW")
+	checkMenuItem                 = user32.NewProc("CheckMenuItem")
+	checkMenuRadioItem            = user32.NewProc("CheckMenuRadioItem")
+	createMenu                    = user32.NewProc("CreateMenu")
+	createPopupMenu               = user32.NewProc("CreatePopupMenu")
+	deleteMenu                    = user32.NewProc("DeleteMenu")
+	destroyMenu                   = user32.NewProc("DestroyMenu")
+	drawMenuBar                   = user32.NewProc("DrawMenuBar")
+	enableMenuItem                = user32.NewProc("EnableMenuItem")
+	endMenu                       = user32.NewProc("EndMenu")
+	getMenu                       = user32.NewProc("GetMenu")
+	getMenuBarInfo                = user32.NewProc("GetMenuBarInfo")
+	getMenuCheckMarkDimensions    = user32.NewProc("GetMenuCheckMarkDimensions")
+	getMenuDefaultItem            = user32.NewProc("GetMenuDefaultItem")
+	getMenuInfo                   = user32.NewProc("GetMenuInfo")
+	getMenuItemCount              = user32.NewProc("GetMenuItemCount")
+	getMenuItemID                 = user32.NewProc("GetMenuItemID")
+	getMenuItemInfo               = user32.NewProc("GetMenuItemInfoW")
+	getMenuItemRect               = user32.NewProc("GetMenuItemRect")
+	getMenuState                  = user32.NewProc("GetMenuState")
+	getMenuString                 = user32.NewProc("GetMenuStringW")
+	getSubMenu                    = user32.NewProc("GetSubMenu")
+	getSystemMenu                 = user32.NewProc("GetSystemMenu")
+	hiliteMenuItem                = user32.NewProc("HiliteMenuItem")
+	insertMenu                    = user32.NewProc("InsertMenuW")
+	insertMenuItem                = user32.NewProc("InsertMenuItemW")
+	isMenu                        = user32.NewProc("IsMenu")
+	loadMenu                      = user32.NewProc("LoadMenuW")
+	loadMenuIndirect              = user32.NewProc("LoadMenuIndirectW")
+	menuItemFromPoint             = user32.NewProc("MenuItemFromPoint")
+	modifyMenu                    = user32.NewProc("ModifyMenuW")
+	removeMenu                    = user32.NewProc("RemoveMenu")
+	setMenu                       = user32.NewProc("SetMenu")
+	setMenuDefaultItem            = user32.NewProc("SetMenuDefaultItem")
+	setMenuInfo                   = user32.NewProc("SetMenuInfo")
+	setMenuItemBitmaps            = user32.NewProc("SetMenuItemBitmaps")
+	setMenuItemInfo               = user32.NewProc("SetMenuItemInfoW")
+	trackPopupMenu                = user32.NewProc("TrackPopupMenu")
+	trackPopupMenuEx              = user32.NewProc("TrackPopupMenuEx")
+	isDlgButtonChecked            = user32.NewProc("IsDlgButtonChecked")
+	sendDlgItemMessage            = user32.NewProc("SendDlgItemMessageW")
+	lookupIconIdFromDirectoryEx   = user32.NewProc("LookupIconIdFromDirectoryEx")
+	setForegroundWindow           = user32.NewProc("SetForegroundWindow")
+	scrollWindow                  = user32.NewProc("ScrollWindow")
+	getFocus                      = user32.NewProc("GetFocus")
+	printWindow                   = user32.NewProc("PrintWindow")
 
-	regCreateKeyEx             = advapi32.NewProc("RegCreateKeyExW")
-	regOpenKeyEx               = advapi32.NewProc("RegOpenKeyExW")
-	regCloseKey                = advapi32.NewProc("RegCloseKey")
-	regGetValue                = advapi32.NewProc("RegGetValueW")
-	regEnumKeyEx               = advapi32.NewProc("RegEnumKeyExW")
-	regEnumValue               = advapi32.NewProc("RegEnumValueW")
-	regSetValueEx              = advapi32.NewProc("RegSetValueExW")
-	regDeleteKeyValue          = advapi32.NewProc("RegDeleteKeyValueW")
-	regDeleteValue             = advapi32.NewProc("RegDeleteValueW")
-	regDeleteTree              = advapi32.NewProc("RegDeleteTreeW")
-	openEventLog               = advapi32.NewProc("OpenEventLogW")
-	getNumberOfEventLogRecords = advapi32.NewProc("GetNumberOfEventLogRecords")
-	readEventLog               = advapi32.NewProc("ReadEventLogW")
-	closeEventLog              = advapi32.NewProc("CloseEventLog")
-	openSCManager              = advapi32.NewProc("OpenSCManagerW")
-	closeServiceHandle         = advapi32.NewProc("CloseServiceHandle")
-	openService                = advapi32.NewProc("OpenServiceW")
-	startService               = advapi32.NewProc("StartServiceW")
-	controlService             = advapi32.NewProc("ControlService")
+	regCreateKeyEx     = advapi32.NewProc("RegCreateKeyExW")
+	regOpenKeyEx       = advapi32.NewProc("RegOpenKeyExW")
+	regCloseKey        = advapi32.NewProc("RegCloseKey")
+	regGetValue        = advapi32.NewProc("RegGetValueW")
+	regEnumKeyEx       = advapi32.NewProc("RegEnumKeyExW")
+	regSetValueEx      = advapi32.NewProc("RegSetValueExW")
+	regDeleteKeyValue  = advapi32.NewProc("RegDeleteKeyValueW")
+	regDeleteValue     = advapi32.NewProc("RegDeleteValueW")
+	regDeleteTree      = advapi32.NewProc("RegDeleteTreeW")
+	openEventLog       = advapi32.NewProc("OpenEventLogW")
+	readEventLog       = advapi32.NewProc("ReadEventLogW")
+	closeEventLog      = advapi32.NewProc("CloseEventLog")
+	openSCManager      = advapi32.NewProc("OpenSCManagerW")
+	closeServiceHandle = advapi32.NewProc("CloseServiceHandle")
+	openService        = advapi32.NewProc("OpenServiceW")
+	startService       = advapi32.NewProc("StartServiceW")
+	controlService     = advapi32.NewProc("ControlService")
 
 	initCommonControlsEx    = comctl32.NewProc("InitCommonControlsEx")
 	imageList_Create        = comctl32.NewProc("ImageList_Create")
@@ -287,14 +266,12 @@ var (
 	createFontIndirect        = gdi32.NewProc("CreateFontIndirectW")
 	abortDoc                  = gdi32.NewProc("AbortDoc")
 	bitBlt                    = gdi32.NewProc("BitBlt")
-	maskBlt                   = gdi32.NewProc("MaskBlt")
 	patBlt                    = gdi32.NewProc("PatBlt")
 	closeEnhMetaFile          = gdi32.NewProc("CloseEnhMetaFile")
 	copyEnhMetaFile           = gdi32.NewProc("CopyEnhMetaFileW")
 	createBrushIndirect       = gdi32.NewProc("CreateBrushIndirect")
 	createCompatibleDC        = gdi32.NewProc("CreateCompatibleDC")
 	createCompatibleBitmap    = gdi32.NewProc("CreateCompatibleBitmap")
-	createBitmap              = gdi32.NewProc("CreateBitmap")
 	createDC                  = gdi32.NewProc("CreateDCW")
 	createDIBSection          = gdi32.NewProc("CreateDIBSection")
 	createEnhMetaFile         = gdi32.NewProc("CreateEnhMetaFileW")
@@ -347,19 +324,13 @@ var (
 	polygon                   = gdi32.NewProc("Polygon")
 	polyline                  = gdi32.NewProc("Polyline")
 	polyBezier                = gdi32.NewProc("PolyBezier")
-	intersectClipRect         = gdi32.NewProc("IntersectClipRect")
-	selectClipRgn             = gdi32.NewProc("SelectClipRgn")
-	createRectRgn             = gdi32.NewProc("CreateRectRgn")
-	combineRgn                = gdi32.NewProc("CombineRgn")
-	enumFontFamiliesEx        = gdi32.NewProc("EnumFontFamiliesExW")
+	polyBezierTo              = gdi32.NewProc("PolyBezierTo")
 
 	getModuleHandle            = kernel32.NewProc("GetModuleHandleW")
-	getModuleFileName          = kernel32.NewProc("GetModuleFileNameW")
 	mulDiv                     = kernel32.NewProc("MulDiv")
 	getConsoleWindow           = kernel32.NewProc("GetConsoleWindow")
 	getCurrentThread           = kernel32.NewProc("GetCurrentThread")
 	getLogicalDrives           = kernel32.NewProc("GetLogicalDrives")
-	getDriveType               = kernel32.NewProc("GetDriveTypeW")
 	getUserDefaultLCID         = kernel32.NewProc("GetUserDefaultLCID")
 	lstrlen                    = kernel32.NewProc("lstrlenW")
 	lstrcpy                    = kernel32.NewProc("lstrcpyW")
@@ -388,10 +359,7 @@ var (
 	setLocalTime               = kernel32.NewProc("SetLocalTime")
 	getSystemTime              = kernel32.NewProc("GetSystemTime")
 	getSystemTimeAsFileTime    = kernel32.NewProc("GetSystemTimeAsFileTime")
-	systemTimeToFileTime       = kernel32.NewProc("SystemTimeToFileTime")
-	fileTimeToSystemTime       = kernel32.NewProc("FileTimeToSystemTime")
 	copyMemory                 = kernel32.NewProc("RtlCopyMemory")
-	getCurrentProcess          = kernel32.NewProc("GetCurrentProcess")
 	getCurrentProcessId        = kernel32.NewProc("GetCurrentProcessId")
 	getVersion                 = kernel32.NewProc("GetVersion")
 	setEnvironmentVariable     = kernel32.NewProc("SetEnvironmentVariableW")
@@ -402,12 +370,6 @@ var (
 	setErrorMode               = kernel32.NewProc("SetErrorMode")
 	createFile                 = kernel32.NewProc("CreateFileW")
 	deviceIoControl            = kernel32.NewProc("DeviceIoControl")
-	findFirstStream            = kernel32.NewProc("FindFirstStreamW")
-	findNextStream             = kernel32.NewProc("FindNextStreamW")
-	findClose                  = kernel32.NewProc("FindClose")
-	openMutex                  = kernel32.NewProc("OpenMutexW")
-	createMutex                = kernel32.NewProc("CreateMutexW")
-	getNativeSystemInfo        = kernel32.NewProc("GetNativeSystemInfo")
 
 	coInitializeEx        = ole32.NewProc("CoInitializeEx")
 	coInitialize          = ole32.NewProc("CoInitialize")
@@ -430,15 +392,14 @@ var (
 
 	enumProcesses = psapi.NewProc("EnumProcesses")
 
-	sHBrowseForFolder      = shell32.NewProc("SHBrowseForFolderW")
-	sHGetPathFromIDList    = shell32.NewProc("SHGetPathFromIDListW")
-	shGetSpecialFolderPath = shell32.NewProc("SHGetSpecialFolderPathW")
-	dragAcceptFiles        = shell32.NewProc("DragAcceptFiles")
-	dragQueryFile          = shell32.NewProc("DragQueryFileW")
-	dragQueryPoint         = shell32.NewProc("DragQueryPoint")
-	dragFinish             = shell32.NewProc("DragFinish")
-	shellExecute           = shell32.NewProc("ShellExecuteW")
-	extractIcon            = shell32.NewProc("ExtractIconW")
+	sHBrowseForFolder   = shell32.NewProc("SHBrowseForFolderW")
+	sHGetPathFromIDList = shell32.NewProc("SHGetPathFromIDListW")
+	dragAcceptFiles     = shell32.NewProc("DragAcceptFiles")
+	dragQueryFile       = shell32.NewProc("DragQueryFileW")
+	dragQueryPoint      = shell32.NewProc("DragQueryPoint")
+	dragFinish          = shell32.NewProc("DragFinish")
+	shellExecute        = shell32.NewProc("ShellExecuteW")
+	extractIcon         = shell32.NewProc("ExtractIconW")
 
 	gdipCreateBitmapFromFile     = gdiplus.NewProc("GdipCreateBitmapFromFile")
 	gdipCreateBitmapFromHBITMAP  = gdiplus.NewProc("GdipCreateBitmapFromHBITMAP")
@@ -465,13 +426,6 @@ var (
 	wNetAddConnection2    = mpr.NewProc("WNetAddConnection2W")
 	wNetAddConnection3    = mpr.NewProc("WNetAddConnection3W")
 	wNetCancelConnection2 = mpr.NewProc("WNetCancelConnection2W")
-
-	rtlGetVersion = ntdll.NewProc("RtlGetVersion")
-
-	setupDiGetClassDevs          = setupAPI.NewProc("SetupDiGetClassDevsW")
-	setupDiDestroyDeviceInfoList = setupAPI.NewProc("SetupDiDestroyDeviceInfoList")
-	setupDiEnumDeviceInfo        = setupAPI.NewProc("SetupDiEnumDeviceInfo")
-	setupDiOpenDevRegKey         = setupAPI.NewProc("SetupDiOpenDevRegKey")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -481,32 +435,6 @@ func RegisterClassEx(wndClassEx *WNDCLASSEX) ATOM {
 	}
 	ret, _, _ := registerClassEx.Call(uintptr(unsafe.Pointer(wndClassEx)))
 	return ATOM(ret)
-}
-
-func UnregisterClass(className string, instance HINSTANCE) bool {
-	ret, _, _ := unregisterClass.Call(
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(className))),
-		uintptr(instance),
-	)
-	return ret != 0
-}
-
-func UnregisterClassAtom(atom ATOM, instance HINSTANCE) bool {
-	ret, _, _ := unregisterClass.Call(
-		uintptr(atom),
-		uintptr(instance),
-	)
-	return ret != 0
-}
-
-func GetClassInfoEx(inst HINSTANCE, className string) (c WNDCLASSEX, found bool) {
-	ret, _, _ := getClassInfoEx.Call(
-		uintptr(inst),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(className))),
-		uintptr(unsafe.Pointer(&c)),
-	)
-	found = ret != 0
-	return
 }
 
 func LoadIcon(instance HINSTANCE, iconName *uint16) HICON {
@@ -661,11 +589,6 @@ func GetMessage(msg *MSG, hwnd HWND, msgFilterMin, msgFilterMax uint32) int {
 	return int(ret)
 }
 
-func GetMessageTime() int {
-	ret, _, _ := getMessageTime.Call()
-	return int(ret)
-}
-
 func TranslateMessage(msg *MSG) bool {
 	ret, _, _ := translateMessage.Call(uintptr(unsafe.Pointer(msg)))
 	return ret != 0
@@ -768,13 +691,13 @@ func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint32, wParam, lParam ui
 	return ret
 }
 
-func SetWindowLong(hwnd HWND, index int, value int32) int32 {
+func SetWindowLong(hwnd HWND, index int, value uint32) uint32 {
 	ret, _, _ := setWindowLong.Call(
 		uintptr(hwnd),
 		uintptr(index),
 		uintptr(value),
 	)
-	return int32(ret)
+	return uint32(ret)
 }
 
 func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
@@ -848,14 +771,6 @@ func InvalidateRect(hwnd HWND, rect *RECT, erase bool) bool {
 	return ret != 0
 }
 
-func ValidateRect(hwnd HWND, rect *RECT) bool {
-	ret, _, _ := validateRect.Call(
-		uintptr(hwnd),
-		uintptr(unsafe.Pointer(rect)),
-	)
-	return ret != 0
-}
-
 func GetClientRect(hwnd HWND) *RECT {
 	var rect RECT
 	ret, _, _ := getClientRect.Call(
@@ -906,14 +821,6 @@ func MessageBox(hwnd HWND, text, caption string, flags uint) int {
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(caption))),
 		uintptr(flags),
 	)
-	return int(ret)
-}
-
-func MessageBoxIndirect(params *MSGBOXPARAMS) int {
-	if params != nil {
-		params.Size = uint32(unsafe.Sizeof(*params))
-	}
-	ret, _, _ := messageBoxIndirect.Call(uintptr(unsafe.Pointer(params)))
 	return int(ret)
 }
 
@@ -1041,24 +948,6 @@ func GetDlgItem(hDlg HWND, nIDDlgItem int) HWND {
 		uintptr(nIDDlgItem),
 	)
 	return HWND(ret)
-}
-
-func DrawIconEx(
-	hDC HDC, x, y int, hIcon HICON, width, height int,
-	frame uint, flickerFreeDraw HBRUSH, flags uint,
-) bool {
-	ret, _, _ := drawIconEx.Call(
-		uintptr(unsafe.Pointer(hDC)),
-		uintptr(x),
-		uintptr(y),
-		uintptr(unsafe.Pointer(hIcon)),
-		uintptr(width),
-		uintptr(height),
-		uintptr(frame),
-		uintptr(flickerFreeDraw),
-		uintptr(flags),
-	)
-	return ret != 0
 }
 
 func DrawIcon(hDC HDC, x, y int, hIcon HICON) bool {
@@ -1254,11 +1143,8 @@ func EndPaint(hwnd HWND, paint *PAINTSTRUCT) {
 	)
 }
 
-func GetKeyboardState(keyState []byte) bool {
-	if len(keyState) < 256 {
-		return false
-	}
-	ret, _, _ := getKeyboardState.Call(uintptr(unsafe.Pointer(&keyState[0])))
+func GetKeyboardState(lpKeyState *[]byte) bool {
+	ret, _, _ := getKeyboardState.Call(uintptr(unsafe.Pointer(&(*lpKeyState)[0])))
 	return ret != 0
 }
 
@@ -1328,21 +1214,6 @@ func CreateIcon(instance HINSTANCE, nWidth, nHeight int, cPlanes, cBitsPerPixel 
 		uintptr(cBitsPerPixel),
 		uintptr(unsafe.Pointer(ANDbits)),
 		uintptr(unsafe.Pointer(XORbits)),
-	)
-	return HICON(ret)
-}
-
-func CreateIconFromResource(
-	mem unsafe.Pointer,
-	memSize uint32,
-	icon bool,
-	version uint32,
-) HICON {
-	ret, _, _ := createIconFromResource.Call(
-		uintptr(mem),
-		uintptr(memSize),
-		uintptr(BoolToBOOL(icon)),
-		uintptr(version),
 	)
 	return HICON(ret)
 }
@@ -1500,7 +1371,7 @@ func SetWindowPlacement(hwnd HWND, placement *WINDOWPLACEMENT) bool {
 
 func ShowCursor(show bool) int {
 	ret, _, _ := showCursor.Call(uintptr(BoolToBOOL(show)))
-	return int(int32(ret))
+	return int(ret)
 }
 
 func LoadImage(
@@ -1568,19 +1439,6 @@ func GetRawInputData(input HRAWINPUT, command uint) (raw RAWINPUT, ok bool) {
 	return
 }
 
-func RegisterPowerSettingNotification(
-	recipient HANDLE,
-	powerSettingGUID *GUID,
-	flags uint32,
-) HANDLE {
-	ret, _, _ := registerPowerSettingNotification.Call(
-		uintptr(recipient),
-		uintptr(unsafe.Pointer(powerSettingGUID)),
-		uintptr(flags),
-	)
-	return HANDLE(ret)
-}
-
 func RegisterRawInputDevices(devices ...RAWINPUTDEVICE) bool {
 	if len(devices) == 0 {
 		return true
@@ -1626,25 +1484,11 @@ func GetWindowDC(window HWND) HDC {
 	return HDC(ret)
 }
 
-func EnumWindows(callback func(window HWND) bool) bool {
-	f := syscall.NewCallback(func(w, _ uintptr) uintptr {
-		if callback(HWND(w)) {
-			return 1
-		}
-		return 0
+func EnumWindows(callback func(window HWND)) bool {
+	f := syscall.NewCallback(func(w, _ uintptr) {
+		callback(HWND(w))
 	})
 	ret, _, _ := enumWindows.Call(f, 0)
-	return ret != 0
-}
-
-func EnumChildWindows(parent HWND, callback func(window HWND) bool) bool {
-	f := syscall.NewCallback(func(w, _ uintptr) uintptr {
-		if callback(HWND(w)) {
-			return 1
-		}
-		return 0
-	})
-	ret, _, _ := enumChildWindows.Call(uintptr(parent), f, 0)
 	return ret != 0
 }
 
@@ -1665,11 +1509,6 @@ func GetNextWindow(rel HWND, cmd uint) HWND {
 func GetKeyState(key int) uint16 {
 	ret, _, _ := getKeyState.Call(uintptr(key))
 	return uint16(ret)
-}
-
-func GetSysColor(index int) uint32 {
-	ret, _, _ := getSysColor.Call(uintptr(index))
-	return uint32(ret)
 }
 
 func GetSysColorBrush(index int) HBRUSH {
@@ -1804,9 +1643,6 @@ func GetMenuItemID(m HMENU, pos int) int {
 }
 
 func GetMenuItemInfo(m HMENU, item uint, byPos bool, info *MENUITEMINFO) bool {
-	if info != nil {
-		info.Size = uint32(unsafe.Sizeof(*info))
-	}
 	ret, _, _ := getMenuItemInfo.Call(
 		uintptr(m),
 		uintptr(item),
@@ -1992,9 +1828,6 @@ func SetMenuItemBitmaps(m HMENU, pos, flags uint, unchecked, checked HBITMAP) bo
 
 // SetMenuItemInfo changes information about a menu item.
 func SetMenuItemInfo(m HMENU, item uint, byPos bool, mii *MENUITEMINFO) bool {
-	if mii != nil {
-		mii.Size = uint32(unsafe.Sizeof(*mii))
-	}
 	ret, _, _ := setMenuItemInfo.Call(
 		uintptr(m),
 		uintptr(item),
@@ -2092,60 +1925,6 @@ func PrintWindow(w HWND, dc HDC, flags uint) bool {
 	return ret != 0
 }
 
-func SetLayeredWindowAttributes(window HWND, key COLORREF, alpha uint8, flags uint32) bool {
-	ret, _, _ := setLayeredWindowAttributes.Call(
-		uintptr(window),
-		uintptr(key),
-		uintptr(alpha),
-		uintptr(flags),
-	)
-	return ret != 0
-}
-
-func RedrawWindow(window HWND, updateRect *RECT, updateRegion HRGN, flags uint32) bool {
-	ret, _, _ := redrawWindow.Call(
-		uintptr(window),
-		uintptr(unsafe.Pointer(updateRect)),
-		uintptr(updateRegion),
-		uintptr(flags),
-	)
-	return ret != 0
-}
-
-func CreateCursor(
-	instance HINSTANCE,
-	xHotSpot, yHotSpot, width, height int,
-	andPlane, xorPlane []byte,
-) HCURSOR {
-	var and, xor uintptr
-	if len(andPlane) > 0 {
-		and = uintptr(unsafe.Pointer(&andPlane[0]))
-	}
-	if len(xorPlane) > 0 {
-		xor = uintptr(unsafe.Pointer(&xorPlane[0]))
-	}
-	ret, _, _ := createCursor.Call(
-		uintptr(instance),
-		uintptr(xHotSpot),
-		uintptr(yHotSpot),
-		uintptr(width),
-		uintptr(height),
-		and,
-		xor,
-	)
-	return HCURSOR(ret)
-}
-
-func DestroyCursor(c HCURSOR) bool {
-	ret, _, _ := destroyCursor.Call(uintptr(c))
-	return ret != 0
-}
-
-func GetDlgCtrlID(w HWND) int {
-	ret, _, _ := getDlgCtrlID.Call(uintptr(w))
-	return int(ret)
-}
-
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
 	var result HKEY
 	ret, _, _ := regCreateKeyEx.Call(
@@ -2171,7 +1950,7 @@ func RegOpenKeyEx(hKey HKEY, subKey string, samDesired uint32) HKEY {
 		uintptr(samDesired),
 		uintptr(unsafe.Pointer(&result)))
 	if ret != ERROR_SUCCESS {
-		return HKEY(INVALID_HANDLE_VALUE)
+		return 0
 	}
 	return result
 }
@@ -2376,32 +2155,12 @@ func RegEnumKeyEx(hKey HKEY, index uint32) string {
 	return syscall.UTF16ToString(buf)
 }
 
-func RegEnumValue(key HKEY, index uint32) {
-	var valueLen uint32
-	_, _, _ = regEnumValue.Call(
-		uintptr(key),
-		uintptr(index),
-		0,
-		uintptr(unsafe.Pointer(&valueLen)),
-		0,
-	)
-}
-
 func OpenEventLog(servername string, sourcename string) HANDLE {
 	ret, _, _ := openEventLog.Call(
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(servername))),
 		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sourcename))),
 	)
 	return HANDLE(ret)
-}
-
-func GetNumberOfEventLogRecords(eventlog HANDLE) (n uint32, ok bool) {
-	ret, _, _ := getNumberOfEventLogRecords.Call(
-		uintptr(eventlog),
-		uintptr(unsafe.Pointer(&n)),
-	)
-	ok = ret != 0
-	return
 }
 
 func ReadEventLog(eventlog HANDLE, readflags, recordoffset uint32, buffer []byte, numberofbytestoread uint32, bytesread, minnumberofbytesneeded *uint32) bool {
@@ -2492,11 +2251,14 @@ func StartService(hService HANDLE, lpServiceArgVectors []string) error {
 	return nil
 }
 
-func ControlService(service HANDLE, control uint32, serviceStatus *SERVICE_STATUS) bool {
+func ControlService(hService HANDLE, dwControl uint32, lpServiceStatus *SERVICE_STATUS) bool {
+	if lpServiceStatus == nil {
+		panic("ControlService: lpServiceStatus cannot be nil")
+	}
 	ret, _, _ := controlService.Call(
-		uintptr(service),
-		uintptr(control),
-		uintptr(unsafe.Pointer(serviceStatus)),
+		uintptr(hService),
+		uintptr(dwControl),
+		uintptr(unsafe.Pointer(lpServiceStatus)),
 	)
 	return ret != 0
 }
@@ -2683,50 +2445,33 @@ func DwmGetTransportAttributes(pfIsRemoting *BOOL, pfIsConnected *BOOL, pDwGener
 	return HRESULT(ret)
 }
 
-func DwmGetWindowAttributeNCRENDERING_ENABLED(window HWND) (ok, enabled bool) {
-	var b uint32
-	ret, _, _ := dwmGetWindowAttribute.Call(
-		uintptr(window),
-		uintptr(DWMWA_NCRENDERING_ENABLED),
-		uintptr(unsafe.Pointer(&b)),
-		4, // size of uint32
-	)
-	ok = ret == S_OK
-	enabled = b != 0
-	return
-}
+// TODO: verify handling of variable arguments
+func DwmGetWindowAttribute(hWnd HWND, dwAttribute uint32) (pAttribute interface{}, result HRESULT) {
+	var pvAttribute, pvAttrSize uintptr
+	switch dwAttribute {
+	case DWMWA_NCRENDERING_ENABLED:
+		v := new(BOOL)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
+	case DWMWA_CAPTION_BUTTON_BOUNDS, DWMWA_EXTENDED_FRAME_BOUNDS:
+		v := new(RECT)
+		pAttribute = v
+		pvAttribute = uintptr(unsafe.Pointer(v))
+		pvAttrSize = unsafe.Sizeof(*v)
+	case DWMWA_CLOAKED:
+		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not currently supported.", dwAttribute))
+	default:
+		panic(fmt.Sprintf("DwmGetWindowAttribute(%d) is not valid.", dwAttribute))
+	}
 
-func DwmGetWindowAttributeCAPTION_BUTTON_BOUNDS(window HWND) (ok bool, r RECT) {
 	ret, _, _ := dwmGetWindowAttribute.Call(
-		uintptr(window),
-		uintptr(DWMWA_CAPTION_BUTTON_BOUNDS),
-		uintptr(unsafe.Pointer(&r)),
-		16, // size of RECT
+		uintptr(hWnd),
+		uintptr(dwAttribute),
+		pvAttribute,
+		pvAttrSize,
 	)
-	ok = ret == S_OK
-	return
-}
-
-func DwmGetWindowAttributeEXTENDED_FRAME_BOUNDS(window HWND) (ok bool, r RECT) {
-	ret, _, _ := dwmGetWindowAttribute.Call(
-		uintptr(window),
-		uintptr(DWMWA_EXTENDED_FRAME_BOUNDS),
-		uintptr(unsafe.Pointer(&r)),
-		16, // size of RECT
-	)
-	ok = ret == S_OK
-	return
-}
-
-// DwmGetWindowAttributeCLOAKED returns one of the DWM_... constants.
-func DwmGetWindowAttributeCLOAKED(window HWND) (ok bool, cloaked uint32) {
-	ret, _, _ := dwmGetWindowAttribute.Call(
-		uintptr(window),
-		uintptr(DWMWA_CLOAKED),
-		uintptr(unsafe.Pointer(&cloaked)),
-		16, // size of uint32
-	)
-	ok = ret == S_OK
+	result = HRESULT(ret)
 	return
 }
 
@@ -2897,29 +2642,6 @@ func BitBlt(hdcDest HDC, nXDest, nYDest, nWidth, nHeight int, hdcSrc HDC, nXSrc,
 	return ret != 0
 }
 
-func MaskBlt(
-	dest HDC, destX, destY, destWidth, destHeight int,
-	source HDC, sourceX, sourceY int,
-	mask HBITMAP, maskX, maskY int,
-	operation uint,
-) bool {
-	ret, _, _ := maskBlt.Call(
-		uintptr(dest),
-		uintptr(destX),
-		uintptr(destY),
-		uintptr(destWidth),
-		uintptr(destHeight),
-		uintptr(source),
-		uintptr(sourceX),
-		uintptr(sourceY),
-		uintptr(mask),
-		uintptr(maskX),
-		uintptr(maskX),
-		uintptr(operation),
-	)
-	return ret != 0
-}
-
 func PatBlt(hdc HDC, nXLeft, nYLeft, nWidth, nHeight int, dwRop uint) bool {
 	ret, _, _ := patBlt.Call(
 		uintptr(hdc),
@@ -2960,17 +2682,6 @@ func CreateCompatibleBitmap(hdc HDC, width, height int) HBITMAP {
 		uintptr(hdc),
 		uintptr(width),
 		uintptr(height),
-	)
-	return HBITMAP(ret)
-}
-
-func CreateBitmap(width, height int, planes, bitCount uint, bits unsafe.Pointer) HBITMAP {
-	ret, _, _ := createBitmap.Call(
-		uintptr(width),
-		uintptr(height),
-		uintptr(planes),
-		uintptr(bitCount),
-		uintptr(bits),
 	)
 	return HBITMAP(ret)
 }
@@ -3446,9 +3157,6 @@ func Chord(hdc HDC, x1, y1, x2, y2, x3, y3, x4, y4 int) bool {
 }
 
 func Polygon(hdc HDC, p []POINT) bool {
-	if len(p) == 0 {
-		return true
-	}
 	ret, _, _ := polygon.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
@@ -3458,9 +3166,6 @@ func Polygon(hdc HDC, p []POINT) bool {
 }
 
 func Polyline(hdc HDC, p []POINT) bool {
-	if len(p) == 0 {
-		return true
-	}
 	ret, _, _ := polyline.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
@@ -3470,91 +3175,12 @@ func Polyline(hdc HDC, p []POINT) bool {
 }
 
 func PolyBezier(hdc HDC, p []POINT) bool {
-	if len(p) == 0 {
-		return true
-	}
 	ret, _, _ := polyBezier.Call(
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
 		uintptr(len(p)),
 	)
 	return ret != 0
-}
-
-func IntersectClipRect(hdc HDC, left, top, right, bottom int) int {
-	ret, _, _ := intersectClipRect.Call(
-		uintptr(hdc),
-		uintptr(left),
-		uintptr(top),
-		uintptr(right),
-		uintptr(bottom),
-	)
-	return int(ret)
-}
-
-func SelectClipRgn(hdc HDC, region HRGN) int {
-	ret, _, _ := selectClipRgn.Call(uintptr(hdc), uintptr(region))
-	return int(ret)
-}
-
-func CreateRectRgn(x1, y1, x2, y2 int) HRGN {
-	ret, _, _ := createRectRgn.Call(
-		uintptr(x1),
-		uintptr(y1),
-		uintptr(x2),
-		uintptr(y2),
-	)
-	return HRGN(ret)
-}
-
-func CombineRgn(dest, src1, src2 HRGN, mode int) int {
-	ret, _, _ := combineRgn.Call(
-		uintptr(dest),
-		uintptr(src1),
-		uintptr(src2),
-		uintptr(mode),
-	)
-	return int(ret)
-}
-
-type FontType int
-
-const (
-	RASTER_FONTTYPE   FontType = 1
-	DEVICE_FONTTYPE   FontType = 2
-	TRUETYPE_FONTTYPE FontType = 4
-)
-
-func (t FontType) String() string {
-	switch t {
-	case RASTER_FONTTYPE:
-		return "RASTER_FONTTYPE"
-	case DEVICE_FONTTYPE:
-		return "DEVICE_FONTTYPE"
-	case TRUETYPE_FONTTYPE:
-		return "TRUETYPE_FONTTYPE"
-	}
-	return strconv.Itoa(int(t))
-}
-
-func EnumFontFamiliesEx(hdc HDC, font LOGFONT, f func(font *ENUMLOGFONTEX, metric *ENUMTEXTMETRIC, fontType FontType) bool) {
-	callback := syscall.NewCallback(func(font, metric uintptr, typ uint32, _ uintptr) uintptr {
-		if f(
-			(*ENUMLOGFONTEX)(unsafe.Pointer(font)),
-			(*ENUMTEXTMETRIC)(unsafe.Pointer(metric)),
-			FontType(typ),
-		) {
-			return 1
-		}
-		return 0
-	})
-	enumFontFamiliesEx.Call(
-		uintptr(hdc),
-		uintptr(unsafe.Pointer(&font)),
-		callback,
-		0,
-		0,
-	)
 }
 
 func GetModuleHandle(modulename string) HINSTANCE {
@@ -3566,19 +3192,6 @@ func GetModuleHandle(modulename string) HINSTANCE {
 	}
 	ret, _, _ := getModuleHandle.Call(mn)
 	return HINSTANCE(ret)
-}
-
-func GetModuleFileName(mod HMODULE) string {
-	var path [32768]uint16
-	ret, _, _ := getModuleFileName.Call(
-		uintptr(mod),
-		uintptr(unsafe.Pointer(&path[0])),
-		uintptr(len(path)),
-	)
-	if ret == 0 {
-		return ""
-	}
-	return syscall.UTF16ToString(path[:])
 }
 
 func MulDiv(number, numerator, denominator int) int {
@@ -3603,11 +3216,6 @@ func GetCurrentThread() HANDLE {
 func GetLogicalDrives() uint32 {
 	ret, _, _ := getLogicalDrives.Call()
 	return uint32(ret)
-}
-
-func GetDriveType(drive string) uint {
-	ret, _, _ := getDriveType.Call(uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(drive))))
-	return uint(ret)
 }
 
 func GetUserDefaultLCID() uint32 {
@@ -3715,7 +3323,8 @@ func TerminateProcess(hProcess HANDLE, uExitCode uint) bool {
 }
 
 func CloseHandle(object HANDLE) bool {
-	ret, _, _ := closeHandle.Call(uintptr(object))
+	ret, _, _ := closeHandle.Call(
+		uintptr(object))
 	return ret != 0
 }
 
@@ -3755,16 +3364,15 @@ func GetSystemTimes(lpIdleTime, lpKernelTime, lpUserTime *FILETIME) bool {
 	return ret != 0
 }
 
-func GetProcessTimes(hProcess HANDLE) (creationTime, exitTime, kernelTime, userTime FILETIME, ok bool) {
+func GetProcessTimes(hProcess HANDLE, lpCreationTime, lpExitTime, lpKernelTime, lpUserTime *FILETIME) bool {
 	ret, _, _ := getProcessTimes.Call(
 		uintptr(hProcess),
-		uintptr(unsafe.Pointer(&creationTime)),
-		uintptr(unsafe.Pointer(&exitTime)),
-		uintptr(unsafe.Pointer(&kernelTime)),
-		uintptr(unsafe.Pointer(&userTime)),
+		uintptr(unsafe.Pointer(lpCreationTime)),
+		uintptr(unsafe.Pointer(lpExitTime)),
+		uintptr(unsafe.Pointer(lpKernelTime)),
+		uintptr(unsafe.Pointer(lpUserTime)),
 	)
-	ok = ret != 0
-	return
+	return ret != 0
 }
 
 func GetConsoleScreenBufferInfo(hConsoleOutput HANDLE) *CONSOLE_SCREEN_BUFFER_INFO {
@@ -3809,31 +3417,15 @@ func GetSystemTimeAsFileTime() (time FILETIME) {
 	return
 }
 
-func SystemTimeToFileTime(sysTime SYSTEMTIME) (fileTime FILETIME, ok bool) {
-	ret, _, _ := systemTimeToFileTime.Call(
-		uintptr(unsafe.Pointer(&sysTime)),
-		uintptr(unsafe.Pointer(&fileTime)),
-	)
-	ok = ret != 0
-	return
-}
-
-func FileTimeToSystemTime(fileTime FILETIME) (sysTime SYSTEMTIME, ok bool) {
-	ret, _, _ := fileTimeToSystemTime.Call(
-		uintptr(unsafe.Pointer(&fileTime)),
-		uintptr(unsafe.Pointer(&sysTime)),
-	)
-	ok = ret != 0
-	return
-}
-
-func SetSystemTime(time SYSTEMTIME) bool {
-	ret, _, _ := setSystemTime.Call(uintptr(unsafe.Pointer(&time)))
+func SetSystemTime(time *SYSTEMTIME) bool {
+	ret, _, _ := setSystemTime.Call(
+		uintptr(unsafe.Pointer(time)))
 	return ret != 0
 }
 
-func SetLocalTime(time SYSTEMTIME) bool {
-	ret, _, _ := setLocalTime.Call(uintptr(unsafe.Pointer(&time)))
+func SetLocalTime(time *SYSTEMTIME) bool {
+	ret, _, _ := setLocalTime.Call(
+		uintptr(unsafe.Pointer(time)))
 	return ret != 0
 }
 
@@ -3843,11 +3435,6 @@ func CopyMemory(dest, source unsafe.Pointer, sizeInBytes int) {
 		uintptr(source),
 		uintptr(sizeInBytes),
 	)
-}
-
-func GetCurrentProcess() HANDLE {
-	id, _, _ := getCurrentProcess.Call()
-	return HANDLE(id)
 }
 
 func GetCurrentProcessId() DWORD {
@@ -3954,52 +3541,20 @@ func DeviceIoControl(
 	return
 }
 
-func FindFirstStream(filename string, data *WIN32_FIND_STREAM_DATA) (HANDLE, bool) {
-	ret, _, _ := findFirstStream.Call(
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(filename))),
-		FindStreamInfoStandard,
-		uintptr(unsafe.Pointer(data)),
+func CoInitializeEx(coInit uintptr) HRESULT {
+	ret, _, _ := coInitializeEx.Call(
 		0,
-	)
-	h := HANDLE(ret)
-	return h, h != INVALID_HANDLE_VALUE
-}
+		coInit)
 
-func FindNextStream(finder HANDLE, data *WIN32_FIND_STREAM_DATA) bool {
-	ret, _, _ := findNextStream.Call(
-		uintptr(finder),
-		uintptr(unsafe.Pointer(data)),
-	)
-	return ret != 0
-}
+	switch uint32(ret) {
+	case E_INVALIDARG:
+		panic("CoInitializeEx failed with E_INVALIDARG")
+	case E_OUTOFMEMORY:
+		panic("CoInitializeEx failed with E_OUTOFMEMORY")
+	case E_UNEXPECTED:
+		panic("CoInitializeEx failed with E_UNEXPECTED")
+	}
 
-func FindClose(finder HANDLE) bool {
-	ret, _, _ := findClose.Call(
-		uintptr(finder),
-	)
-	return ret != 0
-}
-
-func OpenMutex(desiredAccess uint32, inheritHandle bool, name string) HANDLE {
-	ret, _, _ := openMutex.Call(
-		uintptr(desiredAccess),
-		uintptr(BoolToBOOL(inheritHandle)),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
-	)
-	return HANDLE(ret)
-}
-
-func CreateMutex(attributes *SECURITY_ATTRIBUTES, initialOwner bool, name string) HANDLE {
-	ret, _, _ := createMutex.Call(
-		uintptr(unsafe.Pointer(attributes)),
-		uintptr(BoolToBOOL(initialOwner)),
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(name))),
-	)
-	return HANDLE(ret)
-}
-
-func CoInitializeEx(coInit uint32) HRESULT {
-	ret, _, _ := coInitializeEx.Call(0, uintptr(coInit))
 	return HRESULT(ret)
 }
 
@@ -4011,19 +3566,32 @@ func CoUninitialize() {
 	coUninitialize.Call()
 }
 
-func CreateStreamOnHGlobal(global HGLOBAL, deleteOnRelease bool) (*IStream, HRESULT) {
+func CreateStreamOnHGlobal(hGlobal HGLOBAL, fDeleteOnRelease bool) *IStream {
 	stream := new(IStream)
 	ret, _, _ := createStreamOnHGlobal.Call(
-		uintptr(global),
-		uintptr(BoolToBOOL(deleteOnRelease)),
+		uintptr(hGlobal),
+		uintptr(BoolToBOOL(fDeleteOnRelease)),
 		uintptr(unsafe.Pointer(&stream)),
 	)
 
-	return stream, HRESULT(ret)
+	switch uint32(ret) {
+	case E_INVALIDARG:
+		panic("CreateStreamOnHGlobal failed with E_INVALIDARG")
+	case E_OUTOFMEMORY:
+		panic("CreateStreamOnHGlobal failed with E_OUTOFMEMORY")
+	case E_UNEXPECTED:
+		panic("CreateStreamOnHGlobal failed with E_UNEXPECTED")
+	}
+
+	return stream
 }
 
 func VariantInit(v *VARIANT) {
-	variantInit.Call(uintptr(unsafe.Pointer(v)))
+	hr, _, _ := variantInit.Call(uintptr(unsafe.Pointer(v)))
+	if hr != 0 {
+		panic("Invoke VariantInit error.")
+	}
+	return
 }
 
 func SysAllocString(v string) (ss *int16) {
@@ -4035,7 +3603,11 @@ func SysAllocString(v string) (ss *int16) {
 }
 
 func SysFreeString(v *int16) {
-	sysFreeString.Call(uintptr(unsafe.Pointer(v)))
+	hr, _, _ := sysFreeString.Call(uintptr(unsafe.Pointer(v)))
+	if hr != 0 {
+		panic("Invoke SysFreeString error.")
+	}
+	return
 }
 
 func SysStringLen(v *int16) uint {
@@ -4088,39 +3660,12 @@ func WglShareLists(hglrc1, hglrc2 HGLRC) bool {
 	return ret == TRUE
 }
 
-// EnumAllProcesses retrieves the process identifier for each process object in
-// the system. It returns ok = true on success. If ok = false call GetLastError
-// to see why it failed.
-func EnumAllProcesses() (processIDs []uint32, ok bool) {
-	n := 128
-	for {
-		processIDs, ok = EnumProcesses(make([]uint32, n))
-		if !ok || len(processIDs) < n {
-			return
-		}
-		n *= 2
-	}
-}
-
-// EnumProcesses retrieves the process identifier for each process object in the
-// system. It takes a pre-sized slice to fill and returns the filled sub-slice
-// and an OK status to report success. If ok is false, call GetLastError to see
-// what the problem was.
-// If the given slice is filled completely, there might be more unenumerated
-// process IDs. In that case increase the buffer size and call EnumProcesses
-// again. You can also call EnumAllProcesses which does this automatically.
-func EnumProcesses(into []uint32) (processIDs []uint32, ok bool) {
-	if len(into) == 0 {
-		return nil, true
-	}
-	var writtenBytes uint32
+func EnumProcesses(processIds []uint32, cb uint32, bytesReturned *uint32) bool {
 	ret, _, _ := enumProcesses.Call(
-		uintptr(unsafe.Pointer(&into[0])),
-		uintptr(len(into)*4),
-		uintptr(unsafe.Pointer(&writtenBytes)),
-	)
-	writtenIDs := writtenBytes / 4
-	return into[:writtenIDs], ret != 0
+		uintptr(unsafe.Pointer(&processIds[0])),
+		uintptr(cb),
+		uintptr(unsafe.Pointer(bytesReturned)))
+	return ret != 0
 }
 
 func SHBrowseForFolder(bi *BROWSEINFO) uintptr {
@@ -4137,17 +3682,6 @@ func SHGetPathFromIDList(idl uintptr) string {
 	return syscall.UTF16ToString(buf)
 }
 
-func SHGetSpecialFolderPath(window HWND, id int, create bool) (string, bool) {
-	var buf [MAX_PATH]uint16
-	ret, _, _ := shGetSpecialFolderPath.Call(
-		uintptr(window),
-		uintptr(unsafe.Pointer(&buf[0])),
-		uintptr(id),
-		uintptr(BoolToBOOL(create)),
-	)
-	return syscall.UTF16ToString(buf[:]), ret != 0
-}
-
 func DragAcceptFiles(hwnd HWND, accept bool) {
 	dragAcceptFiles.Call(
 		uintptr(hwnd),
@@ -4155,32 +3689,33 @@ func DragAcceptFiles(hwnd HWND, accept bool) {
 	)
 }
 
-func DragQueryFile(drop HDROP, file uint) string {
+func DragQueryFile(hDrop HDROP, iFile uint) (fileName string, fileCount uint) {
 	ret, _, _ := dragQueryFile.Call(
-		uintptr(drop),
-		uintptr(file),
+		uintptr(hDrop),
+		uintptr(iFile),
 		0,
 		0,
 	)
 
-	stringSize := uint(ret)
-	var fileName string
+	fileCount = uint(ret)
 
-	if file != 0xFFFFFFFF {
-		buf := make([]uint16, stringSize+1)
+	if iFile != 0xFFFFFFFF {
+		buf := make([]uint16, fileCount+1)
 
 		ret, _, _ := dragQueryFile.Call(
-			uintptr(drop),
-			uintptr(file),
+			uintptr(hDrop),
+			uintptr(iFile),
 			uintptr(unsafe.Pointer(&buf[0])),
-			uintptr(len(buf)),
-		)
-		if ret != 0 {
-			fileName = syscall.UTF16ToString(buf)
+			uintptr(fileCount+1))
+
+		if ret == 0 {
+			panic("Invoke DragQueryFile error.")
 		}
+
+		fileName = syscall.UTF16ToString(buf)
 	}
 
-	return fileName
+	return
 }
 
 func DragQueryPoint(hDrop HDROP) (x, y int, isClientArea bool) {
@@ -4382,14 +3917,17 @@ func GdiplusShutdown(token uintptr) {
 	gdiplusShutdown.Call(token)
 }
 
-func GdiplusStartup(input *GdiplusStartupInput, output *GdiplusStartupOutput) (token uintptr, status uint32) {
+func GdiplusStartup(input *GdiplusStartupInput, output *GdiplusStartupOutput) uintptr {
+	var token uintptr
 	ret, _, _ := gdiplusStartup.Call(
 		uintptr(unsafe.Pointer(&token)),
 		uintptr(unsafe.Pointer(input)),
-		uintptr(unsafe.Pointer(output)),
-	)
-	status = uint32(ret)
-	return
+		uintptr(unsafe.Pointer(output)))
+
+	if ret != Ok {
+		panic("GdiplusStartup failed with status " + GetGpStatus(int32(ret)))
+	}
+	return token
 }
 
 func MakeIntResource(id uint16) *uint16 {
@@ -4650,62 +4188,4 @@ func WNetCancelConnection2(name string, flags uint32, force bool) uint32 {
 		uintptr(BoolToBOOL(force)),
 	)
 	return uint32(ret)
-}
-
-// https://docs.microsoft.com/en-us/windows/win32/devnotes/rtlgetversion
-func RtlGetVersion() RTL_OSVERSIONINFOEXW {
-	var info RTL_OSVERSIONINFOEXW
-	info.OSVersionInfoSize = 5*4 + 128*2 + 3*2 + 2*1
-	rtlGetVersion.Call(uintptr(unsafe.Pointer(&info)))
-	return info
-}
-
-// https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/nf-sysinfoapi-getnativesysteminfo
-func GetNativeSystemInfo() SYSTEM_INFO {
-	var info SYSTEM_INFO
-	getNativeSystemInfo.Call(uintptr(unsafe.Pointer(&info)))
-	return info
-}
-
-// https://docs.microsoft.com/en-us/windows/win32/api/setupapi/nf-setupapi-setupdigetclassdevsw
-func SetupDiGetClassDevs(classGUID *GUID, flags uint32) HANDLE {
-	ret, _, _ := setupDiGetClassDevs.Call(
-		uintptr(unsafe.Pointer(classGUID)),
-		0,
-		0,
-		uintptr(flags),
-	)
-	return HANDLE(ret)
-}
-
-func SetupDiDestroyDeviceInfoList(list HANDLE) bool {
-	ret, _, _ := setupDiDestroyDeviceInfoList.Call(uintptr(list))
-	return ret != 0
-}
-
-func SetupDiEnumDeviceInfo(deviceInfoList HANDLE, index uint32) (SP_DEVINFO_DATA, bool) {
-	var data SP_DEVINFO_DATA
-	data.Size = uint32(unsafe.Sizeof(data))
-	ret, _, _ := setupDiEnumDeviceInfo.Call(
-		uintptr(deviceInfoList),
-		uintptr(index),
-		uintptr(unsafe.Pointer(&data)),
-	)
-	return data, ret != 0
-}
-
-func SetupDiOpenDevRegKey(
-	DeviceInfoList HANDLE,
-	data *SP_DEVINFO_DATA,
-	scope, hwProfile, keyType, access uint32,
-) HKEY {
-	ret, _, _ := setupDiOpenDevRegKey.Call(
-		uintptr(DeviceInfoList),
-		uintptr(unsafe.Pointer(data)),
-		uintptr(scope),
-		uintptr(hwProfile),
-		uintptr(keyType),
-		uintptr(access),
-	)
-	return HKEY(ret)
 }

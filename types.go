@@ -6,14 +6,176 @@ package w32
 
 import (
 	"syscall"
-	"time"
-	"unicode/utf16"
 	"unsafe"
 )
 
 // From MSDN: Windows Data Types
 // http://msdn.microsoft.com/en-us/library/s3f49ktz.aspx
 // http://msdn.microsoft.com/en-us/library/windows/desktop/aa383751.aspx
+// ATOM                  WORD
+// BOOL                  int32
+// BOOLEAN               byte
+// BYTE                  byte
+// CCHAR                 int8
+// CHAR                  int8
+// COLORREF              DWORD
+// DWORD                 uint32
+// DWORDLONG             ULONGLONG
+// DWORD_PTR             ULONG_PTR
+// DWORD32               uint32
+// DWORD64               uint64
+// FLOAT                 float32
+// HACCEL                HANDLE
+// HALF_PTR              struct{} // ???
+// HANDLE                PVOID
+// HBITMAP               HANDLE
+// HBRUSH                HANDLE
+// HCOLORSPACE           HANDLE
+// HCONV                 HANDLE
+// HCONVLIST             HANDLE
+// HCURSOR               HANDLE
+// HDC                   HANDLE
+// HDDEDATA              HANDLE
+// HDESK                 HANDLE
+// HDROP                 HANDLE
+// HDWP                  HANDLE
+// HENHMETAFILE          HANDLE
+// HFILE                 HANDLE
+// HFONT                 HANDLE
+// HGDIOBJ               HANDLE
+// HGLOBAL               HANDLE
+// HHOOK                 HANDLE
+// HICON                 HANDLE
+// HINSTANCE             HANDLE
+// HKEY                  HANDLE
+// HKL                   HANDLE
+// HLOCAL                HANDLE
+// HMENU                 HANDLE
+// HMETAFILE             HANDLE
+// HMODULE               HANDLE
+// HPALETTE              HANDLE
+// HPEN                  HANDLE
+// HRESULT               int32
+// HRGN                  HANDLE
+// HSZ                   HANDLE
+// HWINSTA               HANDLE
+// HWND                  HANDLE
+// INT                   int32
+// INT_PTR               uintptr
+// INT8                  int8
+// INT16                 int16
+// INT32                 int32
+// INT64                 int64
+// LANGID                WORD
+// LCID                  DWORD
+// LCTYPE                DWORD
+// LGRPID                DWORD
+// LONG                  int32
+// LONGLONG              int64
+// LONG_PTR              uintptr
+// LONG32                int32
+// LONG64                int64
+// LPARAM                LONG_PTR
+// LPBOOL                *BOOL
+// LPBYTE                *BYTE
+// LPCOLORREF            *COLORREF
+// LPCSTR                *int8
+// LPCTSTR               LPCWSTR
+// LPCVOID               unsafe.Pointer
+// LPCWSTR               *WCHAR
+// LPDWORD               *DWORD
+// LPHANDLE              *HANDLE
+// LPINT                 *INT
+// LPLONG                *LONG
+// LPSTR                 *CHAR
+// LPTSTR                LPWSTR
+// LPVOID                unsafe.Pointer
+// LPWORD                *WORD
+// LPWSTR                *WCHAR
+// LRESULT               LONG_PTR
+// PBOOL                 *BOOL
+// PBOOLEAN              *BOOLEAN
+// PBYTE                 *BYTE
+// PCHAR                 *CHAR
+// PCSTR                 *CHAR
+// PCTSTR                PCWSTR
+// PCWSTR                *WCHAR
+// PDWORD                *DWORD
+// PDWORDLONG            *DWORDLONG
+// PDWORD_PTR            *DWORD_PTR
+// PDWORD32              *DWORD32
+// PDWORD64              *DWORD64
+// PFLOAT                *FLOAT
+// PHALF_PTR             *HALF_PTR
+// PHANDLE               *HANDLE
+// PHKEY                 *HKEY
+// PINT_PTR              *INT_PTR
+// PINT8                 *INT8
+// PINT16                *INT16
+// PINT32                *INT32
+// PINT64                *INT64
+// PLCID                 *LCID
+// PLONG                 *LONG
+// PLONGLONG             *LONGLONG
+// PLONG_PTR             *LONG_PTR
+// PLONG32               *LONG32
+// PLONG64               *LONG64
+// POINTER_32            struct{} // ???
+// POINTER_64            struct{} // ???
+// POINTER_SIGNED        uintptr
+// POINTER_UNSIGNED      uintptr
+// PSHORT                *SHORT
+// PSIZE_T               *SIZE_T
+// PSSIZE_T              *SSIZE_T
+// PSTR                  *CHAR
+// PTBYTE                *TBYTE
+// PTCHAR                *TCHAR
+// PTSTR                 PWSTR
+// PUCHAR                *UCHAR
+// PUHALF_PTR            *UHALF_PTR
+// PUINT                 *UINT
+// PUINT_PTR             *UINT_PTR
+// PUINT8                *UINT8
+// PUINT16               *UINT16
+// PUINT32               *UINT32
+// PUINT64               *UINT64
+// PULONG                *ULONG
+// PULONGLONG            *ULONGLONG
+// PULONG_PTR            *ULONG_PTR
+// PULONG32              *ULONG32
+// PULONG64              *ULONG64
+// PUSHORT               *USHORT
+// PVOID                 unsafe.Pointer
+// PWCHAR                *WCHAR
+// PWORD                 *WORD
+// PWSTR                 *WCHAR
+// QWORD                 uint64
+// SC_HANDLE             HANDLE
+// SC_LOCK               LPVOID
+// SERVICE_STATUS_HANDLE HANDLE
+// SHORT                 int16
+// SIZE_T                ULONG_PTR
+// SSIZE_T               LONG_PTR
+// TBYTE                 WCHAR
+// TCHAR                 WCHAR
+// UCHAR                 uint8
+// UHALF_PTR             struct{} // ???
+// UINT                  uint32
+// UINT_PTR              uintptr
+// UINT8                 uint8
+// UINT16                uint16
+// UINT32                uint32
+// UINT64                uint64
+// ULONG                 uint32
+// ULONGLONG             uint64
+// ULONG_PTR             uintptr
+// ULONG32               uint32
+// ULONG64               uint64
+// USHORT                uint16
+// USN                   LONGLONG
+// WCHAR                 uint16
+// WORD                  uint16
+// WPARAM                UINT_PTR
 type (
 	ATOM            uint16
 	BOOL            int32
@@ -118,106 +280,6 @@ type LOGFONT struct {
 	Quality        byte
 	PitchAndFamily byte
 	FaceName       [LF_FACESIZE]uint16
-}
-
-func toString(s []uint16) string {
-	for i, c := range s {
-		if c == 0 {
-			return string(utf16.Decode(s[:i]))
-		}
-	}
-	return string(utf16.Decode(s))
-}
-
-func (f *LOGFONT) GetFaceName() string {
-	return toString(f.FaceName[:])
-}
-
-func (f *LOGFONT) SetFaceName(name string) {
-	s := utf16.Encode([]rune(name))
-	max := len(f.FaceName) - 1
-	if len(s) > max {
-		s = s[:max]
-	}
-	copy(f.FaceName[:], s)
-	f.FaceName[len(s)] = 0
-}
-
-type ENUMLOGFONTEX struct {
-	LOGFONT
-	FullName [LF_FULLFACESIZE]uint16
-	Style    [LF_FACESIZE]uint16
-	Script   [LF_FACESIZE]uint16
-}
-
-func (f *ENUMLOGFONTEX) GetFullName() string {
-	return toString(f.FullName[:])
-}
-
-func (f *ENUMLOGFONTEX) GetStyle() string {
-	return toString(f.Style[:])
-}
-
-func (f *ENUMLOGFONTEX) GetScript() string {
-	return toString(f.Script[:])
-}
-
-type ENUMTEXTMETRIC struct {
-	NEWTEXTMETRICEX
-	AXESLIST
-}
-
-type NEWTEXTMETRICEX struct {
-	NEWTEXTMETRIC
-	FONTSIGNATURE
-}
-
-type NEWTEXTMETRIC struct {
-	Height           int32
-	Ascent           int32
-	Descent          int32
-	InternalLeading  int32
-	ExternalLeading  int32
-	AveCharWidth     int32
-	MaxCharWidth     int32
-	Weight           int32
-	Overhang         int32
-	DigitizedAspectX int32
-	DigitizedAspectY int32
-	FirstChar        uint16
-	LastChar         uint16
-	DefaultChar      uint16
-	BreakChar        uint16
-	Italic           byte
-	Underlined       byte
-	StruckOut        byte
-	PitchAndFamily   byte
-	CharSet          byte
-	Flags            uint32
-	SizeEM           uint32
-	CellHeight       uint32
-	AvgWidth         uint32
-}
-
-type FONTSIGNATURE struct {
-	Usb [4]uint32
-	Csb [2]uint32
-}
-
-type AXESLIST struct {
-	Reserved uint32
-	NumAxes  uint32
-	AxisInfo [MM_MAX_NUMAXES]AXISINFO
-}
-
-type AXISINFO struct {
-	MinValue int32
-	MaxValue int32
-	AxisName [MM_MAX_AXES_NAMELEN]uint16
-}
-
-func (i *AXISINFO) GetAxisName() string {
-	return toString(i.AxisName[:])
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms646839.aspx
@@ -650,21 +712,8 @@ type FILETIME struct {
 	DwHighDateTime uint32
 }
 
-func (t FILETIME) Uint64() uint64 {
+func (t FILETIME) ToUint64() uint64 {
 	return uint64(t.DwHighDateTime)<<32 | uint64(t.DwLowDateTime)
-}
-
-func (t FILETIME) Time() time.Time {
-	// https://docs.microsoft.com/en-us/windows/win32/api/minwinbase/ns-minwinbase-filetime
-	ref := time.Date(1601, time.January, 1, 0, 0, 0, 0, time.UTC)
-	const tick = 100 * time.Nanosecond
-	// The FILETIME is a uint64 of 100-nanosecond intervals since 1601.
-	// Unfortunately time.Duration is really an int64 so if we cast our uint64
-	// to a time.Duration it becomes negative. Thus we do it in 2 steps, adding
-	// half the time each step to avoid overflow.
-	return ref.
-		Add(time.Duration(t.Uint64()) * (tick / 2)).
-		Add(time.Duration(t.Uint64()) * (tick / 2))
 }
 
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms682119.aspx
@@ -842,19 +891,6 @@ type SYSTEMTIME struct {
 	Milliseconds uint16
 }
 
-func (t SYSTEMTIME) Time() time.Time {
-	return time.Date(
-		int(t.Year),
-		time.Month(t.Month),
-		int(t.Day),
-		int(t.Hour),
-		int(t.Minute),
-		int(t.Second),
-		int(t.Milliseconds)*int(time.Millisecond/time.Nanosecond),
-		time.UTC,
-	)
-}
-
 // http://msdn.microsoft.com/en-us/library/windows/desktop/ms644967(v=vs.85).aspx
 type KBDLLHOOKSTRUCT struct {
 	VkCode      DWORD
@@ -873,14 +909,6 @@ type WINDOWPLACEMENT struct {
 	PtMinPosition    POINT
 	PtMaxPosition    POINT
 	RcNormalPosition RECT
-}
-
-type MINMAXINFO struct {
-	PtReserved     POINT
-	PtMaxSize      POINT
-	PtMaxPosition  POINT
-	PtMinTrackSize POINT
-	PtMaxTrackSize POINT
 }
 
 type RAWINPUTHEADER struct {
@@ -1055,18 +1083,18 @@ type PHYSICAL_MONITOR struct {
 }
 
 type MENUITEMINFO struct {
-	Size         uint32
-	Mask         uint32
-	Type         uint32
-	State        uint32
-	ID           uint32
-	SubMenu      HMENU
-	BmpChecked   HBITMAP
-	BmpUnChecked HBITMAP
-	ItemData     uintptr
-	TypeData     uintptr // UTF-16 string
-	CCH          uint32
-	BmpItem      HBITMAP
+	Size              uint32
+	Mask              uint32
+	Type              uint32
+	State             uint32
+	ID                uint32
+	SubMenu           HMENU
+	BmpChecked        HBITMAP
+	BmpUnChecked      HBITMAP
+	ItemData          uintptr
+	TypeData          uintptr // UTF-16 string
+	ItemTextCharCount uint32
+	BmpItem           HBITMAP
 }
 
 type TPMPARAMS struct {
@@ -1209,66 +1237,4 @@ type STORAGE_PROPERTY_QUERY struct {
 	PropertyId           uint32
 	QueryType            uint32
 	AdditionalParameters [1]byte
-}
-
-// https://docs.microsoft.com/en-us/windows/desktop/api/fileapi/ns-fileapi-_win32_find_stream_data
-type WIN32_FIND_STREAM_DATA struct {
-	Size int64
-	Name [MAX_PATH + 36]uint16
-}
-
-type MSGBOXPARAMS struct {
-	Size           uint32
-	Owner          HWND
-	Instance       HINSTANCE
-	Text           *uint16
-	Caption        *uint16
-	Style          uint32
-	Icon           *uint16
-	ContextHelpId  *uint32
-	MsgBoxCallback uintptr
-	LanguageId     uint32
-}
-
-type POWERBROADCAST_SETTING struct {
-	PowerSetting GUID
-	DataLength   uint32
-	Data         [1]byte
-}
-
-// https://docs.microsoft.com/en-us/windows-hardware/drivers/ddi/wdm/ns-wdm-_osversioninfoexw
-type RTL_OSVERSIONINFOEXW struct {
-	OSVersionInfoSize uint32
-	MajorVersion      uint32
-	MinorVersion      uint32
-	BuildNumber       uint32
-	PlatformId        uint32
-	CSDVersion        [128]uint16
-	ServicePackMajor  uint16
-	ServicePackMinor  uint16
-	SuiteMask         uint16
-	ProductType       byte
-	Reserved          byte
-}
-
-// https://docs.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-system_info
-type SYSTEM_INFO struct {
-	ProcessorArchitecture     uint16
-	Reserved                  uint16
-	PageSize                  uint32
-	MinimumApplicationAddress LPCVOID
-	MaximumApplicationAddress LPCVOID
-	ActiveProcessorMask       *uint32
-	NumberOfProcessors        uint32
-	ProcessorType             uint32
-	AllocationGranularity     uint32
-	ProcessorLevel            uint16
-	ProcessorRevision         uint16
-}
-
-type SP_DEVINFO_DATA struct {
-	Size      uint32
-	ClassGuid GUID
-	DevInst   uint32
-	Reserved  uintptr
 }
