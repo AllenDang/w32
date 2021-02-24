@@ -3457,6 +3457,15 @@ func Polygon(hdc HDC, p []POINT) bool {
 	return ret != 0
 }
 
+func PolygonMem(hdc HDC, start unsafe.Pointer, pointCount int) bool {
+	ret, _, _ := polygon.Call(
+		uintptr(hdc),
+		uintptr(start),
+		uintptr(pointCount),
+	)
+	return ret != 0
+}
+
 func Polyline(hdc HDC, p []POINT) bool {
 	if len(p) == 0 {
 		return true
@@ -3469,6 +3478,15 @@ func Polyline(hdc HDC, p []POINT) bool {
 	return ret != 0
 }
 
+func PolylineMem(hdc HDC, start unsafe.Pointer, pointCount int) bool {
+	ret, _, _ := polyline.Call(
+		uintptr(hdc),
+		uintptr(start),
+		uintptr(pointCount),
+	)
+	return ret != 0
+}
+
 func PolyBezier(hdc HDC, p []POINT) bool {
 	if len(p) == 0 {
 		return true
@@ -3477,6 +3495,15 @@ func PolyBezier(hdc HDC, p []POINT) bool {
 		uintptr(hdc),
 		uintptr(unsafe.Pointer(&p[0])),
 		uintptr(len(p)),
+	)
+	return ret != 0
+}
+
+func PolyBezierMem(hdc HDC, start unsafe.Pointer, pointCount int) bool {
+	ret, _, _ := polyline.Call(
+		uintptr(hdc),
+		uintptr(start),
+		uintptr(pointCount),
 	)
 	return ret != 0
 }
