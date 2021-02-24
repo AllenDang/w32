@@ -1,6 +1,6 @@
 package w32
 
-// TODO
+// TODO Check that these messages are correct:
 // WM_*
 // LVM_*
 // TTM_*
