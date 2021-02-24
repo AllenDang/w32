@@ -2106,10 +2106,12 @@ const (
 	VK_KANA                = 0x15
 	VK_HANGEUL             = 0x15
 	VK_HANGUL              = 0x15
+	VK_IME_ON              = 0x16
 	VK_JUNJA               = 0x17
 	VK_FINAL               = 0x18
 	VK_HANJA               = 0x19
 	VK_KANJI               = 0x19
+	VK_IME_OFF             = 0x1A
 	VK_ESCAPE              = 0x1B
 	VK_CONVERT             = 0x1C
 	VK_NONCONVERT          = 0x1D
