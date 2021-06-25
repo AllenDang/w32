@@ -20,6 +20,7 @@ const (
 	ERROR_INVALID_HANDLE             = 6
 	ERROR_BAD_FORMAT                 = 11
 	ERROR_INVALID_NAME               = 123
+	ERROR_ALREADY_EXISTS             = 183
 	ERROR_MORE_DATA                  = 234
 	ERROR_NO_MORE_ITEMS              = 259
 	ERROR_INVALID_SERVICE_CONTROL    = 1052
