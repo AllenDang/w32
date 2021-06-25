@@ -1,8 +1,3 @@
-Version 2
-=========
-
-Please go to [Version 2](https://github.com/gonutz/w32/tree/master/v2) of this library for the latest version.
-
 About w32
 ==========
 
@@ -18,8 +13,3 @@ Installation
 Get the latest version with:
 
 	go get github.com/gonutz/w32/v2
-
-Version 1
-=========
-
-This repository has moved to use Go modules. It is recommended that you not use version 1 (with import path `github.com/gonutz/w32`) as it has known bugs. Use the latest version (v2 as of this writing) for new projects and migrate to a new version in case you still use v1.
