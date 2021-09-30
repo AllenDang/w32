@@ -10,3 +10,33 @@ func MenuItemFromPoint(w HWND, m HMENU, screen POINT) int {
 	)
 	return int(ret)
 }
+
+func GetClassLongPtr(w HWND, index int) uintptr {
+	ret, _, _ := getClassLongPtr.Call(uintptr(w), uintptr(index))
+	return ret
+}
+func SetClassLongPtr(w HWND, index int, value uintptr) uintptr {
+	ret, _, _ := setClassLongPtr.Call(
+		uintptr(w),
+		uintptr(index),
+		value,
+	)
+	return ret
+}
+
+func GetWindowLongPtr(hwnd HWND, index int) uintptr {
+	ret, _, _ := getWindowLongPtr.Call(
+		uintptr(hwnd),
+		uintptr(index),
+	)
+	return ret
+}
+
+func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
+	ret, _, _ := setWindowLongPtr.Call(
+		uintptr(hwnd),
+		uintptr(index),
+		value,
+	)
+	return ret
+}

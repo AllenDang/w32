@@ -64,9 +64,11 @@ var (
 	setWindowLong                    = user32.NewProc("SetWindowLongW")
 	setWindowLongPtr                 = user32.NewProc("SetWindowLongPtrW")
 	setClassLongPtr                  = user32.NewProc("SetClassLongPtrW")
+	setClassLong                     = user32.NewProc("SetClassLongW")
 	getWindowLong                    = user32.NewProc("GetWindowLongW")
 	getWindowLongPtr                 = user32.NewProc("GetWindowLongPtrW")
 	getClassLongPtr                  = user32.NewProc("GetClassLongPtrW")
+	getClassLong                     = user32.NewProc("GetClassLongW")
 	enableWindow                     = user32.NewProc("EnableWindow")
 	isWindowEnabled                  = user32.NewProc("IsWindowEnabled")
 	isWindowVisible                  = user32.NewProc("IsWindowVisible")
@@ -768,6 +770,14 @@ func CallWindowProc(preWndProc uintptr, hwnd HWND, msg uint32, wParam, lParam ui
 	return ret
 }
 
+func GetWindowLong(hwnd HWND, index int) int32 {
+	ret, _, _ := getWindowLong.Call(
+		uintptr(hwnd),
+		uintptr(index),
+	)
+	return int32(ret)
+}
+
 func SetWindowLong(hwnd HWND, index int, value int32) int32 {
 	ret, _, _ := setWindowLong.Call(
 		uintptr(hwnd),
@@ -777,43 +787,21 @@ func SetWindowLong(hwnd HWND, index int, value int32) int32 {
 	return int32(ret)
 }
 
-func SetWindowLongPtr(hwnd HWND, index int, value uintptr) uintptr {
-	ret, _, _ := setWindowLongPtr.Call(
-		uintptr(hwnd),
-		uintptr(index),
-		value,
-	)
-	return ret
-}
-
-func SetClassLongPtr(w HWND, index int, value uintptr) uintptr {
-	ret, _, _ := setClassLongPtr.Call(
-		uintptr(w),
-		uintptr(index),
-		value,
-	)
-	return ret
-}
-
-func GetWindowLong(hwnd HWND, index int) int32 {
-	ret, _, _ := getWindowLong.Call(
+func GetClassLong(hwnd HWND, index int) uint32 {
+	ret, _, _ := getClassLong.Call(
 		uintptr(hwnd),
 		uintptr(index),
 	)
-	return int32(ret)
+	return uint32(ret)
 }
 
-func GetWindowLongPtr(hwnd HWND, index int) uintptr {
-	ret, _, _ := getWindowLongPtr.Call(
+func SetClassLong(hwnd HWND, index int, value int32) uint32 {
+	ret, _, _ := setClassLong.Call(
 		uintptr(hwnd),
 		uintptr(index),
+		uintptr(value),
 	)
-	return ret
-}
-
-func GetClassLongPtr(w HWND, index int) uintptr {
-	ret, _, _ := getClassLongPtr.Call(uintptr(w), uintptr(index))
-	return ret
+	return uint32(ret)
 }
 
 func EnableWindow(hwnd HWND, b bool) bool {
