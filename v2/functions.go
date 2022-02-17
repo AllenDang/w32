@@ -4728,6 +4728,7 @@ func SetupDiOpenDevRegKey(
 	return HKEY(ret)
 }
 
-func SetProcessDpiAwareness(value int) {
-	setProcessDpiAwareness.Call(uintptr(value))
+func SetProcessDpiAwareness(value int) HRESULT {
+	ret, _, _ := setProcessDpiAwareness.Call(uintptr(value))
+	return HRESULT(ret)
 }
