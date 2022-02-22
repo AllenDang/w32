@@ -30,6 +30,7 @@ var (
 	ntoskrnl = syscall.NewLazyDLL("ntoskrnl.exe")
 	ntdll    = syscall.NewLazyDLL("ntdll.dll")
 	setupAPI = syscall.NewLazyDLL("SetupAPI.dll")
+	shcore   = syscall.NewLazyDLL("Shcore.dll")
 
 	registerClassEx                  = user32.NewProc("RegisterClassExW")
 	unregisterClass                  = user32.NewProc("UnregisterClassW")
@@ -474,6 +475,8 @@ var (
 	setupDiDestroyDeviceInfoList = setupAPI.NewProc("SetupDiDestroyDeviceInfoList")
 	setupDiEnumDeviceInfo        = setupAPI.NewProc("SetupDiEnumDeviceInfo")
 	setupDiOpenDevRegKey         = setupAPI.NewProc("SetupDiOpenDevRegKey")
+
+	setProcessDpiAwareness = shcore.NewProc("SetProcessDpiAwareness")
 )
 
 // RegisterClassEx sets the Size of the WNDCLASSEX automatically.
@@ -4723,4 +4726,9 @@ func SetupDiOpenDevRegKey(
 		uintptr(access),
 	)
 	return HKEY(ret)
+}
+
+func SetProcessDpiAwareness(value int) HRESULT {
+	ret, _, _ := setProcessDpiAwareness.Call(uintptr(value))
+	return HRESULT(ret)
 }
