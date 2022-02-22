@@ -1272,3 +1272,13 @@ type SP_DEVINFO_DATA struct {
 	DevInst   uint32
 	Reserved  uintptr
 }
+
+type WINDOWPOS struct {
+	Hwnd            HWND
+	HwndInsertAfter HWND
+	X               int32
+	Y               int32
+	Cx              int32
+	Cy              int32
+	Flags           uint32
+}
