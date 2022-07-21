@@ -1282,3 +1282,16 @@ type WINDOWPOS struct {
 	Cy              int32
 	Flags           uint32
 }
+
+type WINDOWINFO struct {
+	Cbsize uint32
+	RcWindow RECT
+	RcClient RECT
+	DwStyle uint32
+	DwExStyle uint32
+	DwWindowStatus uint32
+	CxWindowBorders uint32
+	CyWindowBorders uint32
+	AtomWindowType uint16
+	WCreatorVersion uint16
+}
