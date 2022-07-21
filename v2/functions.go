@@ -59,6 +59,7 @@ var (
 	getWindowTextLength              = user32.NewProc("GetWindowTextLengthW")
 	getWindowText                    = user32.NewProc("GetWindowTextW")
 	getWindowRect                    = user32.NewProc("GetWindowRect")
+	getWindowInfo                    = user32.NewProc("GetWindowInfo")
 	moveWindow                       = user32.NewProc("MoveWindow")
 	screenToClient                   = user32.NewProc("ScreenToClient")
 	callWindowProc                   = user32.NewProc("CallWindowProcW")
@@ -738,6 +739,15 @@ func GetWindowRect(hwnd HWND) *RECT {
 		uintptr(unsafe.Pointer(&rect)),
 	)
 	return &rect
+}
+
+func GetWindowInfo(hwnd HWND) (WINDOWINFO, bool) {
+	var wi WINDOWINFO
+	ret, _, _ := getWindowInfo.Call(
+		uintptr(hwnd),
+		uintptr(unsafe.Pointer(&wi)),
+	)
+	return wi, ret != 0
 }
 
 func MoveWindow(hwnd HWND, x, y, width, height int, repaint bool) bool {
