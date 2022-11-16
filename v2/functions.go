@@ -163,6 +163,7 @@ var (
 	setTimer                         = user32.NewProc("SetTimer")
 	getActiveWindow                  = user32.NewProc("GetActiveWindow")
 	messageBeep                      = user32.NewProc("MessageBeep")
+	beep                             = user32.NewProc("Beep")
 	getCaretBlinkTime                = user32.NewProc("GetCaretBlinkTime")
 	getWindowDC                      = user32.NewProc("GetWindowDC")
 	enumWindows                      = user32.NewProc("EnumWindows")
@@ -1611,6 +1612,15 @@ func GetActiveWindow() HWND {
 
 func MessageBeep(typ uint) bool {
 	ret, _, _ := messageBeep.Call(uintptr(typ))
+	return ret != 0
+}
+
+// Beep generates simple tones on the speaker. The function is synchronous; it
+// performs an alertable wait and does not return control to its caller until
+// the sound finishes.
+// The frequency must be in the range 37 through 32,767 (0x25 through 0x7FFF).
+func Beep(frequencyInHz, durationInMs uint32) bool {
+	ret, _, _ := beep.Call(uintptr(frequencyInHz), uintptr(durationInMs))
 	return ret != 0
 }
 

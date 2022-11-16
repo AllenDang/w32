@@ -15,6 +15,7 @@ func GetClassLongPtr(w HWND, index int) uintptr {
 	ret, _, _ := getClassLongPtr.Call(uintptr(w), uintptr(index))
 	return ret
 }
+
 func SetClassLongPtr(w HWND, index int, value uintptr) uintptr {
 	ret, _, _ := setClassLongPtr.Call(
 		uintptr(w),
