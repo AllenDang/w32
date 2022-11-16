@@ -163,7 +163,7 @@ var (
 	setTimer                         = user32.NewProc("SetTimer")
 	getActiveWindow                  = user32.NewProc("GetActiveWindow")
 	messageBeep                      = user32.NewProc("MessageBeep")
-	beep                             = user32.NewProc("Beep")
+	beep                             = kernel32.NewProc("Beep")
 	getCaretBlinkTime                = user32.NewProc("GetCaretBlinkTime")
 	getWindowDC                      = user32.NewProc("GetWindowDC")
 	enumWindows                      = user32.NewProc("EnumWindows")
