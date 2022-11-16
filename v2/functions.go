@@ -4577,8 +4577,12 @@ func VerQueryValueString(block []byte, translation, item string) (string, bool) 
 }
 
 func PlaySound(sound string, mod HMODULE, flags uint32) bool {
+	return PlaySoundPointer(syscall.StringToUTF16Ptr(sound), mod, flags)
+}
+
+func PlaySoundPointer(sound *uint16, mod HMODULE, flags uint32) bool {
 	ret, _, _ := playSound.Call(
-		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(sound))),
+		uintptr(unsafe.Pointer(sound)),
 		uintptr(mod),
 		uintptr(flags),
 	)
