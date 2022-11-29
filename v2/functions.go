@@ -224,6 +224,7 @@ var (
 	createCursor                     = user32.NewProc("CreateCursor")
 	destroyCursor                    = user32.NewProc("DestroyCursor")
 	getDlgCtrlID                     = user32.NewProc("GetDlgCtrlID")
+	systemParametersInfo             = user32.NewProc("SystemParametersInfoW")
 
 	regCreateKeyEx             = advapi32.NewProc("RegCreateKeyExW")
 	regOpenKeyEx               = advapi32.NewProc("RegOpenKeyExW")
@@ -2155,6 +2156,25 @@ func DestroyCursor(c HCURSOR) bool {
 func GetDlgCtrlID(w HWND) int {
 	ret, _, _ := getDlgCtrlID.Call(uintptr(w))
 	return int(ret)
+}
+
+func SystemParametersInfo(action, param uint, data uintptr, winIni uint) bool {
+	ret, _, _ := systemParametersInfo.Call(
+		uintptr(action),
+		uintptr(param),
+		data,
+		uintptr(winIni),
+	)
+	return ret != 0
+}
+
+func SystemParametersInfoString(action, param uint, data string, winIni uint) bool {
+	return SystemParametersInfo(
+		action,
+		param,
+		uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(data))),
+		winIni,
+	)
 }
 
 func RegCreateKey(hKey HKEY, subKey string) HKEY {
