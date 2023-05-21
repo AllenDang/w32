@@ -1416,6 +1416,7 @@ const (
 	MB_APPLMODAL         = 0x00000000
 	MB_SYSTEMMODAL       = 0x00001000
 	MB_TASKMODAL         = 0x00002000
+	MB_HELP              = 0x00004000
 )
 
 //COM
