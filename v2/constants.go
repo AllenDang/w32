@@ -1369,7 +1369,7 @@ const (
 	OFN_SHOWHELP             = 0x00000010
 )
 
-//SHBrowseForFolder flags
+// SHBrowseForFolder flags
 const (
 	BIF_RETURNONLYFSDIRS    = 0x00000001
 	BIF_DONTGOBELOWDOMAIN   = 0x00000002
@@ -1390,7 +1390,7 @@ const (
 	BIF_BROWSEFILEJUNCTIONS = 0x00010000
 )
 
-//MessageBox flags
+// MessageBox flags
 const (
 	MB_OK                = 0x00000000
 	MB_OKCANCEL          = 0x00000001
@@ -1419,7 +1419,7 @@ const (
 	MB_HELP              = 0x00004000
 )
 
-//COM
+// COM
 const (
 	E_INVALIDARG  = 0x80070057
 	E_OUTOFMEMORY = 0x8007000E
@@ -2256,6 +2256,32 @@ const (
 	VK_NONAME              = 0xFC
 	VK_PA1                 = 0xFD
 	VK_OEM_CLEAR           = 0xFE
+	VK_A                   = 'A'
+	VK_B                   = 'B'
+	VK_C                   = 'C'
+	VK_D                   = 'D'
+	VK_E                   = 'E'
+	VK_F                   = 'F'
+	VK_G                   = 'G'
+	VK_H                   = 'H'
+	VK_I                   = 'I'
+	VK_J                   = 'J'
+	VK_K                   = 'K'
+	VK_L                   = 'L'
+	VK_M                   = 'M'
+	VK_N                   = 'N'
+	VK_O                   = 'O'
+	VK_P                   = 'P'
+	VK_Q                   = 'Q'
+	VK_R                   = 'R'
+	VK_S                   = 'S'
+	VK_T                   = 'T'
+	VK_U                   = 'U'
+	VK_V                   = 'V'
+	VK_W                   = 'W'
+	VK_X                   = 'X'
+	VK_Y                   = 'Y'
+	VK_Z                   = 'Z'
 )
 
 // Registry Value Types
