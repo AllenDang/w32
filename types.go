@@ -900,6 +900,15 @@ type KBDLLHOOKSTRUCT struct {
 	DwExtraInfo ULONG_PTR
 }
 
+// https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-msllhookstruct
+type MSLLHOOKSTRUCT struct {
+	Pt        POINT
+	MouseData DWORD
+	Flags     DWORD
+	Time      DWORD
+	ExtraInfo ULONG_PTR
+}
+
 type HOOKPROC func(int, WPARAM, LPARAM) LRESULT
 
 type WINDOWPLACEMENT struct {
