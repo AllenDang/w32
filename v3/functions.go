@@ -114,17 +114,20 @@ var (
 	createAcceleratorTable        = user32.NewProc("CreateAcceleratorTableW")
 	destroyAcceleratorTable       = user32.NewProc("DestroyAcceleratorTable")
 	getFocus                      = user32.NewProc("GetFocus")
+	getWindowThreadProcessId      = user32.NewProc("GetWindowThreadProcessId")
 
-	getModuleHandle  = kernel32.NewProc("GetModuleHandleW")
-	globalAlloc      = kernel32.NewProc("GlobalAlloc")
-	globalFree       = kernel32.NewProc("GlobalFree")
-	globalLock       = kernel32.NewProc("GlobalLock")
-	globalUnlock     = kernel32.NewProc("GlobalUnlock")
-	formatMessage    = kernel32.NewProc("FormatMessageW")
-	beep             = kernel32.NewProc("Beep")
-	createActCtx     = kernel32.NewProc("CreateActCtxW")
-	activateActCtx   = kernel32.NewProc("ActivateActCtx")
-	deactivateActCtx = kernel32.NewProc("DeactivateActCtx")
+	getModuleHandle     = kernel32.NewProc("GetModuleHandleW")
+	globalAlloc         = kernel32.NewProc("GlobalAlloc")
+	globalFree          = kernel32.NewProc("GlobalFree")
+	globalLock          = kernel32.NewProc("GlobalLock")
+	globalUnlock        = kernel32.NewProc("GlobalUnlock")
+	formatMessage       = kernel32.NewProc("FormatMessageW")
+	beep                = kernel32.NewProc("Beep")
+	createActCtx        = kernel32.NewProc("CreateActCtxW")
+	activateActCtx      = kernel32.NewProc("ActivateActCtx")
+	deactivateActCtx    = kernel32.NewProc("DeactivateActCtx")
+	getConsoleWindow    = kernel32.NewProc("GetConsoleWindow")
+	getCurrentProcessId = kernel32.NewProc("GetCurrentProcessId")
 
 	moveMemory = ntdll.NewProc("RtlMoveMemory")
 
@@ -1924,4 +1927,31 @@ func SetWindowSubclass(window HWND, proc, subclassID, refData uintptr) error {
 // SetWindowSubclass.
 func NewWindowSubclassProc(f func(window HWND, message uint32, w, l, subclassID, refData uintptr) uintptr) uintptr {
 	return syscall.NewCallback(f)
+}
+
+// https://learn.microsoft.com/windows/console/getconsolewindow
+func GetConsoleWindow() HWND {
+	ret, _, _ := getConsoleWindow.Call()
+	return HWND(ret)
+}
+
+// GetWindowThreadProcessId returns the ID of the thread that created the
+// window as the first return value, and the ID of the process that created the
+// window as the second return value.
+//
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getwindowthreadprocessid
+func GetWindowThreadProcessId(window HWND) (uint32, uint32, error) {
+	var processID uint32
+	ret, _, err := getWindowThreadProcessId.Call(
+		uintptr(window),
+		uintptr(unsafe.Pointer(&processID)),
+	)
+	return uint32(ret), processID,
+		makeErr(ret == 0, "w32.GetWindowThreadProcessId returned 0", err)
+}
+
+// https://learn.microsoft.com/windows/win32/api/processthreadsapi/nf-processthreadsapi-getcurrentprocessid
+func GetCurrentProcessId() uint32 {
+	ret, _, _ := getCurrentProcessId.Call()
+	return uint32(ret)
 }
