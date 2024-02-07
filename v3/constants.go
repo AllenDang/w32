@@ -2790,3 +2790,41 @@ const (
 	MK_XBUTTON1 = 32
 	MK_XBUTTON2 = 64
 )
+
+// https://learn.microsoft.com/windows/win32/controls/bumper-edit-control-reference-notifications
+const (
+	EN_SEARCHWEB         = 4294965776
+	EN_MSGFILTER         = 1792
+	EN_REQUESTRESIZE     = 1793
+	EN_SELCHANGE         = 1794
+	EN_DROPFILES         = 1795
+	EN_PROTECTED         = 1796
+	EN_CORRECTTEXT       = 1797
+	EN_STOPNOUNDO        = 1798
+	EN_IMECHANGE         = 1799
+	EN_SAVECLIPBOARD     = 1800
+	EN_OLEOPFAILED       = 1801
+	EN_OBJECTPOSITIONS   = 1802
+	EN_LINK              = 1803
+	EN_DRAGDROPDONE      = 1804
+	EN_PARAGRAPHEXPANDED = 1805
+	EN_PAGECHANGE        = 1806
+	EN_LOWFIRTF          = 1807
+	EN_ALIGNLTR          = 1808
+	EN_ALIGNRTL          = 1809
+	EN_CLIPFORMAT        = 1810
+	EN_STARTCOMPOSITION  = 1811
+	EN_ENDCOMPOSITION    = 1812
+	EN_SETFOCUS          = 256
+	EN_KILLFOCUS         = 512
+	EN_CHANGE            = 768
+	EN_UPDATE            = 1024
+	EN_ERRSPACE          = 1280
+	EN_MAXTEXT           = 1281
+	EN_HSCROLL           = 1537
+	EN_VSCROLL           = 1538
+	EN_ALIGN_LTR_EC      = 1792
+	EN_ALIGN_RTL_EC      = 1793
+	EN_BEFORE_PASTE      = 2048
+	EN_AFTER_PASTE       = 2049
+)
