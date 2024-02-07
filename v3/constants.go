@@ -2778,3 +2778,15 @@ const (
 	FCONTROL  = 8
 	FALT      = 16
 )
+
+// https://learn.microsoft.com/windows/win32/inputdev/wm-mousewheel
+const (
+	MK_ALT      = 32
+	MK_LBUTTON  = 1
+	MK_RBUTTON  = 2
+	MK_SHIFT    = 4
+	MK_CONTROL  = 8
+	MK_MBUTTON  = 16
+	MK_XBUTTON1 = 32
+	MK_XBUTTON2 = 64
+)
