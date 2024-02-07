@@ -1882,6 +1882,14 @@ func EnableWindow(window HWND, enable bool) bool {
 
 // https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-createacceleratortablew
 func CreateAcceleratorTable(accelerators []ACCEL) (HACCEL, error) {
+	// NOTE that there seems to be a bug in this function. Whenever we pass an
+	// odd number of accelerators, it fails and returns nil. As a work-around
+	// we make sure the number is even by adding an empty accelerator, which
+	// will not trigger.
+	if len(accelerators)%2 == 1 {
+		accelerators = append(accelerators, ACCEL{})
+	}
+
 	var ptr uintptr
 	if len(accelerators) > 0 {
 		ptr = uintptr(unsafe.Pointer(&accelerators[0]))
