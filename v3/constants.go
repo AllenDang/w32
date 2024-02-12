@@ -2828,3 +2828,58 @@ const (
 	EN_BEFORE_PASTE      = 2048
 	EN_AFTER_PASTE       = 2049
 )
+
+// TODO
+const (
+	SB_SETTEXTA         = 1025
+	SB_SETTEXTW         = 1035
+	SB_GETTEXTA         = 1026
+	SB_GETTEXTW         = 1037
+	SB_GETTEXTLENGTHA   = 1027
+	SB_GETTEXTLENGTHW   = 1036
+	SB_GETTEXT          = 1037
+	SB_SETTEXT          = 1035
+	SB_GETTEXTLENGTH    = 1036
+	SB_SETPARTS         = 1028
+	SB_GETPARTS         = 1030
+	SB_GETBORDERS       = 1031
+	SB_SETMINHEIGHT     = 1032
+	SB_SIMPLE           = 1033
+	SB_GETRECT          = 1034
+	SB_ISSIMPLE         = 1038
+	SB_SETICON          = 1039
+	SB_SETTIPTEXTA      = 1040
+	SB_SETTIPTEXTW      = 1041
+	SB_GETTIPTEXTA      = 1042
+	SB_GETTIPTEXTW      = 1043
+	SB_GETICON          = 1044
+	SB_SETUNICODEFORMAT = 8197
+	SB_GETUNICODEFORMAT = 8198
+	SB_SETBKCOLOR       = 8193
+	SB_SIMPLEID         = 255
+	SB_NONE             = 0
+	SB_CONST_ALPHA      = 1
+	SB_PIXEL_ALPHA      = 2
+	SB_PREMULT_ALPHA    = 4
+	SB_GRAD_RECT        = 16
+	SB_GRAD_TRI         = 32
+	SB_CTL              = 2
+	SB_HORZ             = 0
+	SB_VERT             = 1
+	SB_BOTH             = 3
+	SB_LINEUP           = 0
+	SB_LINELEFT         = 0
+	SB_LINEDOWN         = 1
+	SB_LINERIGHT        = 1
+	SB_PAGEUP           = 2
+	SB_PAGELEFT         = 2
+	SB_PAGEDOWN         = 3
+	SB_PAGERIGHT        = 3
+	SB_THUMBPOSITION    = 4
+	SB_THUMBTRACK       = 5
+	SB_TOP              = 6
+	SB_LEFT             = 6
+	SB_RIGHT            = 7
+	SB_BOTTOM           = 7
+	SB_ENDSCROLL        = 8
+)

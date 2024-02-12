@@ -103,7 +103,6 @@ var (
 	enumWindows                   = user32.NewProc("EnumWindows")
 	enumDisplayMonitors           = user32.NewProc("EnumDisplayMonitors")
 	getMonitorInfo                = user32.NewProc("GetMonitorInfoW")
-	getSystemMetrics              = user32.NewProc("GetSystemMetrics")
 	setFocus                      = user32.NewProc("SetFocus")
 	messageBeep                   = user32.NewProc("MessageBeep")
 	setWindowText                 = user32.NewProc("SetWindowTextW")
@@ -115,6 +114,11 @@ var (
 	destroyAcceleratorTable       = user32.NewProc("DestroyAcceleratorTable")
 	getFocus                      = user32.NewProc("GetFocus")
 	getWindowThreadProcessId      = user32.NewProc("GetWindowThreadProcessId")
+	setScrollPos                  = user32.NewProc("SetScrollPos")
+	getScrollPos                  = user32.NewProc("GetScrollPos")
+	getSystemMetrics              = user32.NewProc("GetSystemMetrics")
+	getSystemMetricsForDpi        = user32.NewProc("GetSystemMetricsForDpi")
+	getAsyncKeyState              = user32.NewProc("GetAsyncKeyState")
 
 	getModuleHandle     = kernel32.NewProc("GetModuleHandleW")
 	globalAlloc         = kernel32.NewProc("GlobalAlloc")
@@ -1344,12 +1348,6 @@ func GetMonitorInfo(monitor HMONITOR) (MONITORINFOEX, error) {
 	return info, makeErr(ret == 0, "w32.GetMonitorInfo returned FALSE", nil)
 }
 
-// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics
-func GetSystemMetrics(index int32) int32 {
-	ret, _, _ := getSystemMetrics.Call(uintptr(index))
-	return int32(ret)
-}
-
 // SendInput sends mouse, keyboards and hardware input to the system.
 //
 // Use functions MouseInput, KeyboardInput and HardwareInput to create these
@@ -1886,6 +1884,7 @@ func CreateAcceleratorTable(accelerators []ACCEL) (HACCEL, error) {
 	// odd number of accelerators, it fails and returns nil. As a work-around
 	// we make sure the number is even by adding an empty accelerator, which
 	// will not trigger.
+	// This bug was not reproducible in a C program.
 	if len(accelerators)%2 == 1 {
 		accelerators = append(accelerators, ACCEL{})
 	}
@@ -1962,4 +1961,78 @@ func GetWindowThreadProcessId(window HWND) (uint32, uint32, error) {
 func GetCurrentProcessId() uint32 {
 	ret, _, _ := getCurrentProcessId.Call()
 	return uint32(ret)
+}
+
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-setscrollpos
+func SetScrollPos(window HWND, bar, pos int32, redraw bool) (int32, error) {
+	ret, _, err := setScrollPos.Call(
+		uintptr(window),
+		uintptr(bar),
+		uintptr(pos),
+		uintptr(BoolToBOOL(redraw)),
+	)
+	return int32(ret), makeErr(
+		ret == 0 && err.(syscall.Errno) != 0,
+		"w32.SetScrollPos returned nil",
+		err,
+	)
+}
+
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getscrollpos
+func GetScrollPos(window HWND, bar int32) (int32, error) {
+	ret, _, err := getScrollPos.Call(
+		uintptr(window),
+		uintptr(bar),
+	)
+	return int32(ret), makeErr(
+		ret == 0 && err.(syscall.Errno) != 0,
+		"w32.GetScrollPos returned nil",
+		err,
+	)
+}
+
+// TODO
+func Edit_GetFirstVisibleLine(edit HWND) int32 {
+	return int32(SendMessage(edit, EM_GETFIRSTVISIBLELINE, 0, 0))
+}
+
+// TODO
+func Edit_LimitText(edit HWND, maxChars int32) int32 {
+	return int32(SendMessage(edit, EM_LIMITTEXT, uintptr(maxChars), 0))
+}
+
+// TODO
+func Edit_GetLineCount(edit HWND) uint32 {
+	return uint32(SendMessage(edit, EM_GETLINECOUNT, 0, 0))
+}
+
+// TODO: https://github.com/microsoft/win32metadata/issues/1846
+//
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics
+func GetSystemMetrics(index int32) (int32, error) {
+	ret, _, err := getSystemMetrics.Call(uintptr(index))
+	return int32(ret), makeErr(
+		ret == 0 && err.(syscall.Errno) != 0,
+		"w32.GetSystemMetricsForDpi returned 0",
+		err,
+	)
+}
+
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetricsfordpi
+func GetSystemMetricsForDpi(index int32, dpi uint32) (int32, error) {
+	ret, _, err := getSystemMetricsForDpi.Call(
+		uintptr(index),
+		uintptr(dpi),
+	)
+	return int32(ret), makeErr(
+		ret == 0 && err.(syscall.Errno) != 0,
+		"w32.GetSystemMetricsForDpi returned 0",
+		err,
+	)
+}
+
+// https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getasynckeystate
+func GetAsyncKeyState(key int32) uint16 {
+	ret, _, _ := getAsyncKeyState.Call(uintptr(key))
+	return uint16(ret)
 }
