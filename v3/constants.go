@@ -2883,3 +2883,10 @@ const (
 	SB_BOTTOM           = 7
 	SB_ENDSCROLL        = 8
 )
+
+// https://learn.microsoft.com/windows/win32/inputdev/wm-activate
+const (
+	WA_INACTIVE    = 0
+	WA_ACTIVE      = 1
+	WA_CLICKACTIVE = 2
+)

@@ -99,10 +99,10 @@ type INITCOMMONCONTROLSEX struct {
 	ICC  uint32
 }
 
-// https://learn.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-nmhdr
+// https://learn.microsoft.com/windows/win32/api/winuser/ns-winuser-nmhdr
 type NMHDR struct {
 	HwndFrom HWND
-	IdFrom   uint32
+	IdFrom   uintptr
 	Code     uint32
 }
 

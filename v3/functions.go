@@ -797,9 +797,9 @@ func INDEXTOSTATEIMAGEMASK(index uint32) uint32 {
 // there was no image list, it returns 0.
 //
 // https://learn.microsoft.com/windows/win32/api/commctrl/nf-commctrl-treeview_setimagelist
-func TreeView_SetImageList(control HWND, imageList HIMAGELIST, imageType int) HIMAGELIST {
+func TreeView_SetImageList(tree HWND, imageList HIMAGELIST, imageType int) HIMAGELIST {
 	return HIMAGELIST(SendMessage(
-		control,
+		tree,
 		TVM_SETIMAGELIST,
 		uintptr(imageType),
 		uintptr(imageList),
@@ -810,8 +810,13 @@ func TreeView_SetImageList(control HWND, imageList HIMAGELIST, imageType int) HI
 // returns 0 if the control has no image list.
 //
 // https://learn.microsoft.com/windows/win32/api/commctrl/nf-commctrl-treeview_getimagelist
-func TreeView_GetImageList(control HWND, imageType int) HIMAGELIST {
-	return HIMAGELIST(SendMessage(control, TVM_GETIMAGELIST, uintptr(imageType), 0))
+func TreeView_GetImageList(tree HWND, imageType int) HIMAGELIST {
+	return HIMAGELIST(SendMessage(tree, TVM_GETIMAGELIST, uintptr(imageType), 0))
+}
+
+// https://learn.microsoft.com/windows/win32/api/commctrl/nf-commctrl-treeview_getselection
+func TreeView_GetSelection(tree HWND) HTREEITEM {
+	return HTREEITEM(SendMessage(tree, TVM_GETNEXTITEM, TVGN_CARET, 0))
 }
 
 // https://learn.microsoft.com/windows/win32/api/commctrl/nf-commctrl-imagelist_create
