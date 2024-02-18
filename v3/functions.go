@@ -2011,16 +2011,10 @@ func Edit_GetLineCount(edit HWND) uint32 {
 	return uint32(SendMessage(edit, EM_GETLINECOUNT, 0, 0))
 }
 
-// TODO: https://github.com/microsoft/win32metadata/issues/1846
-//
 // https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetrics
-func GetSystemMetrics(index int32) (int32, error) {
-	ret, _, err := getSystemMetrics.Call(uintptr(index))
-	return int32(ret), makeErr(
-		ret == 0 && err.(syscall.Errno) != 0,
-		"w32.GetSystemMetricsForDpi returned 0",
-		err,
-	)
+func GetSystemMetrics(index int32) int32 {
+	ret, _, _ := getSystemMetrics.Call(uintptr(index))
+	return int32(ret)
 }
 
 // https://learn.microsoft.com/windows/win32/api/winuser/nf-winuser-getsystemmetricsfordpi
